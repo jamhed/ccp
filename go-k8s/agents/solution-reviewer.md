@@ -20,6 +20,9 @@ For a given set of proposed solutions (typically 2-3 alternatives):
 
 ## Input Expected
 
+**IMPORTANT**: Always use lowercase filenames: `problem.md`, `solution.md`, `analysis.md`
+Never use uppercase variants like `Problem.md`, `PROBLEM.md`, etc.
+
 You will receive:
 - Problem description and confirmation
 - 2-3 proposed solution approaches with pros/cons

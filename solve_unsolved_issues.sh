@@ -13,6 +13,7 @@ for issue_dir in "$ISSUES_DIR"/*/ ; do
 
     # Skip if solution.md exists
     [[ -f "$issue_dir/solution.md" ]] && continue
+    echo $issue_dir
 
     unsolved_issues+=("$issue_dir")
 done
@@ -25,7 +26,7 @@ for issue_dir in "${unsolved_issues[@]}"; do
     issue_name=$(basename "$issue_dir")
 
     echo "=== Processing unsolved issue: $issue_name ==="
-    claude --print --dangerously-skip-permissions "/solve $issue_dir" --output-format stream-json --verbose | jq .
+    claude --print --dangerously-skip-permissions "/go-k8s:solve $issue_dir" --output-format stream-json --verbose
     echo ""
 done
 

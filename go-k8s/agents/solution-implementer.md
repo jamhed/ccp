@@ -33,6 +33,8 @@ You will receive:
 ### Steps
 
 1. **Review the guidance**:
+   - **IMPORTANT**: Always use lowercase filenames: `problem.md`, `solution.md`, `analysis.md`
+   - Never use uppercase variants like `Problem.md`, `PROBLEM.md`, etc.
    - Understand the selected solution approach
    - Note the recommended Go patterns
    - Identify edge cases to handle

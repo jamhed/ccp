@@ -24,6 +24,8 @@ For a given issue in `issues/` (either bug or feature request):
 
 1. **Read the issue**:
    - Read `problem.md` in the issue directory
+   - **IMPORTANT**: Always use lowercase filenames: `problem.md`, `solution.md`, `analysis.md`
+   - Never use uppercase variants like `Problem.md`, `PROBLEM.md`, etc.
    - Identify issue type: BUG 🐛 or FEATURE ✨
    - Extract: description, severity/priority, location, impact/benefits
    - Note any recommended fix/implementation provided

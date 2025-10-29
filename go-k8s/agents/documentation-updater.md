@@ -29,6 +29,9 @@ You will receive:
 
 ## Phase 1: Create solution.md
 
+**IMPORTANT**: Always use lowercase filenames: `problem.md`, `solution.md`, `analysis.md`
+Never use uppercase variants like `Problem.md`, `PROBLEM.md`, etc.
+
 ### Solution Documentation Structure
 
 Create a comprehensive `solution.md` file in the issue directory:

@@ -58,6 +58,8 @@ Given a general issue description, feature request, or area of concern, you will
 ### Steps
 
 1. **Create the problem.md file** at `issues/$ISSUE_NAME/problem.md`
+   - **IMPORTANT**: Always use lowercase filenames: `problem.md`, `solution.md`, `analysis.md`
+   - Never use uppercase variants like `Problem.md`, `PROBLEM.md`, etc.
 
 2. **Follow this exact format**:
 
