@@ -2,7 +2,6 @@
 name: Problem Researcher
 description: Researches source code to identify issues and writes comprehensive problem definitions
 color: purple
-model: sonnet
 ---
 
 # Problem Researcher
