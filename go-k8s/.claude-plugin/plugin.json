@@ -1,0 +1,6 @@
+{
+"name": "go-k8s",
+"description": "Golang for Kubernetes development",
+"version": "0.1.0",
+"author": { "name": "Roman Galeev" }
+}

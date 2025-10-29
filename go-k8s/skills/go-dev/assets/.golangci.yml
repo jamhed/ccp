@@ -1,0 +1,240 @@
+# golangci-lint configuration for Kubernetes operators
+# Emphasizes fail-early patterns, modern Go idioms, and operator best practices
+
+run:
+  timeout: 5m
+  tests: true
+  skip-dirs:
+    - vendor
+    - testdata
+    - hack
+  skip-files:
+    - ".*\\.pb\\.go$"
+    - "zz_generated\\..*\\.go$"
+
+linters:
+  enable:
+    # Error checking
+    - errcheck        # Check for unchecked errors
+    - errorlint       # Find code that will cause problems with Go 1.13+ error wrapping
+    - goerr113        # Enforce error wrapping and sentinel errors
+
+    # Code quality
+    - govet           # Reports suspicious constructs
+    - staticcheck     # Go static analysis, many checks
+    - unused          # Check for unused code
+    - ineffassign     # Detect ineffectual assignments
+    - unconvert       # Remove unnecessary type conversions
+
+    # Style and idioms
+    - gofmt           # Check whether code was gofmt-ed
+    - goimports       # Check import statements
+    - revive          # Fast, configurable, extensible linter
+    - stylecheck      # Stylecheck is a replacement for golint
+
+    # Complexity
+    - gocyclo         # Computes cyclomatic complexity
+    - gocognit        # Computes cognitive complexity
+    - nestif          # Reports deeply nested if statements
+
+    # Performance
+    - prealloc        # Find slice declarations that could be preallocated
+    - bodyclose       # Checks whether HTTP response body is closed
+
+    # Security
+    - gosec           # Inspects source code for security problems
+
+    # Bugs
+    - nilerr          # Finds code that returns nil even if it checks that error is not nil
+    - nilnil          # Checks that there is no simultaneous return of nil error and invalid value
+    - makezero        # Finds slice declarations with non-zero initial length
+    - copyloopvar     # Detects places where loop variables are copied (Go 1.22+)
+
+    # Modern Go features
+    - usestdlibvars   # Detect the possibility to use variables/constants from stdlib
+    - nolintlint      # Reports ill-formed or insufficient nolint directives
+
+  disable:
+    - funlen          # Too strict for reconcile functions
+    - lll             # Line length - handled by formatter
+    - gomnd           # Magic numbers - too noisy for constants
+    - wrapcheck       # Too strict for controller code
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+    exclude-functions:
+      # It's OK to ignore errors from these status update functions
+      # as they're often best-effort at the end of reconcile
+      - (*sigs.k8s.io/controller-runtime/pkg/client.StatusWriter).Update
+      - (*sigs.k8s.io/controller-runtime/pkg/client.StatusWriter).Patch
+
+  errorlint:
+    # Check for plain error comparisons
+    errorf: true
+    asserts: true
+    comparison: true
+
+  govet:
+    enable-all: true
+    disable:
+      - shadow  # Too noisy
+    settings:
+      printf:
+        funcs:
+          - (github.com/go-logr/logr.Logger).Infof
+          - (github.com/go-logr/logr.Logger).Errorf
+
+  revive:
+    rules:
+      # Fail-early patterns
+      - name: early-return
+        severity: warning
+      - name: indent-error-flow
+        severity: warning
+      - name: superfluous-else
+        severity: warning
+
+      # Error handling
+      - name: error-return
+        severity: warning
+      - name: error-strings
+        severity: warning
+      - name: error-naming
+        severity: warning
+
+      # Code quality
+      - name: var-naming
+        severity: warning
+      - name: package-comments
+        severity: warning
+      - name: exported
+        severity: warning
+      - name: receiver-naming
+        severity: warning
+
+      # Anti-patterns
+      - name: defer
+        severity: warning
+        arguments:
+          - ["call-chain", "loop", "method-call", "recover", "return"]
+      - name: if-return
+        severity: warning
+      - name: unused-parameter
+        severity: warning
+      - name: unreachable-code
+        severity: warning
+
+      # Concurrency
+      - name: waitgroup-by-value
+        severity: error
+      - name: atomic
+        severity: error
+      - name: context-as-argument
+        severity: warning
+        arguments:
+          - allowTypesBefore: "*testing.T"
+
+  gocyclo:
+    # Reconcile functions can be complex
+    min-complexity: 20
+
+  gocognit:
+    # Cognitive complexity threshold
+    min-complexity: 30
+
+  nestif:
+    # Maximum nesting of if statements
+    min-complexity: 5
+
+  goerr113:
+    rules:
+      # Allow these error construction patterns in operators
+      - pattern: 'fmt\.Errorf.*%w'
+      - pattern: 'errors\.New'
+      - pattern: 'errors\.Join'
+
+  prealloc:
+    simple: true
+    range-loops: true
+    for-loops: true
+
+  gosec:
+    excludes:
+      # G404: Use of weak random number generator
+      # OK for non-security purposes like test data
+      - G404
+
+  stylecheck:
+    checks:
+      - all
+      - -ST1000  # Package comments - too strict for internal packages
+      - -ST1003  # Underscores in names - generated code uses them
+
+  staticcheck:
+    checks:
+      - all
+
+issues:
+  exclude-use-default: false
+
+  exclude-rules:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - gosec
+        - goerr113
+
+    # Exclude generated files
+    - path: zz_generated\..*\.go
+      linters:
+        - all
+
+    # Allow dot imports in Ginkgo tests
+    - path: _test\.go
+      text: "dot imports"
+      linters:
+        - revive
+
+    # kubebuilder markers use underscores
+    - path: .*_types\.go
+      linters:
+        - stylecheck
+      text: "ST1003"
+
+    # Webhook setup code often has long functions
+    - path: webhook
+      linters:
+        - gocyclo
+        - gocognit
+
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+severity:
+  default-severity: warning
+  rules:
+    # Critical issues
+    - linters:
+        - errcheck
+        - govet
+        - staticcheck
+        - gosec
+      severity: error
+
+    # Style issues
+    - linters:
+        - stylecheck
+        - revive
+      severity: warning
+
+output:
+  formats:
+    - format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  uniq-by-line: true
+  sort-results: true

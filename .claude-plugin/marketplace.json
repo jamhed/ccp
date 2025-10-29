@@ -1,0 +1,11 @@
+{
+  "name": "ccp",
+  "owner": { "name": "Roman Galeev" },
+  "plugins": [
+    {
+      "name": "go-k8s",
+      "source": "./go-k8s",
+      "description": "Golang for Kubernetes development"
+    }
+  ]
+}
