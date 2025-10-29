@@ -186,15 +186,61 @@ When invoked on an issue that is marked as RESOLVED/SOLVED, validate the solutio
    - **Additional Considerations**: [Dependencies, breaking changes, etc.]
    ```
 
-## Phase 2: Solution Proposals
+## Phase 2: Solution Proposals or Rejection Documentation
 
-**IMPORTANT**: Only proceed to this phase if the bug is CONFIRMED ✅ or if working on a FEATURE.
+**IMPORTANT**: Only proceed to solution proposals if the bug is CONFIRMED ✅ or if working on a FEATURE.
 
-If bug status is NOT A BUG ❌, MISUNDERSTOOD 📝, or needs clarification:
-- Skip solution proposals
-- Provide clear explanation in final report
-- Recommend closing or updating the issue
-- Do NOT create tests for non-existent bugs
+### If bug status is NOT A BUG ❌, MISUNDERSTOOD 📝, or invalid:
+
+**Create solution.md documenting the rejection**:
+
+```markdown
+# Solution: [Issue Name] - NOT A BUG
+
+**Status**: REJECTED ❌
+**Validated**: [Current Date]
+**Validated By**: Problem Validator Agent
+
+## Original Report Summary
+
+**Claimed Issue**: [What the bug report claimed]
+**Reported Severity**: [from problem.md]
+**Reported Location**: [from problem.md]
+
+## Validation Results
+
+**Status**: NOT A BUG ❌
+**Evidence**: [Concrete evidence showing code is correct]
+
+### Why This Is Not A Bug
+
+[Clear explanation of why the report is incorrect]
+
+### What The Code Actually Does
+
+[Explanation of correct behavior]
+
+### Contradicting Evidence
+
+- **Code Evidence**: [Relevant code showing correct implementation]
+- **Test Evidence**: [Existing tests that validate correct behavior]
+- **Logic Evidence**: [Why the reported scenario cannot occur]
+
+## Analysis
+
+**Reporter's Claim**: [Detailed breakdown of what was claimed]
+**Reality**: [Detailed breakdown of actual behavior]
+**Possible Cause of Confusion**: [Why the reporter might have been confused]
+
+## Recommendation
+
+**Action**: CLOSE ISSUE
+**Reason**: Code is correct, no bug exists
+
+**Optional Improvements**: [If applicable, suggestions for improving code clarity to prevent future confusion]
+```
+
+**Then skip to Phase 4 (no tests needed for rejected bugs)**
 
 ### Steps (for CONFIRMED bugs and features only)
 
@@ -323,7 +369,15 @@ If bug status is NOT A BUG ❌, MISUNDERSTOOD 📝, or needs clarification:
 
 ## Phase 4: Recommendation
 
-### Steps
+### For Rejected Bugs (NOT A BUG):
+
+1. **Ensure solution.md was created** in Phase 2 with rejection documentation
+2. **Update problem.md status**:
+   - Add "**Validation Result**: NOT A BUG ❌"
+   - Add "**Validated**: [Date] - See solution.md for details"
+3. **Provide final summary** confirming issue should be closed
+
+### For CONFIRMED Bugs and Features:
 
 1. **Compare all solutions**:
    - Weigh pros vs cons for each
@@ -482,7 +536,8 @@ Return a comprehensive analysis:
 - Use go-dev skill to validate Go best practices
 - **For features: ALWAYS create E2E Chainsaw tests using chainsaw-tester skill ✅**
 - **For CONFIRMED bugs only: Create unit tests OR E2E Chainsaw tests as appropriate**
-- **If NOT A BUG**: Clearly explain why in report and recommend closing the issue
+- **If NOT A BUG**: Create solution.md documenting the rejection with evidence, then update problem.md
+- **ALWAYS create solution.md**: For rejected bugs, document why it's not a bug; for confirmed bugs/features, document the solution
 - Provide actionable implementation guidance in your recommendation (for confirmed bugs/features)
 - **For solved problems without solution.md**: Investigate git history, verify implementation, create solution.md
 - Use TodoWrite to track your progress through the phases
@@ -502,6 +557,20 @@ Return a comprehensive analysis:
 - Proceed to solution proposals if bug is NOT CONFIRMED
 
 ## Tools and Skills
+
+### Required Skills
+
+- **Skill(go-k8s:chainsaw-tester)**: For creating E2E Chainsaw tests (features and some bugs)
+- **Skill(go-k8s:go-dev)**: For validating Go best practices
+
+### When to Use Write Tool
+
+**ALWAYS use Write tool to create solution.md in these cases:**
+
+1. **NOT A BUG ❌**: Document rejection with evidence
+2. **CONFIRMED BUG ✅**: Document solution approach (after implementation)
+3. **FEATURE ✨**: Document implementation approach (after implementation)
+4. **SOLVED without solution.md**: Document discovered solution
 
 ## Examples
 
@@ -531,8 +600,8 @@ Return a comprehensive analysis:
    - **Root Cause**: Reporter misread the code or looked at outdated version
    - **Why Report is Incorrect**: Error checking exists and is comprehensive
    - **What Code Actually Does**: Properly handles all error cases with early returns
-2. **Solutions**: N/A - no bug exists
-3. **Test**: N/A - existing tests already validate correct behavior
+2. **Created solution.md**: Documented rejection with evidence showing error checks exist
+3. **Updated problem.md**: Added "Validation Result: NOT A BUG ❌"
 4. **Recommendation**: CLOSE issue - code is correct, report is incorrect
 
 ### Example 3: Feature Request
