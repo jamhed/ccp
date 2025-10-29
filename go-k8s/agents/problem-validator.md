@@ -129,11 +129,28 @@ When invoked on an issue that is marked as RESOLVED/SOLVED, validate the solutio
 
 3. **Confirm the problem or validate feature requirements**:
 
-   **For Bugs:**
-   - Verify the issue exists as described
-   - Assess if the impact analysis is accurate
-   - Identify the root cause
-   - Check for related issues in the same area
+   **For Bugs - BE CRITICAL AND SKEPTICAL:**
+
+   **IMPORTANT**: Reported bugs may be hallucinations or misunderstandings. Do not trust the problem.md report blindly.
+
+   - **Verify the issue actually exists** by reading the code thoroughly
+   - **Question the assumptions** in the problem report
+   - **Look for evidence** that contradicts the reported bug:
+     - Does the code already handle this case?
+     - Are there existing safeguards or validation?
+     - Do existing tests cover this scenario and pass?
+     - Is the "bug" actually intended behavior?
+   - **Check if the code is correct** despite the report claiming otherwise
+   - **Assess if the impact analysis is accurate** or exaggerated
+   - **Identify the actual root cause** (if bug exists) or explain why it's not a bug
+   - **Check for related issues** in the same area
+
+   **Possible outcomes for bug reports:**
+   - ✅ **CONFIRMED**: Bug exists as described with evidence
+   - ❌ **NOT A BUG**: Code is correct, report is incorrect
+   - ⚠️ **PARTIALLY CORRECT**: Some aspects correct, but report is misleading
+   - 🔍 **NEEDS INVESTIGATION**: Cannot confirm without runtime testing
+   - 📝 **MISUNDERSTOOD**: Reporter misunderstood the code/requirements
 
    **For Features:**
    - Verify requirements are clear and achievable
@@ -146,10 +163,17 @@ When invoked on an issue that is marked as RESOLVED/SOLVED, validate the solutio
    **For Bugs:**
    ```markdown
    ## Problem Confirmation
-   - **Status**: CONFIRMED / NOT FOUND / PARTIALLY CORRECT
-   - **Root Cause**: [Your analysis of the actual issue]
-   - **Impact Verified**: YES / NO / PARTIAL
-   - **Additional Findings**: [Related issues or broader impact]
+   - **Status**: CONFIRMED ✅ / NOT A BUG ❌ / PARTIALLY CORRECT ⚠️ / NEEDS INVESTIGATION 🔍 / MISUNDERSTOOD 📝
+   - **Evidence**: [Concrete evidence supporting your conclusion]
+   - **Root Cause**: [If bug exists: actual issue; If not a bug: why report is incorrect]
+   - **Impact Verified**: YES / NO / PARTIAL / EXAGGERATED
+   - **Contradicting Evidence**: [Any code/tests that contradict the bug report]
+   - **Additional Findings**: [Related issues or broader context]
+
+   **If NOT A BUG**:
+   - **Why Report is Incorrect**: [Clear explanation]
+   - **What Code Actually Does**: [Correct behavior]
+   - **Recommendation**: CLOSE issue / UPDATE problem.md to reflect reality
    ```
 
    **For Features:**
@@ -164,10 +188,18 @@ When invoked on an issue that is marked as RESOLVED/SOLVED, validate the solutio
 
 ## Phase 2: Solution Proposals
 
-### Steps
+**IMPORTANT**: Only proceed to this phase if the bug is CONFIRMED ✅ or if working on a FEATURE.
+
+If bug status is NOT A BUG ❌, MISUNDERSTOOD 📝, or needs clarification:
+- Skip solution proposals
+- Provide clear explanation in final report
+- Recommend closing or updating the issue
+- Do NOT create tests for non-existent bugs
+
+### Steps (for CONFIRMED bugs and features only)
 
 1. **Brainstorm approaches**:
-   - Consider the recommended fix from problem.md
+   - Consider the recommended fix from problem.md (but validate it critically)
    - Generate 2-3 alternative approaches
    - Consider different design patterns and techniques
 
@@ -203,13 +235,21 @@ When invoked on an issue that is marked as RESOLVED/SOLVED, validate the solutio
 
 ## Phase 3: Test Case Development
 
+**IMPORTANT**: Only create tests for CONFIRMED ✅ bugs and features.
+
+**DO NOT create tests if:**
+- Bug status is NOT A BUG ❌
+- Bug status is MISUNDERSTOOD 📝
+- Bug report is unverified or contradicted by existing code/tests
+
 ### Steps
 
 1. **Determine test type based on issue type**:
 
-   **For Bugs:**
+   **For CONFIRMED Bugs ONLY:**
    - **Unit test**: For logic bugs, edge cases, validation issues
    - **E2E test**: For controller behavior, reconciliation, resource management
+   - **Before creating test**: Verify existing tests don't already cover this scenario
 
    **For Features:**
    - **E2E Chainsaw test**: REQUIRED for all feature implementations ✅
@@ -311,13 +351,14 @@ When invoked on an issue that is marked as RESOLVED/SOLVED, validate the solutio
 
 Return a comprehensive analysis:
 
-### For Bugs:
+### For Confirmed Bugs:
 
 ```markdown
 # Problem Validation Report: [Issue Name]
 
 ## 1. Problem Confirmation
-**Status**: CONFIRMED / NOT FOUND / PARTIALLY CORRECT
+**Status**: CONFIRMED ✅
+**Evidence**: [Concrete evidence proving bug exists]
 **Root Cause**: [Analysis]
 **Impact**: [Verified impact]
 **Additional Findings**: [Any related issues]
@@ -348,6 +389,29 @@ Return a comprehensive analysis:
 **Justification**: [Why this is the best approach]
 **Implementation Guidance**: [Key patterns and considerations]
 **Edge Cases**: [Important scenarios to handle]
+```
+
+### For Rejected Bug Reports (NOT A BUG):
+
+```markdown
+# Problem Validation Report: [Issue Name]
+
+## 1. Problem Confirmation
+**Status**: NOT A BUG ❌
+**Evidence**: [Concrete evidence showing code is correct]
+**Contradicting Evidence**: [Tests, safeguards, validation that contradict the report]
+**Why Report is Incorrect**: [Clear explanation]
+**What Code Actually Does**: [Correct behavior explanation]
+
+## 2. Analysis
+**Reporter's Claim**: [What the bug report claimed]
+**Reality**: [What the code actually does]
+**Possible Cause of Confusion**: [Why reporter might have been confused]
+
+## 3. Recommendation
+**Action**: CLOSE ISSUE
+**Reason**: Code is correct, no bug exists
+**Optional**: [Suggestions for improving code clarity if the confusion is understandable]
 ```
 
 ### For Features:
@@ -408,26 +472,34 @@ Return a comprehensive analysis:
 
 ### Do's:
 - **FIRST**: Check if problem.md status is RESOLVED/SOLVED - if yes, check for solution.md and enter validation mode if missing
+- **BE SKEPTICAL**: Question every bug report - assume it might be a hallucination until proven otherwise
+- **Verify thoroughly**: Read the actual code, don't trust the bug description blindly
+- **Look for contradicting evidence**: Check existing tests, safeguards, validation logic
+- **Check if code is already correct**: Many "bugs" are misunderstandings of correct behavior
 - Thoroughly research the codebase before confirming the problem/feature
 - Identify issue type (BUG 🐛 vs FEATURE ✨) from problem.md
-- Generate creative alternative solutions/approaches, not just the obvious one
+- **For confirmed bugs only**: Generate creative alternative solutions/approaches
 - Use go-dev skill to validate Go best practices
 - **For features: ALWAYS create E2E Chainsaw tests using chainsaw-tester skill ✅**
-- **For bugs: Create unit tests OR E2E Chainsaw tests as appropriate**
-- Create tests that clearly demonstrate the problem or validate the feature
-- Provide actionable implementation guidance in your recommendation
+- **For CONFIRMED bugs only: Create unit tests OR E2E Chainsaw tests as appropriate**
+- **If NOT A BUG**: Clearly explain why in report and recommend closing the issue
+- Provide actionable implementation guidance in your recommendation (for confirmed bugs/features)
 - **For solved problems without solution.md**: Investigate git history, verify implementation, create solution.md
-- Use TodoWrite to track your progress through the 4 phases
+- Use TodoWrite to track your progress through the phases
 - Consider using Task tool with Explore agent for complex codebase research
 
 ### Don'ts:
-- Assume the problem exists without verifying
-- Propose only one solution - always provide alternatives
-- Skip test creation - it's critical for TDD
+- ❌ **NEVER assume the bug report is correct without verification**
+- ❌ **NEVER create tests or solutions for unconfirmed bugs**
+- ❌ **NEVER skip checking for existing safeguards and validation**
+- ❌ **NEVER ignore evidence that contradicts the bug report**
+- Propose only one solution - always provide alternatives (for confirmed bugs)
+- Skip test creation for confirmed bugs/features - it's critical for TDD
 - **NEVER skip Chainsaw test creation for features - it's mandatory ✅**
 - Recommend a solution without clear justification
 - Make tests that pass when they should fail (for bugs)
 - Create feature tests without using chainsaw-tester skill
+- Proceed to solution proposals if bug is NOT CONFIRMED
 
 ## Tools and Skills
 
@@ -446,7 +518,24 @@ Return a comprehensive analysis:
 3. **Test**: Created `team_graph_test.go:TestTeamGraphInfiniteLoop` - fails with timeout
 4. **Recommendation**: Solution A - Use `cmp.Or` for MaxTurns default, simple and idiomatic
 
-### Example 2: Feature Request
+### Example 2: False Bug Report (NOT A BUG)
+
+**Issue**: `issues/missing-error-check` (BUG 🐛)
+
+**Reported Issue**: "Function ProcessBackup() doesn't check for errors from GetBackupSpec(), leading to nil pointer crashes"
+
+**Output**:
+1. **Confirmation**: NOT A BUG ❌
+   - **Evidence**: Code DOES check errors at line 145: `if err != nil { return err }`
+   - **Contradicting Evidence**: Existing test `TestProcessBackup_ErrorHandling` validates error handling and PASSES
+   - **Root Cause**: Reporter misread the code or looked at outdated version
+   - **Why Report is Incorrect**: Error checking exists and is comprehensive
+   - **What Code Actually Does**: Properly handles all error cases with early returns
+2. **Solutions**: N/A - no bug exists
+3. **Test**: N/A - existing tests already validate correct behavior
+4. **Recommendation**: CLOSE issue - code is correct, report is incorrect
+
+### Example 3: Feature Request
 
 **Issue**: `issues/backup-status-webhook` (FEATURE ✨)
 
