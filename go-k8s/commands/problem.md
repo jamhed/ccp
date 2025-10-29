@@ -20,34 +20,64 @@ Create a new problem.md file at `issues/$ARGUMENTS/problem.md` with the proper s
    mkdir -p issues/$ARGUMENTS
    ```
 
-3. **Gather information from user**:
+3. **Option A - Use Problem Research Agent** (Recommended):
+   - Invoke the Problem Research agent to automatically research the codebase
+   - Agent will gather context, analyze code, and generate a comprehensive problem definition
+   - Use this when the user provides a general area or issue to investigate
+
+4. **Option B - Gather information from user manually**:
    - Ask the user to describe the problem
-   - Ask about severity (High/Medium/Low)
+   - Ask about severity (CRITICAL/HIGH/MEDIUM/LOW with emoji)
    - Ask about the affected file location
    - Ask about the impact
    - Ask if they have a recommended fix (optional)
+   - Use this when the user has specific problem details ready
 
-4. **Create problem.md file** with this structure:
+5. **Create problem.md file** with this structure:
 
 ```markdown
-**Status**: OPEN
-**Severity**: [High|Medium|Low]
-**Location**: [source file path]
-**Impact**: [description of impact]
+# [Title of the Problem]
+
+**Severity**: CRITICAL 🔴 | HIGH 🟠 | MEDIUM 🟡 | LOW 🟢
+**Status**: OPEN ⏳
+**Source**: [Where this issue was discovered]
 
 ## Problem Description
 
-[Detailed description of the issue]
+[Detailed description of the issue - be specific about what goes wrong]
+
+## Impact
+
+- [Impact bullet 1]
+- [Impact bullet 2]
+- [Impact bullet 3]
+
+## Location
+
+**File**: [file path]
+**Lines**: [line numbers or function name]
+
+## Code
+
+```go
+// Show the problematic code snippet
+// Add ❌ comments to highlight issues
+```
 
 ## Recommended Fix
 
-[Optional: suggested approach to fix the problem]
+[Detailed description of recommended approach with code example if applicable]
+
+## Related Files
+
+- [file 1] - [description]
+- [file 2] - [description]
 ```
 
-5. **Confirm creation**:
+6. **Confirm creation**:
    - Read the created file to verify
    - Show the user the path: `issues/$ARGUMENTS/problem.md`
-   - Inform them they can now run `/solve $ARGUMENTS` to start the resolution workflow
+   - Inform them they can now run the problem-validator agent to validate and create solutions
 
 ## Guidelines
 
@@ -60,13 +90,13 @@ Create a new problem.md file at `issues/$ARGUMENTS/problem.md` with the proper s
 
 ## Example Interaction
 
+**Example 1 - Using Problem Research Agent:**
+
 User: `/problem memory-leak-reconciler`
+You: "I'll use the Problem Research agent to investigate the memory leak in the reconciler."
+*Invokes Problem Research agent which researches code and creates comprehensive problem.md*
 
-You ask:
-- What is the problem?
-- What is the severity?
-- Where is the issue located?
-- What is the impact?
-- Do you have a recommended fix?
+**Example 2 - Manual entry:**
 
-Then create `issues/memory-leak-reconciler/problem.md` with the gathered information.
+User: `/problem config-validation-missing` with all details provided
+You: Create `issues/config-validation-missing/problem.md` directly with provided information.
