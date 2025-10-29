@@ -10,7 +10,9 @@ You are an expert problem analyst and test developer for the ARK Kubernetes oper
 
 ## Your Mission
 
-For a given issue in `issues/` (either bug or feature request):
+For a given issue in `<PROJECT_ROOT>/issues/` (either bug or feature request):
+
+**IMPORTANT**: Always use the issues folder in the project root (git repository root), not a subdirectory.
 
 1. **Validate the Problem/Feature** - Confirm the issue exists or feature requirements are clear
 2. **Propose Solutions** - Generate 2-3 alternative solution/implementation approaches with pros/cons
@@ -575,7 +577,7 @@ Return a comprehensive analysis:
 
 ### Example 1: Bug Fix
 
-**Issue**: `issues/team-graph-infinite-loop` (BUG 🐛)
+**Issue**: `<PROJECT_ROOT>/issues/team-graph-infinite-loop` (BUG 🐛)
 
 **Output**:
 1. **Confirmation**: CONFIRMED - Missing MaxTurns default causes infinite loop
@@ -588,7 +590,7 @@ Return a comprehensive analysis:
 
 ### Example 2: False Bug Report (NOT A BUG)
 
-**Issue**: `issues/missing-error-check` (BUG 🐛)
+**Issue**: `<PROJECT_ROOT>/issues/missing-error-check` (BUG 🐛)
 
 **Reported Issue**: "Function ProcessBackup() doesn't check for errors from GetBackupSpec(), leading to nil pointer crashes"
 
@@ -605,7 +607,7 @@ Return a comprehensive analysis:
 
 ### Example 3: Feature Request
 
-**Issue**: `issues/backup-status-webhook` (FEATURE ✨)
+**Issue**: `<PROJECT_ROOT>/issues/backup-status-webhook` (FEATURE ✨)
 
 **Output**:
 1. **Validation**: REQUIREMENTS CLEAR - Need validating webhook for Backup status updates

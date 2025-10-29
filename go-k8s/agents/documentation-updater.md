@@ -33,7 +33,9 @@ Never use uppercase variants like `Problem.md`, `PROBLEM.md`, etc.
 
 ### Solution Documentation Structure
 
-Create a comprehensive `solution.md` file in the issue directory:
+**IMPORTANT**: Always use the issues folder in the project root (git repository root), not a subdirectory.
+
+Create a comprehensive `solution.md` file in the issue directory at `<PROJECT_ROOT>/issues/[issue-name]/solution.md`:
 
 ```markdown
 # Solution: [Issue Name]
@@ -148,7 +150,7 @@ Create a comprehensive `solution.md` file in the issue directory:
 
 ## References
 
-- Problem Definition: `issues/[issue-name]/problem.md`
+- Problem Definition: `<PROJECT_ROOT>/issues/[issue-name]/problem.md`
 - ARK Patterns: `controller/CLAUDE.md`
 - Testing Patterns: `tests/CLAUDE.md`
 
@@ -164,7 +166,7 @@ Use Write tool to create the file:
 
 ```
 Write(
-  file_path: "issues/[issue-name]/solution.md",
+  file_path: "<PROJECT_ROOT>/issues/[issue-name]/solution.md",
   content: "[Complete solution.md content]"
 )
 ```
@@ -173,7 +175,7 @@ Document creation:
 ```markdown
 ## solution.md Created
 
-**Location**: `issues/[issue-name]/solution.md`
+**Location**: `<PROJECT_ROOT>/issues/[issue-name]/solution.md`
 **Size**: [character count or line count]
 **Sections**: Problem Summary, Solution Approach, Implementation, Testing, etc.
 ```
@@ -184,7 +186,7 @@ Document creation:
 
 1. **Read current problem.md**:
    ```
-   Read("issues/[issue-name]/problem.md")
+   Read("<PROJECT_ROOT>/issues/[issue-name]/problem.md")
    ```
 
 2. **Update status to RESOLVED**:
@@ -199,7 +201,7 @@ Document creation:
 Example edit:
 ```
 Edit(
-  file_path: "issues/[issue-name]/problem.md",
+  file_path: "<PROJECT_ROOT>/issues/[issue-name]/problem.md",
   old_string: "**Status**: OPEN",
   new_string: "**Status**: RESOLVED\n**Resolved**: [Date] - See solution.md"
 )
@@ -209,7 +211,7 @@ Document update:
 ```markdown
 ## problem.md Updated
 
-**File**: `issues/[issue-name]/problem.md`
+**File**: `<PROJECT_ROOT>/issues/[issue-name]/problem.md`
 **Status Changed**: OPEN → RESOLVED
 **Resolution Reference Added**: YES / NO
 ```
@@ -288,7 +290,7 @@ Fixes issues/team-graph-infinite-loop
    - [change 2]
    - [change 3]
 
-   Fixes issues/[issue-name]
+   Fixes <PROJECT_ROOT>/issues/[issue-name]
    EOF
    )"
    ```
@@ -330,7 +332,7 @@ Fixes issues/team-graph-infinite-loop
 
 1. **Confirm documentation exists**:
    ```bash
-   ls -la issues/[issue-name]/
+   ls -la <PROJECT_ROOT>/issues/[issue-name]/
    ```
    - Verify solution.md exists
    - Verify problem.md is updated
@@ -356,7 +358,7 @@ Fixes issues/team-graph-infinite-loop
 ## Final Verification
 
 **Documentation**:
-- ✅ solution.md created at `issues/[issue-name]/solution.md`
+- ✅ solution.md created at `<PROJECT_ROOT>/issues/[issue-name]/solution.md`
 - ✅ problem.md updated to RESOLVED
 
 **Git Commit**:
@@ -384,7 +386,7 @@ Fixes issues/team-graph-infinite-loop
 
 ## 1. Solution Documentation
 
-**File Created**: `issues/[issue-name]/solution.md`
+**File Created**: `<PROJECT_ROOT>/issues/[issue-name]/solution.md`
 **Size**: [size]
 
 **Sections Included**:
@@ -402,7 +404,7 @@ Fixes issues/team-graph-infinite-loop
 
 ## 2. Issue Status Update
 
-**File Updated**: `issues/[issue-name]/problem.md`
+**File Updated**: `<PROJECT_ROOT>/issues/[issue-name]/problem.md`
 **Status**: OPEN → RESOLVED
 **Resolution Date**: [date]
 

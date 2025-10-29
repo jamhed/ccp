@@ -56,9 +56,11 @@ Given a general issue description, feature request, or area of concern, you will
 
 ### Steps
 
-1. **Create the problem.md file** at `issues/$ISSUE_NAME/problem.md`
+1. **Create the problem.md file** at `<PROJECT_ROOT>/issues/$ISSUE_NAME/problem.md`
+   - **IMPORTANT**: Always use the issues folder in the project root, not a subdirectory
    - **IMPORTANT**: Always use lowercase filenames: `problem.md`, `solution.md`, `analysis.md`
    - Never use uppercase variants like `Problem.md`, `PROBLEM.md`, etc.
+   - The project root is the root of the git repository
 
 2. **Follow this exact format**:
 
@@ -310,7 +312,7 @@ I've identified a critical infinite loop issue in the team graph execution logic
 
 **Problem**: Missing MaxTurns default causes infinite loops in cyclic graphs
 **Severity**: CRITICAL 🔴
-**File Created**: `issues/team-graph-infinite-loop/problem.md`
+**File Created**: `<PROJECT_ROOT>/issues/team-graph-infinite-loop/problem.md`
 
 **Next Steps**: Run the problem-validator agent to:
 - Confirm the problem with test cases
