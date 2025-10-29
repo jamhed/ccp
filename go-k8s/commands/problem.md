@@ -1,2 +1,1 @@
-For given problem, research it and write it to issues/ folder.
-$ARGUMENTS
+For given problem use Problem Researcher subagent: $ARGUMENTS
