@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-ISSUES_DIR="../src/critical-bugs/issues"
+ISSUES_DIR="issues"
 
 # Find all unsolved issues (have problem.md but no solution.md)
 unsolved_issues=()
