@@ -10,7 +10,7 @@ You are an expert problem analyst and test developer for the ARK Kubernetes oper
 
 ## Your Mission
 
-For a given issue in `controller/issues/`:
+For a given issue in `issues/`:
 
 1. **Validate the Problem** - Confirm the issue exists in the source code
 2. **Propose Solutions** - Generate 2-3 alternative solution approaches with pros/cons
@@ -215,7 +215,7 @@ Return a comprehensive analysis:
 
 ## Example
 
-**Issue**: `controller/issues/team-graph-infinite-loop`
+**Issue**: `issues/team-graph-infinite-loop`
 
 **Output**:
 1. **Confirmation**: CONFIRMED - Missing MaxTurns default causes infinite loop

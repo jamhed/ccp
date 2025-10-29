@@ -145,7 +145,7 @@ Create a comprehensive `solution.md` file in the issue directory:
 
 ## References
 
-- Problem Definition: `controller/issues/[issue-name]/problem.md`
+- Problem Definition: `issues/[issue-name]/problem.md`
 - ARK Patterns: `controller/CLAUDE.md`
 - Testing Patterns: `tests/CLAUDE.md`
 
@@ -161,7 +161,7 @@ Use Write tool to create the file:
 
 ```
 Write(
-  file_path: "controller/issues/[issue-name]/solution.md",
+  file_path: "issues/[issue-name]/solution.md",
   content: "[Complete solution.md content]"
 )
 ```
@@ -170,7 +170,7 @@ Document creation:
 ```markdown
 ## solution.md Created
 
-**Location**: `controller/issues/[issue-name]/solution.md`
+**Location**: `issues/[issue-name]/solution.md`
 **Size**: [character count or line count]
 **Sections**: Problem Summary, Solution Approach, Implementation, Testing, etc.
 ```
@@ -181,7 +181,7 @@ Document creation:
 
 1. **Read current problem.md**:
    ```
-   Read("controller/issues/[issue-name]/problem.md")
+   Read("issues/[issue-name]/problem.md")
    ```
 
 2. **Update status to RESOLVED**:
@@ -196,7 +196,7 @@ Document creation:
 Example edit:
 ```
 Edit(
-  file_path: "controller/issues/[issue-name]/problem.md",
+  file_path: "issues/[issue-name]/problem.md",
   old_string: "**Status**: OPEN",
   new_string: "**Status**: RESOLVED\n**Resolved**: [Date] - See solution.md"
 )
@@ -206,7 +206,7 @@ Document update:
 ```markdown
 ## problem.md Updated
 
-**File**: `controller/issues/[issue-name]/problem.md`
+**File**: `issues/[issue-name]/problem.md`
 **Status Changed**: OPEN → RESOLVED
 **Resolution Reference Added**: YES / NO
 ```
@@ -266,7 +266,7 @@ fix: resolve team graph infinite loop with MaxTurns default
 - Create TestTeamGraphInfiniteLoop to verify fix
 - Update issue documentation with solution details
 
-Fixes controller/issues/team-graph-infinite-loop
+Fixes issues/team-graph-infinite-loop
 ```
 
 ### Create the Commit
@@ -285,7 +285,7 @@ Fixes controller/issues/team-graph-infinite-loop
    - [change 2]
    - [change 3]
 
-   Fixes controller/issues/[issue-name]
+   Fixes issues/[issue-name]
    EOF
    )"
    ```
@@ -327,7 +327,7 @@ Fixes controller/issues/team-graph-infinite-loop
 
 1. **Confirm documentation exists**:
    ```bash
-   ls -la controller/issues/[issue-name]/
+   ls -la issues/[issue-name]/
    ```
    - Verify solution.md exists
    - Verify problem.md is updated
@@ -353,7 +353,7 @@ Fixes controller/issues/team-graph-infinite-loop
 ## Final Verification
 
 **Documentation**:
-- ✅ solution.md created at `controller/issues/[issue-name]/solution.md`
+- ✅ solution.md created at `issues/[issue-name]/solution.md`
 - ✅ problem.md updated to RESOLVED
 
 **Git Commit**:
@@ -381,7 +381,7 @@ Fixes controller/issues/team-graph-infinite-loop
 
 ## 1. Solution Documentation
 
-**File Created**: `controller/issues/[issue-name]/solution.md`
+**File Created**: `issues/[issue-name]/solution.md`
 **Size**: [size]
 
 **Sections Included**:
@@ -399,7 +399,7 @@ Fixes controller/issues/team-graph-infinite-loop
 
 ## 2. Issue Status Update
 
-**File Updated**: `controller/issues/[issue-name]/problem.md`
+**File Updated**: `issues/[issue-name]/problem.md`
 **Status**: OPEN → RESOLVED
 **Resolution Date**: [date]
 
@@ -504,7 +504,7 @@ Fixes controller/issues/team-graph-infinite-loop
    - Extract magic number to defaultMaxTurns constant
    - Update issue documentation with solution details
 
-   Fixes controller/issues/team-graph-infinite-loop
+   Fixes issues/team-graph-infinite-loop
    ```
 
 4. **Verify**:
