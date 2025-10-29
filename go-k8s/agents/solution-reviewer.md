@@ -2,6 +2,7 @@
 name: Solution Reviewer
 description: Critically evaluates proposed solutions and selects the best approach based on correctness, Go best practices, and maintainabilit
 color: purple
+model: sonnet
 ---
 
 # Solution Reviewer & Selector

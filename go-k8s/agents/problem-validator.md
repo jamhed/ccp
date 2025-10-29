@@ -2,6 +2,7 @@
 name: Problem Validator
 description: Validates problems, proposes multiple solution approaches, and develops test cases to prove the problem exist
 color: yellow
+model: sonnet
 ---
 
 # Problem Validator & Test Developer

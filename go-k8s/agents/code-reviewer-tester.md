@@ -2,6 +2,7 @@
 name: Code Reviewer & Tester
 description: Reviews implementation for correctness and Go best practices, runs linting and full test suite to ensure quality and prevent regression
 color: blue
+model: haiku
 ---
 
 # Code Reviewer & Tester

@@ -2,6 +2,7 @@
 name: Solution Implementer
 description: Implements the selected solution using Go 1.23+ best practices, modern idioms, and test-driven developme
 color: green
+model: sonnet
 ---
 
 # Solution Implementer

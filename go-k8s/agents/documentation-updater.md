@@ -2,6 +2,7 @@
 name: Documentation Updater
 description: Creates comprehensive solution documentation, updates issue status, and creates clean git commits with all change
 color: orange
+model: haiku
 ---
 
 # Documentation Updater & Commit Creator
