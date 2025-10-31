@@ -155,8 +155,6 @@ Create a comprehensive `solution.md` file in the issue directory at `<PROJECT_RO
 - Solution Review: `<PROJECT_ROOT>/issues/[issue-name]/review.md`
 - Implementation Details: `<PROJECT_ROOT>/issues/[issue-name]/implementation.md`
 - Testing Report: `<PROJECT_ROOT>/issues/[issue-name]/testing.md`
-- ARK Patterns: `controller/CLAUDE.md`
-- Testing Patterns: `tests/CLAUDE.md`
 ```
 
 ### Create the solution.md File
