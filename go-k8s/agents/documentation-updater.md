@@ -153,11 +153,6 @@ Create a comprehensive `solution.md` file in the issue directory at `<PROJECT_RO
 - Problem Definition: `<PROJECT_ROOT>/issues/[issue-name]/problem.md`
 - ARK Patterns: `controller/CLAUDE.md`
 - Testing Patterns: `tests/CLAUDE.md`
-
-## Commit
-
-**Commit Hash**: [Will be filled after commit]
-**Commit Message**: [Will be filled after commit]
 ```
 
 ### Create the solution.md File
@@ -302,29 +297,6 @@ Fixes issues/team-graph-infinite-loop
    - Check commit hash
    - Verify all files included
    - Review commit message
-
-### Document Commit
-
-```markdown
-## Git Commit Created
-
-**Commit Hash**: [hash from git show]
-**Commit Type**: [fix/feat/test/etc.]
-
-**Commit Message**:
-```
-[Full commit message]
-```
-
-**Files Included**: [count] files
-- `[file 1]` - [insertions]+/[deletions]-
-- `[file 2]` - [insertions]+/[deletions]-
-- [etc.]
-
-**Total Changes**:
-- Insertions: [count]
-- Deletions: [count]
-```
 
 ## Phase 4: Final Verification
 
