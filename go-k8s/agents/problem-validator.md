@@ -324,16 +324,29 @@ When invoked on an issue that is marked as RESOLVED/SOLVED, validate the solutio
    - Test should fail until feature is implemented, then pass
 
 4. **Verify test behavior**:
+
+   **For unit tests (bugs):**
    ```bash
-   # For unit tests (bugs)
    go test ./path/to/package/... -v -run TestName
    # Should FAIL before fix
-
-   # For E2E Chainsaw tests
-   chainsaw test tests/path/to/test/
-   # For bugs: Should FAIL before fix
-   # For features: Should FAIL until implementation is complete
    ```
+
+   **For E2E Chainsaw tests (MANDATORY - ALWAYS RUN):**
+
+   **IMPORTANT**: You MUST run the chainsaw test after creating it to verify it exhibits the expected behavior.
+
+   ```bash
+   # Run the chainsaw test
+   chainsaw test tests/path/to/test/
+   ```
+
+   - **For bugs**: Test should FAIL before fix (proving bug exists)
+   - **For features**: Test should FAIL until implementation is complete (proving feature doesn't exist yet)
+   - **ALWAYS capture the full test output** to include in your validation report
+   - If test unexpectedly passes, investigate why - either:
+     - Bug might not exist (reconsider bug confirmation)
+     - Feature might already be implemented
+     - Test might not be correctly validating the scenario
 
 5. **Document the test**:
 
@@ -344,9 +357,10 @@ When invoked on an issue that is marked as RESOLVED/SOLVED, validate the solutio
    - **Location**: [file path:line or test directory]
    - **Test Name**: [test function/file name]
    - **Test Status**: FAILING (as expected - proves bug exists)
+   - **Test Run Command**: [exact command used to run the test]
    - **Failure Output**:
    ```
-   [Paste relevant error message]
+   [Paste ACTUAL output from running the test - not a placeholder]
    ```
    ```
 
@@ -357,6 +371,7 @@ When invoked on an issue that is marked as RESOLVED/SOLVED, validate the solutio
    - **Location**: [test directory, e.g., tests/e2e/feature-name/]
    - **Test Name**: [chainsaw-test.yaml]
    - **Test Status**: FAILING (as expected - feature not yet implemented)
+   - **Test Run Command**: chainsaw test tests/e2e/feature-name/
    - **Test Scenarios Covered**:
      - [Scenario 1: e.g., resource creation]
      - [Scenario 2: e.g., status validation]
@@ -364,9 +379,11 @@ When invoked on an issue that is marked as RESOLVED/SOLVED, validate the solutio
      - [Scenario 4: e.g., edge cases]
    - **Failure Output**:
    ```
-   [Paste relevant error message]
+   [Paste ACTUAL output from running the chainsaw test - not a placeholder or example]
    ```
    ```
+
+   **CRITICAL**: The "Failure Output" sections above MUST contain actual test output from running the test, not placeholder text or hypothetical errors. Always run the test and capture real output.
 
 ## Phase 4: Recommendation
 
@@ -434,9 +451,10 @@ Return a comprehensive analysis:
 **Location**: [file:line or test directory]
 **Test Name**: [name]
 **Status**: FAILING (as expected - proves bug exists)
+**Test Run Command**: [exact command used]
 **Failure Output**:
 ```
-[Error message]
+[ACTUAL error message from running the test]
 ```
 
 ## 4. Recommendation
@@ -505,6 +523,7 @@ Return a comprehensive analysis:
 **Location**: [test directory, e.g., tests/e2e/feature-name/]
 **Test Name**: [chainsaw-test.yaml]
 **Status**: FAILING (as expected - feature not yet implemented)
+**Test Run Command**: chainsaw test tests/e2e/feature-name/
 **Test Scenarios Covered**:
 - [Scenario 1: e.g., resource creation]
 - [Scenario 2: e.g., status validation]
@@ -512,7 +531,7 @@ Return a comprehensive analysis:
 - [Scenario 4: e.g., edge cases]
 **Failure Output**:
 ```
-[Error message showing feature not implemented]
+[ACTUAL error message from running chainsaw test showing feature not implemented]
 ```
 
 ## 4. Recommendation
@@ -552,6 +571,8 @@ This creates an audit trail of the validation phase for future reference.
 - Use go-dev skill to validate Go best practices
 - **For features: ALWAYS create E2E Chainsaw tests using chainsaw-tester skill ✅**
 - **For CONFIRMED bugs only: Create unit tests OR E2E Chainsaw tests as appropriate**
+- **ALWAYS RUN tests after creating them**: Use Bash tool to execute `chainsaw test` or `go test` and capture actual output ✅
+- **Include ACTUAL test output in reports**: Never use placeholder text - always paste real test execution results
 - **If NOT A BUG**: Create solution.md documenting the rejection with evidence, then update problem.md
 - **ALWAYS create solution.md**: For rejected bugs, document why it's not a bug; for confirmed bugs/features, document the solution
 - Provide actionable implementation guidance in your recommendation (for confirmed bugs/features)
@@ -564,6 +585,8 @@ This creates an audit trail of the validation phase for future reference.
 - ❌ **NEVER create tests or solutions for unconfirmed bugs**
 - ❌ **NEVER skip checking for existing safeguards and validation**
 - ❌ **NEVER ignore evidence that contradicts the bug report**
+- ❌ **NEVER skip running tests after creating them**
+- ❌ **NEVER use placeholder or hypothetical test output in reports**
 - Propose only one solution - always provide alternatives (for confirmed bugs)
 - Skip test creation for confirmed bugs/features - it's critical for TDD
 - **NEVER skip Chainsaw test creation for features - it's mandatory ✅**
