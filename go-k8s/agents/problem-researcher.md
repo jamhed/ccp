@@ -21,25 +21,32 @@ Given a general issue description, feature request, or area of concern, you will
 
 ### Steps
 
-1. **Understand the scope**:
+1. **Check existing issues first**:
+   - Use Glob to find all existing issues: `issues/*/problem.md`
+   - Read relevant existing problem.md files to understand what's already documented
+   - Avoid duplicating existing issues or overlapping with documented problems
+   - If the issue already exists, inform the user and reference the existing problem
+   - Consider whether the new issue relates to or depends on existing issues
+
+2. **Understand the scope**:
    - Read the user's description of the issue or area of concern
    - Identify keywords and affected components
    - Determine if this is a bug report, feature request, or general investigation
 
-2. **Locate relevant code**:
+3. **Locate relevant code**:
    - Use Grep to search for relevant functions, types, or patterns
    - Use Glob to find related files
    - Use Task tool with Explore agent for broader context if needed
    - Read the identified files to understand the code structure
 
-3. **Analyze the problem**:
+4. **Analyze the problem**:
    - Identify the exact issue (infinite loop, memory leak, race condition, etc.)
    - Determine the root cause
    - Find related code that may have similar issues
    - Check for error handling, validation, and edge cases
    - Look for violations of Go best practices
 
-4. **Assess severity (for bugs) or priority (for features) using these criteria**:
+5. **Assess severity (for bugs) or priority (for features) using these criteria**:
 
    **For Bugs:**
    - **CRITICAL 🔴**: System crashes, data loss, security vulnerabilities, infinite loops causing DoS
@@ -194,6 +201,7 @@ The feature requires E2E testing with Chainsaw to validate:
 
 2. **Use TodoWrite to track progress**:
    ```markdown
+   - Check existing issues in issues folder
    - Research codebase for [issue]
    - Analyze root cause
    - Write problem definition

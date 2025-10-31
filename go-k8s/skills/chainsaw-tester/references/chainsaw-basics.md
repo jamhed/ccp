@@ -90,22 +90,22 @@ tests/
 │   ├── chainsaw-test.yaml
 │   ├── README.md
 │   └── manifests/
-│       ├── 00-namespace.yaml
-│       ├── 01-rbac.yaml
-│       ├── 02-secrets.yaml
-│       ├── 03-dependencies.yaml
-│       ├── 04-custom-resource.yaml
-│       └── 05-validation.yaml
+│       ├── a00-namespace.yaml
+│       ├── a01-rbac.yaml
+│       ├── a02-secrets.yaml
+│       ├── a03-dependencies.yaml
+│       ├── a04-custom-resource.yaml
+│       └── a05-validation.yaml
 ```
 
 ### File Naming Conventions
 
-Use numeric prefixes to control application order:
-- `00-` - Namespaces
-- `01-` - RBAC (Roles, RoleBindings, ServiceAccounts)
-- `02-` - ConfigMaps and Secrets
-- `03-` - Dependencies (CRDs, other required resources)
-- `04+` - Main resources under test
+Use 'a' prefix with numeric suffixes to control application order:
+- `a00-` - Namespaces
+- `a01-` - RBAC (Roles, RoleBindings, ServiceAccounts)
+- `a02-` - ConfigMaps and Secrets
+- `a03-` - Dependencies (CRDs, other required resources)
+- `a04+` - Main resources under test
 
 ### README Documentation
 
@@ -147,9 +147,9 @@ One sentence explaining what successful test completion validates.
 
 # Apply specific files
 - apply:
-    file: manifests/01-rbac.yaml
+    file: manifests/a01-rbac.yaml
 - apply:
-    file: manifests/02-config.yaml
+    file: manifests/a02-config.yaml
 ```
 
 #### Inline Resources

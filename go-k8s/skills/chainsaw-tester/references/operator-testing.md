@@ -56,15 +56,15 @@ spec:
   - name: setup
     try:
     - apply:
-        file: manifests/00-rbac.yaml
+        file: manifests/a00-rbac.yaml
     - apply:
-        file: manifests/01-secrets.yaml
+        file: manifests/a01-secrets.yaml
 
   # 2. Create: Custom resources
   - name: create-resources
     try:
     - apply:
-        file: manifests/02-custom-resource.yaml
+        file: manifests/a02-custom-resource.yaml
 
   # 3. Validate: Reconciliation and status
   - name: validate-reconciliation
@@ -84,7 +84,7 @@ spec:
   - name: test-functionality
     try:
     - apply:
-        file: manifests/03-test-action.yaml
+        file: manifests/a03-test-action.yaml
     - assert:
         timeout: 2m
         resource:
@@ -162,18 +162,18 @@ spec:
 Apply resources in the correct order based on dependencies:
 
 ```
-00-namespace.yaml      → Namespace
-01-rbac.yaml           → ServiceAccounts, Roles, RoleBindings
-02-secrets.yaml        → Secrets, ConfigMaps
-03-crds.yaml           → Custom Resource Definitions
-04-dependencies.yaml   → Resources that others depend on
-05-main-resource.yaml  → Primary resource under test
-06-test-trigger.yaml   → Action that triggers test behavior
+a00-namespace.yaml      → Namespace
+a01-rbac.yaml           → ServiceAccounts, Roles, RoleBindings
+a02-secrets.yaml        → Secrets, ConfigMaps
+a03-crds.yaml           → Custom Resource Definitions
+a04-dependencies.yaml   → Resources that others depend on
+a05-main-resource.yaml  → Primary resource under test
+a06-test-trigger.yaml   → Action that triggers test behavior
 ```
 
 ### Numeric Prefixes
 
-Use numeric prefixes to control application order:
+Use 'a' prefix with numeric suffixes to control application order:
 
 ```
 manifests/

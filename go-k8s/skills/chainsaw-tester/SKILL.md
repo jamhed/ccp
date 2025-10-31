@@ -92,6 +92,7 @@ When writing or reviewing assertions:
 3. **Structure test directory** (see [chainsaw-basics.md#file-organization](references/chainsaw-basics.md#file-organization))
 
 4. **Write manifests in dependency order** - RBAC → Secrets → Dependencies → Primary resources ([operator-testing.md#resource-dependencies](references/operator-testing.md#resource-dependencies))
+   - **ALWAYS use 'a' prefix for numbered manifest files**: `a00-`, `a01-`, `a02-`, etc. (never `00-`, `01-`, `02-`)
 
 5. **Write assertions using JP functions** - Use built-in functions, avoid shell scripts ([assertion-patterns.md](references/assertion-patterns.md))
 
@@ -166,11 +167,12 @@ spec:
 1. **Declarative Assertions**: Use JP functions, not shell scripts
 2. **RBAC Required**: Query tests need proper RBAC configuration
 3. **Dependency Order**: Apply resources in correct dependency sequence
-4. **Schema Validation**: Always verify CRD schema before writing manifests
-5. **Comprehensive Validation**: Assert both existence and content
-6. **Error Handling**: Include catch blocks with events and describe
-7. **Timeouts**: Set appropriate timeout values for different operations
-8. **Documentation**: Include README.md for each test directory
+4. **File Naming**: ALWAYS use 'a' prefix for numbered manifest files (a00-, a01-, a02-, etc.)
+5. **Schema Validation**: Always verify CRD schema before writing manifests
+6. **Comprehensive Validation**: Assert both existence and content
+7. **Error Handling**: Include catch blocks with events and describe
+8. **Timeouts**: Set appropriate timeout values for different operations
+9. **Documentation**: Include README.md for each test directory
 
 ## Common Patterns
 

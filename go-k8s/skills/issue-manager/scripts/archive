@@ -1,0 +1,20 @@
+#!/bin/bash
+# Archive a solved issue to archive folder
+
+if [ $# -ne 1 ]; then
+  echo "Usage: archive <issue-name>"
+  exit 1
+fi
+
+ISSUE_NAME="$1"
+ISSUES_DIR="${ISSUES_DIR:-issues}"
+ARCHIVE_DIR="${ARCHIVE_DIR:-archive}"
+
+if [ ! -d "$ISSUES_DIR/$ISSUE_NAME" ]; then
+  echo "Issue not found: $ISSUE_NAME"
+  exit 1
+fi
+
+mkdir -p "$ARCHIVE_DIR"
+mv "$ISSUES_DIR/$ISSUE_NAME" "$ARCHIVE_DIR/"
+echo "Archived: $ISSUE_NAME -> $ARCHIVE_DIR/$ISSUE_NAME"

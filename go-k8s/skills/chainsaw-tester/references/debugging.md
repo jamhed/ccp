@@ -50,7 +50,7 @@ Common root causes:
 
 3. **Resource dependency order**
    - Verify dependencies are applied before dependents
-   - Check numeric prefixes in manifest files (00-, 01-, etc.)
+   - Check numeric prefixes in manifest files (a00-, a01-, etc.)
    - Ensure resources exist before assertions
 
 4. **Timing issues**
@@ -97,13 +97,13 @@ Common root causes:
 
    # After: Explicit order
    - apply:
-       file: manifests/00-namespace.yaml
+       file: manifests/a00-namespace.yaml
    - apply:
-       file: manifests/01-rbac.yaml
+       file: manifests/a01-rbac.yaml
    - apply:
-       file: manifests/02-secrets.yaml
+       file: manifests/a02-secrets.yaml
    - apply:
-       file: manifests/03-custom-resource.yaml
+       file: manifests/a03-custom-resource.yaml
    ```
 
 4. **Replace shell scripts with JP assertions**
