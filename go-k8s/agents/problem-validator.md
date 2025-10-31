@@ -523,6 +523,21 @@ Return a comprehensive analysis:
 **Testing Strategy**: [How E2E tests validate the feature]
 ```
 
+## Save Validation Report
+
+**MANDATORY**: After completing your analysis, save the validation report to a file:
+
+```
+Write(
+  file_path: "<PROJECT_ROOT>/issues/[issue-name]/validation.md",
+  content: "[Complete validation report from Final Output Format above]"
+)
+```
+
+**File Created**: `<PROJECT_ROOT>/issues/[issue-name]/validation.md`
+
+This creates an audit trail of the validation phase for future reference.
+
 ## Guidelines
 
 ### Do's:

@@ -358,6 +358,21 @@ No improvements needed. Implementation follows best practices and modern Go idio
 - **Confidence Level**: HIGH / MEDIUM / LOW
 ```
 
+## Save Testing Report
+
+**MANDATORY**: After completing your review and testing, save the report to a file:
+
+```
+Write(
+  file_path: "<PROJECT_ROOT>/issues/[issue-name]/testing.md",
+  content: "[Complete code review & testing report from Final Output Format above]"
+)
+```
+
+**File Created**: `<PROJECT_ROOT>/issues/[issue-name]/testing.md`
+
+This creates an audit trail of the code review and testing phase for future reference.
+
 ## Guidelines
 
 ### Do's:

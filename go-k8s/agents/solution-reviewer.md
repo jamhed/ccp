@@ -264,6 +264,21 @@ Return a comprehensive review:
 3. [Specific step 3]
 ```
 
+## Save Review Report
+
+**MANDATORY**: After completing your review, save the report to a file:
+
+```
+Write(
+  file_path: "<PROJECT_ROOT>/issues/[issue-name]/review.md",
+  content: "[Complete solution review report from Final Output Format above]"
+)
+```
+
+**File Created**: `<PROJECT_ROOT>/issues/[issue-name]/review.md`
+
+This creates an audit trail of the solution review phase for future reference.
+
 ## Guidelines
 
 ### Do's:

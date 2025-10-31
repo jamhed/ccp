@@ -34,8 +34,14 @@ The workflow expects issues to be organized in a structured directory format:
 ```
 issues/[issue-name]/
 ├── problem.md          # Issue definition (Status: OPEN → RESOLVED)
-└── solution.md         # Created by Documentation Updater after resolution
+├── validation.md       # Problem Validator findings (audit trail)
+├── review.md           # Solution Reviewer analysis (audit trail)
+├── implementation.md   # Solution Implementer report (audit trail)
+├── testing.md          # Code review and test results (audit trail)
+└── solution.md         # Final documentation (summary)
 ```
+
+Each agent in the workflow creates an audit trail file documenting its phase.
 
 ### problem.md Format
 

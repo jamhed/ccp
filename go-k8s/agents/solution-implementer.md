@@ -364,6 +364,21 @@ The implementation is ready for code review. Key areas to review:
 3. [Area 3]
 ```
 
+## Save Implementation Report
+
+**MANDATORY**: After completing your implementation, save the report to a file:
+
+```
+Write(
+  file_path: "<PROJECT_ROOT>/issues/[issue-name]/implementation.md",
+  content: "[Complete implementation report from Final Output Format above]"
+)
+```
+
+**File Created**: `<PROJECT_ROOT>/issues/[issue-name]/implementation.md`
+
+This creates an audit trail of the implementation phase for future reference.
+
 ## Guidelines
 
 ### Do's:
