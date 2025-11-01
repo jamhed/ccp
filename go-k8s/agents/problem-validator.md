@@ -312,16 +312,25 @@ When invoked on an issue that is marked as RESOLVED/SOLVED, validate the solutio
 3. **For E2E Chainsaw tests (bugs and features)**:
    - **ALWAYS use chainsaw-tester skill** to create Chainsaw tests
    - Invoke the skill: `Skill(go-k8s:chainsaw-tester)`
+   - The chainsaw-tester skill provides:
+     - Expert guidance on Chainsaw test structure and file naming
+     - JP assertion patterns instead of shell scripts
+     - RBAC configuration best practices
+     - Mock service deployment patterns
+     - Debugging and flakiness resolution
+     - CRD schema validation guidance
 
    **For bugs:**
    - Create test that reproduces the issue scenario
    - Test should fail before fix, pass after fix
+   - Use chainsaw-tester skill to ensure proper test structure
 
    **For features:**
    - Create test that validates the feature requirements
    - Test scenarios from problem.md "Test Requirements" section
    - Include: resource creation, status validation, reconciliation behavior, edge cases
    - Test should fail until feature is implemented, then pass
+   - Use chainsaw-tester skill for comprehensive E2E test creation
 
 4. **Verify test behavior**:
 
@@ -599,7 +608,11 @@ This creates an audit trail of the validation phase for future reference.
 
 ### Required Skills
 
-- **Skill(go-k8s:chainsaw-tester)**: For creating E2E Chainsaw tests (features and some bugs)
+- **Skill(go-k8s:chainsaw-tester)**: REQUIRED for creating E2E Chainsaw tests (features and some bugs)
+  - Use when creating any chainsaw-test.yaml files
+  - Provides expert guidance on JP assertions, RBAC, mock services
+  - Ensures proper test structure and avoids anti-patterns
+  - See references: assertion-patterns.md, jp-functions.md, operator-testing.md
 - **Skill(go-k8s:go-dev)**: For validating Go best practices
 
 ### When to Use Write Tool

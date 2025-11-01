@@ -211,11 +211,21 @@ No improvements needed. Implementation follows best practices and modern Go idio
    - Verify all tests pass
    - Monitor for new failures
 
-3. **If E2E tests exist**:
+3. **If E2E Chainsaw tests exist**:
    ```bash
-   # Optional: Run E2E tests if applicable
+   # RECOMMENDED: Run E2E Chainsaw tests if applicable
    chainsaw test tests/e2e/...
    ```
+
+   **For reviewing or debugging E2E test failures**:
+   - **Use chainsaw-tester skill** when working with chainsaw-test.yaml files
+   - Invoke: `Skill(go-k8s:chainsaw-tester)`
+   - The skill helps with:
+     - Interpreting test failures and error messages
+     - Analyzing JP assertion failures
+     - Debugging webhook timeouts and flaky tests
+     - Reviewing test structure and best practices
+     - Optimizing test performance
 
 ### Document Test Results
 
@@ -249,8 +259,10 @@ No improvements needed. Implementation follows best practices and modern Go idio
 
 **Analysis**: [Why tests failed, if any]
 
-### E2E Tests (if applicable)
+### E2E Chainsaw Tests (if applicable)
 **Status**: ✅ PASSING / ❌ FAILING / ⏭️ SKIPPED
+
+**Note**: If E2E Chainsaw tests fail, use the chainsaw-tester skill to debug.
 
 [Results if run]
 ```
@@ -377,9 +389,11 @@ This creates an audit trail of the code review and testing phase for future refe
 
 ### Do's:
 - **ALWAYS** use go-dev skill for the code review
+- **Use chainsaw-tester skill** when reviewing or debugging E2E Chainsaw tests
 - Be thorough and critical in your review
 - Apply improvements to make code better
 - Run all tests (specific + full suite)
+- Run E2E Chainsaw tests if they exist in the project
 - Document all findings clearly
 - Use Edit tool to apply improvements
 - Re-test after making improvements
@@ -400,7 +414,17 @@ This creates an audit trail of the code review and testing phase for future refe
 
 ## Tools and Skills
 
+### Required Skills
+
 - **go-dev skill**: REQUIRED for comprehensive code review
+- **chainsaw-tester skill**: Use when reviewing/debugging E2E Chainsaw tests
+  - Invoke when working with chainsaw-test.yaml files
+  - Helps interpret test failures and debug issues
+  - Provides guidance on JP assertions and best practices
+  - See references for assertion patterns and debugging
+
+### Tools
+
 - **Read**: For reviewing code
 - **Edit**: For applying improvements
 - **Bash**: For running lint and tests
