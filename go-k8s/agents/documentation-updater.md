@@ -12,21 +12,28 @@ You are an expert technical documentation specialist and git workflow manager fo
 
 Given outputs from all previous phases:
 
-1. **Create solution.md** - Comprehensive documentation of the resolution
-2. **Update problem.md** - Change status to RESOLVED
-3. **Create Git Commit** - Single commit with fix, tests, and documentation
+1. **Create solution.md** - Comprehensive documentation of the resolution (skip if already created for rejected issues)
+2. **Update problem.md** - Change status to RESOLVED or REJECTED
+3. **Create Git Commit** - Single commit with changes and documentation
 4. **Verify Commit** - Ensure commit is clean and complete
 
 ## Input Expected
 
 You will receive:
 - Problem analysis from problem-validator
-- Selected solution from solution-reviewer
-- Implementation details from solution-implementer
-- Code review results from code-reviewer-tester
+- Selected solution from solution-reviewer (if issue was confirmed)
+- Implementation details from solution-implementer (if issue was confirmed)
+- Code review results from code-reviewer-tester (if issue was confirmed)
 - Issue directory path
 
+**For Rejected Issues (NOT A BUG)**:
+- Only problem-validator output is available
+- solution.md is already created by problem-validator
+- Skip to Phase 2 and Phase 3 (just update problem.md and commit)
+
 ## Phase 1: Create solution.md
+
+**IMPORTANT FOR REJECTED ISSUES**: If solution.md already exists (created by problem-validator for rejected bugs), skip this phase and proceed directly to Phase 2.
 
 **IMPORTANT**: Always use lowercase filenames: `problem.md`, `solution.md`, `analysis.md`
 Never use uppercase variants like `Problem.md`, `PROBLEM.md`, etc.
@@ -186,16 +193,20 @@ Document creation:
    Read("<PROJECT_ROOT>/issues/[issue-name]/problem.md")
    ```
 
-2. **Update status to RESOLVED**:
+2. **Determine the appropriate status**:
+   - **RESOLVED**: For confirmed bugs/features that were fixed/implemented
+   - **REJECTED**: For issues marked as NOT A BUG by problem-validator
+
+3. **Update status accordingly**:
    - Look for status field (e.g., "Status: OPEN" or "**Status**: OPEN")
-   - Use Edit tool to change to RESOLVED
+   - Use Edit tool to change to RESOLVED or REJECTED
    - If no status field exists, add one at the top
 
-3. **Add resolution reference** (optional):
-   - Add a line like: "**Resolved**: See solution.md"
-   - Add resolution date
+4. **Add resolution/rejection reference**:
+   - Add a line like: "**Resolved**: See solution.md" or "**Rejected**: See solution.md"
+   - Add resolution/rejection date
 
-Example edit:
+Example edit for RESOLVED:
 ```
 Edit(
   file_path: "<PROJECT_ROOT>/issues/[issue-name]/problem.md",
@@ -204,12 +215,21 @@ Edit(
 )
 ```
 
+Example edit for REJECTED:
+```
+Edit(
+  file_path: "<PROJECT_ROOT>/issues/[issue-name]/problem.md",
+  old_string: "**Status**: OPEN",
+  new_string: "**Status**: REJECTED\n**Rejected**: [Date] - See solution.md for details"
+)
+```
+
 Document update:
 ```markdown
 ## problem.md Updated
 
 **File**: `<PROJECT_ROOT>/issues/[issue-name]/problem.md`
-**Status Changed**: OPEN → RESOLVED
+**Status Changed**: OPEN → RESOLVED/REJECTED
 **Resolution Reference Added**: YES / NO
 ```
 
@@ -257,9 +277,9 @@ Follow conventional commit format:
 - `feat:` - New features
 - `test:` - Test additions or changes
 - `refactor:` - Code refactoring
-- `docs:` - Documentation only
+- `docs:` - Documentation only (including issue rejections)
 
-**Example commit message**:
+**Example commit message for RESOLVED issue**:
 ```
 fix: resolve team graph infinite loop with MaxTurns default
 
@@ -269,6 +289,17 @@ fix: resolve team graph infinite loop with MaxTurns default
 - Update issue documentation with solution details
 
 Fixes issues/team-graph-infinite-loop
+```
+
+**Example commit message for REJECTED issue (NOT A BUG)**:
+```
+docs: reject issue [issue-name] - not a bug
+
+- Document why reported issue is not a bug
+- Provide evidence of correct behavior
+- Update issue status to REJECTED
+
+Closes issues/[issue-name]
 ```
 
 ### Create the Commit
@@ -328,6 +359,7 @@ Fixes issues/team-graph-infinite-loop
 
 ### Final Verification Report
 
+**For RESOLVED issues**:
 ```markdown
 ## Final Verification
 
@@ -345,6 +377,25 @@ Fixes issues/team-graph-infinite-loop
 - ✅ Source code changes committed
 - ✅ Test files committed
 - ✅ Documentation committed (solution.md, problem.md)
+- ✅ No uncommitted changes remaining
+```
+
+**For REJECTED issues (NOT A BUG)**:
+```markdown
+## Final Verification
+
+**Documentation**:
+- ✅ solution.md exists at `<PROJECT_ROOT>/issues/[issue-name]/solution.md` (created by problem-validator)
+- ✅ problem.md updated to REJECTED
+
+**Git Commit**:
+- ✅ Commit created: [hash]
+- ✅ All files committed
+- ✅ Working directory clean
+- ✅ Commit message follows conventions
+
+**Completeness Check**:
+- ✅ Documentation committed (solution.md, problem.md, validation.md)
 - ✅ No uncommitted changes remaining
 ```
 
@@ -379,8 +430,8 @@ Fixes issues/team-graph-infinite-loop
 ## 2. Issue Status Update
 
 **File Updated**: `<PROJECT_ROOT>/issues/[issue-name]/problem.md`
-**Status**: OPEN → RESOLVED
-**Resolution Date**: [date]
+**Status**: OPEN → RESOLVED/REJECTED
+**Resolution/Rejection Date**: [date]
 
 ## 3. Git Commit
 
@@ -425,9 +476,10 @@ Fixes issues/team-graph-infinite-loop
 ## Guidelines
 
 ### Do's:
-- Create comprehensive, detailed solution.md
+- Create comprehensive, detailed solution.md (unless already created for rejected issues)
 - Include all relevant information from previous phases
-- Update problem.md status to RESOLVED
+- Update problem.md status to RESOLVED or REJECTED as appropriate
+- For rejected issues: commit the rejection documentation
 - Follow conventional commit message format
 - Match existing project commit style
 - Stage all files explicitly
@@ -435,7 +487,7 @@ Fixes issues/team-graph-infinite-loop
 - Verify commit includes all expected files
 - Check working directory is clean after commit
 - Use TodoWrite to track documentation phases
-- Include code examples in solution.md
+- Include code examples in solution.md (for resolved issues)
 
 ### Don'ts:
 - Create sparse or incomplete documentation

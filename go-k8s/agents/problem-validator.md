@@ -241,7 +241,7 @@ When invoked on an issue that is marked as RESOLVED/SOLVED, validate the solutio
 **Optional Improvements**: [If applicable, suggestions for improving code clarity to prevent future confusion]
 ```
 
-**Then skip to Phase 4 (no tests needed for rejected bugs)**
+**Then proceed to Phase 4 and complete your work. The workflow will skip to Documentation Updater for commit (no solution review, implementation, or testing needed for rejected bugs).**
 
 ### Steps (for CONFIRMED bugs and features only)
 
