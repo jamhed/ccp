@@ -30,11 +30,13 @@ When writing tests for Kubernetes operators:
 - Use proper resource dependencies (RBAC → Secrets → CRDs → Custom Resources)
 - Validate status phases and conditions
 - Test admission webhooks and validation
+- Test expected errors and negative cases
 - Validate reconciliation behavior
 
 **References**:
 - [references/chainsaw-basics.md](references/chainsaw-basics.md)
 - [references/assertion-patterns.md](references/assertion-patterns.md)
+- [references/error-testing.md](references/error-testing.md)
 - [references/ark-examples.md](references/ark-examples.md) (optional: ARK operator examples)
 
 ### 3. Debugging and Understanding Tests
@@ -75,6 +77,7 @@ When writing or reviewing assertions:
 **Explicitly use for:**
 - Writing new Chainsaw tests for Kubernetes operators or Custom Resources
 - Testing Custom Resource Definitions (CRDs) and admission webhooks
+- Testing expected errors and negative validation cases
 - Validating controller/operator reconciliation behavior
 - Debugging flaky tests or webhook timeout issues
 - Converting shell script assertions to JP functions
@@ -214,6 +217,7 @@ See [assertion-patterns.md](references/assertion-patterns.md) and [jp-functions.
 - **[chainsaw-basics.md](references/chainsaw-basics.md)**: Chainsaw fundamentals, test structure, file organization, operations
 - **[assertion-patterns.md](references/assertion-patterns.md)**: Assertion syntax, JP expressions, validation patterns
 - **[jp-functions.md](references/jp-functions.md)**: Complete JP function reference with examples
+- **[error-testing.md](references/error-testing.md)**: Error testing, negative testing, webhook validation errors, `$error` binding
 - **[debugging.md](references/debugging.md)**: Debugging test failures, flaky tests, webhook timeouts, LLM assertions
 - **[mock-services.md](references/mock-services.md)**: Mock service deployment, URL templating, Prism, httpbin
 - **[operator-testing.md](references/operator-testing.md)**: CRD testing, controller reconciliation, RBAC, admission webhooks
@@ -225,6 +229,7 @@ Load references as needed based on the testing task at hand.
 
 See detailed anti-patterns in each reference file:
 - [assertion-patterns.md#anti-patterns](references/assertion-patterns.md#anti-patterns)
+- [error-testing.md#best-practices](references/error-testing.md#best-practices)
 - [debugging.md#anti-patterns](references/debugging.md#anti-patterns)
 - [mock-services.md#anti-patterns](references/mock-services.md#anti-patterns)
 - [operator-testing.md#anti-patterns](references/operator-testing.md#anti-patterns)
@@ -233,9 +238,11 @@ See detailed anti-patterns in each reference file:
 - ❌ Use shell scripts for assertions → ✅ Use JP functions
 - ❌ Apply all resources with `manifests/*.yaml` when webhooks exist → ✅ Split into steps
 - ❌ Assert exact LLM output strings → ✅ Validate structure and length
+- ❌ Test exact error messages → ✅ Use `contains()` with key substrings (see error-testing.md)
 - ❌ Skip CRD schema validation → ✅ Check schema first (`kubectl explain`)
 - ❌ Hardcode namespaces in URLs → ✅ Use `$namespace` variable
 - ❌ Skip RBAC configuration → ✅ Include RBAC manifests
+- ❌ Test only happy paths → ✅ Include negative tests for invalid resources
 
 ## Usage and Best Practices
 
