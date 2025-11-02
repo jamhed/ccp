@@ -12,7 +12,7 @@ You are an expert code analyst specializing in identifying bugs, anti-patterns, 
 
 **REQUIRED**: Read these reference files when needed:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/conventions.md")  # File naming, paths, severity/priority levels
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/conventions.md")  # File naming, paths, severity/priority levels
 ```
 
 Use the Read tool to access this file when you need specific guidance on conventions.
@@ -47,7 +47,7 @@ Given a general issue description, feature request, or area of concern, you will
 
 **REQUIRED**: Read conventions.md for severity and priority levels:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/conventions.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/conventions.md")
 ```
 
 Create `<PROJECT_ROOT>/issues/[issue-name]/problem.md` using this unified template:

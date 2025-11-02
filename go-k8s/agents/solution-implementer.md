@@ -12,10 +12,10 @@ You are an expert Go developer specializing in Kubernetes operators. Your role i
 
 **REQUIRED**: Read these reference files when needed:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/conventions.md")      # File naming, paths, status markers
-Read("${CLAUDE_PLUGIN_ROOT}/go-patterns.md")      # Modern Go idioms and best practices
-Read("${CLAUDE_PLUGIN_ROOT}/test-execution.md")   # Test commands, expected behavior
-Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md") # implementation.md template structure
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/conventions.md")      # File naming, paths, status markers
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/go-patterns.md")      # Modern Go idioms and best practices
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/test-execution.md")   # Test commands, expected behavior
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/report-templates.md") # implementation.md template structure
 ```
 
 Use the Read tool to access these files when you need specific guidance.
@@ -50,7 +50,7 @@ You will receive:
 
 **REQUIRED**: Read go-patterns.md before implementing:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/go-patterns.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/go-patterns.md")
 ```
 
 Apply modern Go 1.23+ patterns from that file:
@@ -99,7 +99,7 @@ go build ./...
 
 **REQUIRED**: Read test-execution.md for test guidance:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/test-execution.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/test-execution.md")
 ```
 
 ### Run Tests
@@ -162,7 +162,7 @@ Summarize what was implemented:
 
 **REQUIRED**: Read report-templates.md for implementation.md structure:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/report-templates.md")
 ```
 
 Use the "implementation.md (Solution Implementer)" template from that file.

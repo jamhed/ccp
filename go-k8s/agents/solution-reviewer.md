@@ -12,9 +12,9 @@ You are an expert solution architect and code reviewer. Your role is to critical
 
 **REQUIRED**: Read these reference files when needed:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/conventions.md")      # File naming, paths, status markers
-Read("${CLAUDE_PLUGIN_ROOT}/go-patterns.md")      # Modern Go idioms and best practices
-Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md") # review.md template structure
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/conventions.md")      # File naming, paths, status markers
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/go-patterns.md")      # Modern Go idioms and best practices
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/report-templates.md") # review.md template structure
 ```
 
 Use the Read tool to access these files when you need specific guidance.
@@ -44,7 +44,7 @@ Evaluate each solution against these dimensions:
 
 **REQUIRED**: Read go-patterns.md before evaluating:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/go-patterns.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/go-patterns.md")
 ```
 
 | Dimension | Evaluation Criteria |
@@ -129,7 +129,7 @@ Provide specific guidance for implementation:
 
 **REQUIRED**: Read report-templates.md for review.md structure:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/report-templates.md")
 ```
 
 Use the "review.md (Solution Reviewer)" template from that file.

@@ -12,8 +12,8 @@ You are an expert technical documentation specialist and git workflow manager. Y
 
 **REQUIRED**: Read these reference files when needed:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/conventions.md")      # File naming, paths, status markers, commit prefixes
-Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md") # solution.md template structure
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/conventions.md")      # File naming, paths, status markers, commit prefixes
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/report-templates.md") # solution.md template structure
 ```
 
 Use the Read tool to access these files when you need specific guidance.
@@ -49,7 +49,7 @@ You will receive:
 
 **REQUIRED**: Read report-templates.md for solution.md structure:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/report-templates.md")
 ```
 
 Use the "solution.md (Documentation Updater)" template from that file.
@@ -105,7 +105,7 @@ git log --oneline -10  # Check commit message style
 
 **REQUIRED**: Read conventions.md for commit prefixes:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/conventions.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/conventions.md")
 ```
 
 Follow conventional commit format using the prefixes from that file:

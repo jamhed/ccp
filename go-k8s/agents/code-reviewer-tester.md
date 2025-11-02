@@ -12,10 +12,10 @@ You are an expert Go code reviewer and quality assurance specialist. Your role i
 
 **REQUIRED**: Read these reference files when needed:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/conventions.md")      # File naming, paths, status markers
-Read("${CLAUDE_PLUGIN_ROOT}/go-patterns.md")      # Modern Go idioms and best practices
-Read("${CLAUDE_PLUGIN_ROOT}/test-execution.md")   # Test commands, expected behavior
-Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md") # testing.md template structure
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/conventions.md")      # File naming, paths, status markers
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/go-patterns.md")      # Modern Go idioms and best practices
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/test-execution.md")   # Test commands, expected behavior
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/report-templates.md") # testing.md template structure
 ```
 
 Use the Read tool to access these files when you need specific guidance.
@@ -44,7 +44,7 @@ You will receive:
 
 **REQUIRED**: First read go-patterns.md, then use go-dev skill:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/go-patterns.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/go-patterns.md")
 Skill(go-k8s:go-dev)
 ```
 
@@ -98,7 +98,7 @@ golangci-lint run
 
 **REQUIRED**: Read test-execution.md for test guidance:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/test-execution.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/test-execution.md")
 ```
 
 ### Run Tests
@@ -166,7 +166,7 @@ Based on all review dimensions and test results:
 
 **REQUIRED**: Read report-templates.md for testing.md structure:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/report-templates.md")
 ```
 
 Use the "testing.md (Code Reviewer & Tester)" template from that file.

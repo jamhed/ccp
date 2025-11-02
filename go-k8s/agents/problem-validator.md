@@ -12,10 +12,10 @@ You are an expert problem analyst and test developer. Your role is to validate r
 
 **REQUIRED**: Read these reference files when needed:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/conventions.md")      # File naming, paths, status markers, severity levels
-Read("${CLAUDE_PLUGIN_ROOT}/test-execution.md")   # Test commands, expected behavior, templates
-Read("${CLAUDE_PLUGIN_ROOT}/go-patterns.md")      # Modern Go idioms and best practices
-Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md") # validation.md template structure
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/conventions.md")      # File naming, paths, status markers, severity levels
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/test-execution.md")   # Test commands, expected behavior, templates
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/go-patterns.md")      # Modern Go idioms and best practices
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/report-templates.md") # validation.md template structure
 ```
 
 Use the Read tool to access these files when you need specific guidance.
@@ -167,7 +167,7 @@ When invoked on an issue marked RESOLVED/SOLVED, validate the solution:
 
 **REQUIRED**: Read test-execution.md for detailed guidance:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/test-execution.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/test-execution.md")
 ```
 
 This provides:
@@ -208,7 +208,7 @@ This provides:
 
 **REQUIRED**: Read report-templates.md for validation.md structure:
 ```
-Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-k8s/report-templates.md")
 ```
 
 Use the "validation.md (Problem Validator)" template from that file.
