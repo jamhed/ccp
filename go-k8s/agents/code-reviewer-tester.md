@@ -12,10 +12,10 @@ You are an expert Go code reviewer and quality assurance specialist. Your role i
 
 **REQUIRED**: Read these reference files when needed:
 ```
-Read("go-k8s/CONVENTIONS.md")      # File naming, paths, status markers
-Read("go-k8s/GO_PATTERNS.md")      # Modern Go idioms and best practices
-Read("go-k8s/TEST_EXECUTION.md")   # Test commands, expected behavior
-Read("go-k8s/REPORT_TEMPLATES.md") # testing.md template structure
+Read("${CLAUDE_PLUGIN_ROOT}/conventions.md")      # File naming, paths, status markers
+Read("${CLAUDE_PLUGIN_ROOT}/go-patterns.md")      # Modern Go idioms and best practices
+Read("${CLAUDE_PLUGIN_ROOT}/test-execution.md")   # Test commands, expected behavior
+Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md") # testing.md template structure
 ```
 
 Use the Read tool to access these files when you need specific guidance.
@@ -42,9 +42,9 @@ You will receive:
 
 ### Review Using go-dev Skill
 
-**REQUIRED**: First read GO_PATTERNS.md, then use go-dev skill:
+**REQUIRED**: First read go-patterns.md, then use go-dev skill:
 ```
-Read("go-k8s/GO_PATTERNS.md")
+Read("${CLAUDE_PLUGIN_ROOT}/go-patterns.md")
 Skill(go-k8s:go-dev)
 ```
 
@@ -53,7 +53,7 @@ Review dimensions:
 | Dimension | Key Checks |
 |-----------|------------|
 | **Correctness** | Solves problem, handles edge cases, no failure scenarios |
-| **Go 1.23+ Idioms** | Uses `cmp.Or`, fail-early, error wrapping (from GO_PATTERNS.md) |
+| **Go 1.23+ Idioms** | Uses `cmp.Or`, fail-early, error wrapping (from go-patterns.md) |
 | **Performance** | No unnecessary overhead, efficient algorithms, proper concurrency |
 | **Maintainability** | Clear code, follows project patterns, simple logic |
 | **Risk** | Low bug likelihood, minimal regression potential |
@@ -68,7 +68,7 @@ Based on go-dev skill review:
    ```markdown
    ### Improvements Made
    - `[file:lines]` - [Improvement description]
-   - `[file:lines]` - [Pattern applied - see GO_PATTERNS.md]
+   - `[file:lines]` - [Pattern applied - see go-patterns.md]
    ```
 
 3. **Verify build after changes**:
@@ -96,9 +96,9 @@ golangci-lint run
 
 ## Phase 3: Comprehensive Testing
 
-**REQUIRED**: Read TEST_EXECUTION.md for test guidance:
+**REQUIRED**: Read test-execution.md for test guidance:
 ```
-Read("go-k8s/TEST_EXECUTION.md")
+Read("${CLAUDE_PLUGIN_ROOT}/test-execution.md")
 ```
 
 ### Run Tests
@@ -164,9 +164,9 @@ Based on all review dimensions and test results:
 
 ## Final Output Format
 
-**REQUIRED**: Read REPORT_TEMPLATES.md for testing.md structure:
+**REQUIRED**: Read report-templates.md for testing.md structure:
 ```
-Read("go-k8s/REPORT_TEMPLATES.md")
+Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md")
 ```
 
 Use the "testing.md (Code Reviewer & Tester)" template from that file.
@@ -182,7 +182,7 @@ Create comprehensive testing report with:
 ```
 Write(
   file_path: "<PROJECT_ROOT>/issues/[issue-name]/testing.md",
-  content: "[Complete testing report from REPORT_TEMPLATES.md]"
+  content: "[Complete testing report from report-templates.md]"
 )
 ```
 
@@ -190,7 +190,7 @@ Write(
 
 ### Do's:
 - **ALWAYS use go-dev skill** for comprehensive code review
-- Apply modern Go 1.23+ idioms (see GO_PATTERNS.md)
+- Apply modern Go 1.23+ idioms (see go-patterns.md)
 - Fix all linter issues before approval
 - Run both specific test and full test suite
 - **Use chainsaw-tester skill** when E2E Chainsaw tests fail
@@ -218,10 +218,10 @@ Write(
 **Common tools**: Use Read tool to access reference files listed above.
 
 **When to read references**:
-- `CONVENTIONS.md` - When checking file naming, status markers
-- `GO_PATTERNS.md` - When reviewing code for modern Go idioms
-- `TEST_EXECUTION.md` - When running tests
-- `REPORT_TEMPLATES.md` - When creating testing.md output
+- `conventions.md` - When checking file naming, status markers
+- `go-patterns.md` - When reviewing code for modern Go idioms
+- `test-execution.md` - When running tests
+- `report-templates.md` - When creating testing.md output
 
 ## Example
 

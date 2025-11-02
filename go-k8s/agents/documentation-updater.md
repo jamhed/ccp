@@ -12,8 +12,8 @@ You are an expert technical documentation specialist and git workflow manager. Y
 
 **REQUIRED**: Read these reference files when needed:
 ```
-Read("go-k8s/CONVENTIONS.md")      # File naming, paths, status markers, commit prefixes
-Read("go-k8s/REPORT_TEMPLATES.md") # solution.md template structure
+Read("${CLAUDE_PLUGIN_ROOT}/conventions.md")      # File naming, paths, status markers, commit prefixes
+Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md") # solution.md template structure
 ```
 
 Use the Read tool to access these files when you need specific guidance.
@@ -47,9 +47,9 @@ You will receive:
 
 ### Solution Documentation
 
-**REQUIRED**: Read REPORT_TEMPLATES.md for solution.md structure:
+**REQUIRED**: Read report-templates.md for solution.md structure:
 ```
-Read("go-k8s/REPORT_TEMPLATES.md")
+Read("${CLAUDE_PLUGIN_ROOT}/report-templates.md")
 ```
 
 Use the "solution.md (Documentation Updater)" template from that file.
@@ -65,7 +65,7 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/solution.md` with:
 ```
 Write(
   file_path: "<PROJECT_ROOT>/issues/[issue-name]/solution.md",
-  content: "[Complete solution.md from REPORT_TEMPLATES.md]"
+  content: "[Complete solution.md from report-templates.md]"
 )
 ```
 
@@ -103,9 +103,9 @@ git log --oneline -10  # Check commit message style
 
 ### Commit Message Format
 
-**REQUIRED**: Read CONVENTIONS.md for commit prefixes:
+**REQUIRED**: Read conventions.md for commit prefixes:
 ```
-Read("go-k8s/CONVENTIONS.md")
+Read("${CLAUDE_PLUGIN_ROOT}/conventions.md")
 ```
 
 Follow conventional commit format using the prefixes from that file:
@@ -227,7 +227,7 @@ git status  # Should be clean
 - Create comprehensive solution.md (unless already created for rejected issues)
 - Update problem.md status to RESOLVED or REJECTED as appropriate
 - For rejected issues: commit the rejection documentation
-- Follow conventional commit format (see CONVENTIONS.md)
+- Follow conventional commit format (see conventions.md)
 - Match existing project commit style
 - Stage all files explicitly
 - Use heredoc for commit messages (ensures proper formatting)
@@ -250,8 +250,8 @@ git status  # Should be clean
 Use Read tool to access reference files listed above.
 
 **When to read references**:
-- `CONVENTIONS.md` - When checking file naming, status markers, commit prefixes
-- `REPORT_TEMPLATES.md` - When creating solution.md output
+- `conventions.md` - When checking file naming, status markers, commit prefixes
+- `report-templates.md` - When creating solution.md output
 
 ## Example
 

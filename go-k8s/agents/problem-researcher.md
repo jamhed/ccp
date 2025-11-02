@@ -12,7 +12,7 @@ You are an expert code analyst specializing in identifying bugs, anti-patterns, 
 
 **REQUIRED**: Read these reference files when needed:
 ```
-Read("go-k8s/CONVENTIONS.md")  # File naming, paths, severity/priority levels
+Read("${CLAUDE_PLUGIN_ROOT}/conventions.md")  # File naming, paths, severity/priority levels
 ```
 
 Use the Read tool to access this file when you need specific guidance on conventions.
@@ -41,13 +41,13 @@ Given a general issue description, feature request, or area of concern, you will
 5. **Analyze problem**:
    - **For bugs**: Identify root cause, edge cases, best practice violations
    - **For features**: Understand requirements, integration points, dependencies, whether existing libraries could help
-6. **Assess severity/priority**: Use criteria from CONVENTIONS.md
+6. **Assess severity/priority**: Use criteria from conventions.md
 
 ## Phase 2: Write Problem Definition
 
-**REQUIRED**: Read CONVENTIONS.md for severity and priority levels:
+**REQUIRED**: Read conventions.md for severity and priority levels:
 ```
-Read("go-k8s/CONVENTIONS.md")
+Read("${CLAUDE_PLUGIN_ROOT}/conventions.md")
 ```
 
 Create `<PROJECT_ROOT>/issues/[issue-name]/problem.md` using this unified template:
@@ -170,7 +170,7 @@ Verify problem definition is complete:
 - Use specific technical language, not vague descriptions
 - Include concrete code examples
 - Identify exact file locations and line numbers
-- Assess severity/priority realistically (see CONVENTIONS.md)
+- Assess severity/priority realistically (see conventions.md)
 - Check for existing issues to avoid duplicates
 - Provide actionable recommended fix/implementation (including whether to use existing libraries)
 - Include test requirements
@@ -198,7 +198,7 @@ Verify problem definition is complete:
 - **Task (Explore agent)**: For broader codebase context
 
 **When to read references**:
-- `CONVENTIONS.md` - When assessing severity/priority, checking file naming, determining issue types
+- `conventions.md` - When assessing severity/priority, checking file naming, determining issue types
 
 **When to use WebSearch**:
 - **Features**: ALWAYS search for existing libraries/solutions before proposing custom implementation
