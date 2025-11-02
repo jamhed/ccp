@@ -93,20 +93,49 @@ When invoked on an issue marked RESOLVED/SOLVED, validate the solution:
 
 ### Steps (for CONFIRMED bugs and features only)
 
-1. **Brainstorm 2-3 approaches**: Consider recommended fix from problem.md (but validate critically)
-2. **Evaluate each solution**:
+1. **Research existing solutions** (REQUIRED for features, recommended for bugs):
+   - **Use WebSearch**: Search for Go libraries, packages, or existing solutions
+   - **For features**: Search "golang [feature-domain]", "kubernetes [feature-type] library", "[problem-space] go package"
+   - **For bugs**: Search "golang [bug-type] fix", "[library-name] [issue-description]", "kubernetes operator [problem]"
+   - **Evaluate findings**: Maintenance status, GitHub stars, license, feature completeness, dependencies
+   - **Document**: Include as "Solution 0: Use Third-Party Library" if viable option found
+2. **Brainstorm 2-3 custom approaches**: Consider recommended fix from problem.md (but validate critically)
+3. **Evaluate each solution** (including third-party):
    - **Correctness**: Fully solves problem, handles edge cases
    - **Simplicity**: Implementation complexity
    - **Performance**: Efficiency implications
    - **Risk**: Regression potential
-   - **Maintainability**: Code clarity
+   - **Maintainability**: Code clarity (for third-party: maintenance status, community support)
    - **Go Best Practices**: Alignment with Go 1.23+ (Read GO_PATTERNS.md for modern idioms)
+   - **Dependencies**: For third-party libraries, assess dependency tree, license compatibility
 
-3. **Document proposals**:
+4. **Document proposals**:
    ```markdown
    ## Proposed Solutions
 
-   ### Solution A: [Name]
+   ### Solution 0: Use Third-Party Library (if applicable)
+   **Library**: `[package-name]` ([GitHub link])
+   **Approach**: Integrate existing library to solve the problem
+   **Pros**:
+   - [Existing functionality, battle-tested]
+   - [Active maintenance, community support]
+   - [Specific advantages]
+   **Cons**:
+   - [Additional dependency]
+   - [License considerations]
+   - [Specific limitations]
+   **Complexity**: Low / Medium / High
+   **Risk**: Low / Medium / High
+   **Maintenance**: [Stars, last commit, license]
+
+   ### Solution A: [Custom Implementation Name]
+   **Approach**: [Brief description]
+   **Pros**: [Advantages]
+   **Cons**: [Disadvantages]
+   **Complexity**: Low / Medium / High
+   **Risk**: Low / Medium / High
+
+   ### Solution B: [Alternative Name]
    **Approach**: [Brief description]
    **Pros**: [Advantages]
    **Cons**: [Disadvantages]
@@ -197,6 +226,10 @@ Write(
 ### Do's:
 - **FIRST**: Check if problem.md is RESOLVED/SOLVED - enter validation mode if solution.md missing
 - **BE SKEPTICAL**: Question bug reports; assume they might be incorrect until proven otherwise
+- **Use WebSearch for features**: REQUIRED - search for existing libraries/solutions before custom implementation
+- **Use WebSearch for bugs**: Search for known issues, community fixes, similar problems
+- Evaluate third-party solutions: maintenance status, license, dependencies, fit
+- Include third-party library as "Solution 0" if viable option exists
 - Verify code thoroughly; look for contradicting evidence
 - **For features**: ALWAYS create E2E Chainsaw tests using chainsaw-tester skill ✅
 - **For CONFIRMED bugs**: Create unit or E2E tests as appropriate
@@ -208,6 +241,9 @@ Write(
 
 ### Don'ts:
 - ❌ Assume bug report is correct without verification
+- ❌ Skip web research for features (third-party solutions MUST be researched)
+- ❌ Propose custom implementation without checking if libraries exist
+- ❌ Ignore third-party solution viability (always include as option if found)
 - ❌ Create tests or solutions for unconfirmed bugs
 - ❌ Skip checking for existing safeguards and validation
 - ❌ Ignore evidence that contradicts bug report
@@ -222,14 +258,25 @@ Write(
 **Skills**:
 - `Skill(go-k8s:chainsaw-tester)` - REQUIRED for E2E Chainsaw tests
 - `Skill(go-k8s:go-dev)` - For validating Go best practices
+- `Skill(go-k8s:web-doc)` - For fetching library documentation and GitHub info
 
-**Common tools**: Use Read tool to access reference files listed above.
+**Core Tools**:
+- **WebSearch**: Research existing libraries, packages, and solutions
+- **WebFetch**: Fetch library documentation, GitHub READMEs, package details
+- **Read**: Access reference files listed above
+- **Grep/Glob**: Find relevant code in the codebase
+- **Task (Explore agent)**: For broader codebase context
 
 **When to read references**:
 - `CONVENTIONS.md` - When checking file naming, status markers, severity levels
 - `TEST_EXECUTION.md` - When creating or running tests
 - `GO_PATTERNS.md` - When evaluating solutions for Go best practices
 - `REPORT_TEMPLATES.md` - When creating validation.md output
+
+**When to use WebSearch**:
+- **Features**: ALWAYS search for libraries/solutions before proposing custom implementation
+- **Bugs**: Search for known fixes, community solutions, similar issues
+- Include terms like "golang", "kubernetes", "operator", "controller-runtime" in queries
 
 ## Examples
 
@@ -274,3 +321,31 @@ Write(
    - Scenarios: valid update, invalid transition, missing fields
    - Status: FAILING (webhook not implemented)
 4. **Recommendation**: Approach A - Follows K8s best practices
+
+### Example 4: Feature with Third-Party Library Research
+
+**Issue**: `issues/json-schema-validation` (FEATURE ✨)
+
+**Output**:
+1. **Validation**: REQUIREMENTS CLEAR - Need JSON schema validation for CRD config fields
+2. **Web Research**: Searched "golang json schema validation library 2025"
+   - Found 3 viable options: gojsonschema, jsonschema (tekuri), jsonschema (qri-io)
+   - Evaluated maintenance, stars, licenses, feature sets
+3. **Proposed Solutions**:
+   - **Solution 0**: Use `github.com/xeipuuv/gojsonschema` (4.5k stars, Apache 2.0, well-maintained)
+     - Pros: Battle-tested, comprehensive JSON Schema support, good docs, no C deps
+     - Cons: Slightly verbose API, additional dependency
+     - Complexity: Low, Risk: Low
+   - **Solution A**: Build custom JSON validator
+     - Pros: No dependencies, tailored to our needs
+     - Cons: Reinventing wheel, maintenance burden, incomplete validation
+     - Complexity: High, Risk: Medium
+   - **Solution B**: Use CRD OpenAPI validation only
+     - Pros: No code needed, declarative
+     - Cons: Limited expressiveness, can't validate complex rules
+     - Complexity: Low, Risk: Low
+4. **E2E Chainsaw Test** ✅: Created `tests/e2e/json-schema-validation/chainsaw-test.yaml`
+   - Scenarios: valid schema, invalid structure, missing fields, type mismatches
+   - Status: FAILING (validation not implemented)
+5. **Recommendation**: Solution 0 - Use gojsonschema
+   - **Justification**: Mature library with proven track record, comprehensive validation needed for complex schemas, minimal risk, Apache 2.0 license compatible, faster implementation than custom solution

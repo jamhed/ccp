@@ -32,11 +32,16 @@ Given a general issue description, feature request, or area of concern, you will
 
 1. **Check existing issues**: Use Glob `issues/*/problem.md` to avoid duplicates; note related/dependent issues
 2. **Understand scope**: Determine if bug or feature; identify affected components
-3. **Locate code**: Use Grep/Glob to find relevant files; use Task tool with Explore agent for broader context
-4. **Analyze problem**:
+3. **Research existing solutions** (REQUIRED for features, recommended for bugs):
+   - **Use WebSearch**: Search for existing Go libraries, packages, or tools that address similar problems
+   - **Search terms**: Include "golang", "kubernetes", "operator" with your problem domain (e.g., "golang backup validation library", "kubernetes webhook golang")
+   - **Evaluate found solutions**: Check GitHub stars, maintenance status, license compatibility, feature completeness
+   - **Document findings**: Note relevant libraries/tools in problem.md under "Additional Context"
+4. **Locate code**: Use Grep/Glob to find relevant files; use Task tool with Explore agent for broader context
+5. **Analyze problem**:
    - **For bugs**: Identify root cause, edge cases, best practice violations
-   - **For features**: Understand requirements, integration points, dependencies
-5. **Assess severity/priority**: Use criteria from CONVENTIONS.md
+   - **For features**: Understand requirements, integration points, dependencies, whether existing libraries could help
+6. **Assess severity/priority**: Use criteria from CONVENTIONS.md
 
 ## Phase 2: Write Problem Definition
 
@@ -112,6 +117,15 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/problem.md` using this unified templa
 - Test scenarios: [list key scenarios]
 - Validation criteria: [what constitutes success]
 
+## Third-Party Solutions (if researched)
+
+**Existing Libraries/Tools**:
+- `[package-name]` - [Brief description, GitHub link, pros/cons, maintenance status]
+- `[tool-name]` - [Brief description, pros/cons, whether it fits our needs]
+
+**Recommendation**: Use existing solution / Build custom / Hybrid approach
+**Rationale**: [Why use or not use third-party solutions]
+
 ## Additional Context
 
 [Any additional information: links, references, related issues, constraints]
@@ -149,30 +163,47 @@ Verify problem definition is complete:
 
 ### Do's:
 - Research thoroughly before writing problem definition
+- **Use WebSearch for features**: ALWAYS search for existing libraries/solutions
+- **Use WebSearch for bugs**: Search for known issues, community solutions, existing fixes
+- Evaluate third-party solutions for maintenance status, license, and fit
+- Document researched libraries/tools in "Third-Party Solutions" section
 - Use specific technical language, not vague descriptions
 - Include concrete code examples
 - Identify exact file locations and line numbers
 - Assess severity/priority realistically (see CONVENTIONS.md)
 - Check for existing issues to avoid duplicates
-- Provide actionable recommended fix/implementation
+- Provide actionable recommended fix/implementation (including whether to use existing libraries)
 - Include test requirements
 - Use TodoWrite to track research phases
 
 ### Don'ts:
 - Create problem definitions without researching codebase
+- Skip web research for features (third-party solutions MUST be researched)
+- Propose custom implementation without checking if libraries exist
 - Be vague or use generic descriptions
 - Exaggerate severity/priority
 - Skip code analysis section
 - Duplicate existing issues
 - Provide recommendations without understanding the code
 - Omit test requirements
+- Ignore third-party solution viability (always document findings)
 
 ## Tools
 
-Use Read tool to access reference files listed above.
+**Core Tools**:
+- **WebSearch**: Research existing libraries, packages, and third-party solutions
+- **WebFetch**: Fetch documentation, GitHub READMEs, and package details
+- **Read**: Access reference files listed above
+- **Grep/Glob**: Find relevant code in the codebase
+- **Task (Explore agent)**: For broader codebase context
 
 **When to read references**:
 - `CONVENTIONS.md` - When assessing severity/priority, checking file naming, determining issue types
+
+**When to use WebSearch**:
+- **Features**: ALWAYS search for existing libraries/solutions before proposing custom implementation
+- **Bugs**: Search for known issues, existing fixes, or community solutions (e.g., "golang [problem] fix", "[library-name] [bug-type]")
+- Include terms like "golang", "kubernetes operator", "controller-runtime" in search queries
 
 ## Example Bug Definition
 
@@ -281,4 +312,83 @@ Create new validating webhook in `webhooks/backup_webhook.go` that validates:
   - Invalid transition (Completed → Pending)
   - Missing required fields
   - Valid complete workflow
+
+## Third-Party Solutions
+
+**Existing Libraries/Tools**:
+- `kubebuilder` - Includes webhook scaffolding (already in use)
+- `controller-runtime/pkg/webhook/admission` - Standard admission webhook library (recommended)
+- `kyverno` - Policy engine (too heavy, adds external dependency)
+
+**Recommendation**: Use existing admission webhook patterns from controller-runtime
+**Rationale**: Already a dependency, lightweight, follows Kubernetes best practices, no external services needed
+```
+
+## Example Feature with Library Research
+
+```markdown
+# Feature: JSON Schema Validation for Config
+
+**Status**: OPEN
+**Type**: FEATURE ✨
+**Priority**: Medium
+**Location**: `api/v1alpha1/` (new validation)
+
+## Problem Description
+
+Need to validate complex JSON configuration fields in our CRD against JSON schemas to prevent invalid configurations.
+
+## Benefits
+
+- Prevents invalid configuration deployment
+- Provides clear validation error messages
+- Reduces configuration-related runtime errors
+- Improves user experience
+
+## Implementation Area
+
+Add JSON schema validation to `ConfigMap` and `Backup` resources that have complex JSON fields.
+
+## Related Files
+
+- `api/v1alpha1/backup_types.go` - Backup CRD with JSON config field
+- `api/v1alpha1/configmap_types.go` - ConfigMap CRD
+
+## Proposed Implementation
+
+Use existing library for JSON schema validation rather than building custom solution (see Third-Party Solutions section).
+
+## Test Requirements
+
+- E2E Chainsaw test REQUIRED ✅
+- Test scenarios:
+  - Valid JSON against schema
+  - Invalid JSON structure
+  - Missing required fields
+  - Type mismatches
+
+## Third-Party Solutions
+
+**Existing Libraries/Tools**:
+- `github.com/xeipuuv/gojsonschema` - 4.5k stars, well-maintained, pure Go, comprehensive JSON Schema support
+  - Pros: Mature, supports draft-07, good error messages, no C dependencies
+  - Cons: Slightly verbose API
+  - License: Apache 2.0 ✅
+- `github.com/santhosh-tekuri/jsonschema` - 800 stars, actively maintained, better performance
+  - Pros: Faster, cleaner API, supports latest drafts
+  - Cons: Smaller community
+  - License: Apache 2.0 ✅
+- `github.com/qri-io/jsonschema` - 600 stars, Go team member maintained
+  - Pros: Clean API, good documentation
+  - Cons: Less features than alternatives
+  - License: MIT ✅
+
+**Recommendation**: Use `github.com/xeipuuv/gojsonschema`
+**Rationale**: Most mature and battle-tested, large community, comprehensive JSON Schema support needed for complex validation rules, Apache 2.0 license compatible
+
+## Additional Context
+
+- All three libraries are actively maintained (last commit < 6 months)
+- gojsonschema is used by popular projects (Terraform, Packer)
+- Validation should happen in admission webhook for early rejection
 ```
