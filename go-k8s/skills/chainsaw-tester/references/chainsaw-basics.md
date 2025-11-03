@@ -235,31 +235,7 @@ One sentence explaining what successful test completion validates.
 
 ### Operation Timeouts
 
-```yaml
-# Default timeout for step
-- assert:
-    timeout: 30s
-    resource:
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: test-deployment
-      status:
-        (readyReplicas): 3
-
-# Longer timeout for slow operations
-- assert:
-    timeout: 5m
-    resource:
-      status:
-        phase: Succeeded
-```
-
-### Common Timeout Values
-- Quick checks: 10-30s
-- Pod readiness: 30-60s
-- Deployments: 1-2m
-- Complex reconciliation: 2-5m
+All timeout configurations should be set in `.chainsaw.yaml` configuration file rather than in individual test operations. This ensures consistent timeout behavior across all tests.
 
 ### Error Handling: catch Blocks
 
@@ -355,12 +331,6 @@ Test for expected errors:
     env:
     - name: NAMESPACE
       value: default
-
-# Script with timeout
-- script:
-    timeout: 60s
-    content: |
-      ./long-running-script.sh
 
 # Skip log output for sensitive data
 - script:
@@ -574,7 +544,7 @@ kind: Configuration
 metadata:
   name: default
 spec:
-  # Global timeout for all operations
+  # Global timeout for all operations - configure here instead of in individual tests
   timeout: 5m
 
   # Skip resource deletion
@@ -590,6 +560,8 @@ spec:
   testDirs:
   - tests/
 ```
+
+**Note:** All timeout values should be configured in `.chainsaw.yaml` rather than in individual test operations to ensure consistency.
 
 ## Best Practices
 

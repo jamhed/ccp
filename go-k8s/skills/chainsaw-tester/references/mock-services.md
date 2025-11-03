@@ -60,7 +60,6 @@ spec:
     - apply:
         file: manifests/mock-service.yaml
     - assert:
-        timeout: 60s
         resource:
           apiVersion: apps/v1
           kind: Deployment
@@ -75,7 +74,6 @@ spec:
     - apply:
         file: manifests/resource-using-mock.yaml
     - assert:
-        timeout: 2m
         resource:
           kind: Query
           status:
@@ -516,7 +514,6 @@ spec:
             - port: 80
               targetPort: 80
     - assert:
-        timeout: 60s
         resource:
           apiVersion: apps/v1
           kind: Deployment
@@ -560,7 +557,6 @@ spec:
   - apply:
       file: manifests/mock-service.yaml
   - assert:
-      timeout: 60s
       resource:
         apiVersion: apps/v1
         kind: Deployment
@@ -744,7 +740,6 @@ spec:
 - name: verify-mock
   try:
   - assert:
-      timeout: 60s
       resource:
         apiVersion: apps/v1
         kind: Deployment

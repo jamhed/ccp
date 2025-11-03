@@ -71,18 +71,15 @@ Common root causes:
      state: Ready  # Actual field name
    ```
 
-2. **Update timeouts for slow operations**
+2. **Configure timeouts globally in `.chainsaw.yaml`**
    ```yaml
-   # Before: Default timeout too short
-   - assert:
-       resource:
-         kind: Pod
-         status:
-           phase: Running
+   # Configure timeout in .chainsaw.yaml instead of inline
+   # In .chainsaw.yaml:
+   spec:
+     timeout: 2m  # Allow time for image pull and slow operations
 
-   # After: Explicit timeout
+   # In test:
    - assert:
-       timeout: 2m  # Allow time for image pull
        resource:
          kind: Pod
          status:
@@ -229,7 +226,6 @@ spec:
     - apply:
         file: manifests/a07-query.yaml
     - assert:
-        timeout: 2m
         resource:
           apiVersion: ark.mckinsey.com/v1alpha1
           kind: Query
@@ -264,11 +260,11 @@ spec:
              name: my-team
    ```
 
-4. **Increase timeouts for webhook-validated resources**
+4. **Configure appropriate timeouts in `.chainsaw.yaml`**
    ```yaml
-   - apply:
-       timeout: 30s  # Allow time for webhook validation
-       file: manifests/team.yaml
+   # In .chainsaw.yaml
+   spec:
+     timeout: 2m  # Set global timeout to allow for webhook validation
    ```
 
 ## LLM-Dependent Assertions
@@ -676,19 +672,24 @@ kubectl explain query.status
 (json_parse(responses[0].content).weather != null): true
 ```
 
-### Don't Use Default Timeouts for Slow Operations
+### Configure Timeouts Globally
 
 ```yaml
-# ❌ BAD: May timeout
+# ❌ BAD: Inline timeout in test
 - assert:
+    timeout: 2m
     resource:
       kind: Deployment
       status:
         readyReplicas: 3
 
-# ✅ GOOD: Explicit timeout
+# ✅ GOOD: Configure timeout in .chainsaw.yaml
+# In .chainsaw.yaml:
+spec:
+  timeout: 2m
+
+# In test:
 - assert:
-    timeout: 2m
     resource:
       kind: Deployment
       status:
@@ -730,7 +731,7 @@ kubectl explain query.status
 - Wait for webhook-validated resources before creating dependents
 - Validate LLM output structure and length, not exact content
 - Include catch blocks with events and describe for all assertions
-- Use appropriate timeouts for different operations
+- Configure timeouts globally in `.chainsaw.yaml`
 - Run tests multiple times to detect flakiness
 - Add intermediate assertions to identify failure points
 
@@ -738,7 +739,7 @@ kubectl explain query.status
 - Apply all resources with `manifests/*.yaml` when webhooks validate dependencies
 - Assert exact LLM output strings (brittle, causes flakiness)
 - Use exact string matching on LLM-generated content
-- Use default timeouts for slow operations
+- Use inline `timeout:` in test operations (configure in `.chainsaw.yaml` instead)
 - Skip catch blocks (loses debugging context)
 - Assert non-existent status fields
 - Use shell scripts for assertions (use JP functions)

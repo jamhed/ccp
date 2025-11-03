@@ -615,7 +615,6 @@ spec:
     try:
     # Wait for query completion
     - assert:
-        timeout: 60s
         resource:
           apiVersion: ark.mckinsey.com/v1alpha1
           kind: Query

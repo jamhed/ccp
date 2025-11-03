@@ -10,6 +10,7 @@ Comprehensive guide to testing Kubernetes operators, Custom Resource Definitions
 5. [Admission Webhooks](#admission-webhooks)
 6. [Controller Reconciliation](#controller-reconciliation)
 7. [RBAC Testing](#rbac-testing)
+8. [OpenTelemetry Testing](#opentelemetry-testing)
 
 ## Operator Testing Fundamentals
 
@@ -70,7 +71,6 @@ spec:
   - name: validate-reconciliation
     try:
     - assert:
-        timeout: 2m
         resource:
           apiVersion: example.com/v1
           kind: CustomResource
@@ -86,7 +86,6 @@ spec:
     - apply:
         file: manifests/a03-test-action.yaml
     - assert:
-        timeout: 2m
         resource:
           kind: TestAction
           status:
@@ -219,7 +218,6 @@ spec:
   - name: wait-for-dependencies
     try:
     - assert:
-        timeout: 2m
         resource:
           apiVersion: ark.mckinsey.com/v1alpha1
           kind: Model
@@ -271,7 +269,6 @@ spec:
 - name: validate-status
   try:
   - assert:
-      timeout: 2m
       resource:
         apiVersion: example.com/v1
         kind: CustomResource
@@ -299,7 +296,6 @@ Test that the controller creates dependent resources:
 - name: validate-deployment-created
   try:
   - assert:
-      timeout: 2m
       resource:
         apiVersion: apps/v1
         kind: Deployment
@@ -394,7 +390,6 @@ See [debugging.md#webhook-timeout-race-conditions](debugging.md#webhook-timeout-
 - name: verify-reconciliation
   try:
   - assert:
-      timeout: 2m
       resource:
         apiVersion: example.com/v1
         kind: CustomResource
@@ -439,7 +434,6 @@ See [debugging.md#webhook-timeout-race-conditions](debugging.md#webhook-timeout-
 - name: wait-initial-reconciliation
   try:
   - assert:
-      timeout: 2m
       resource:
         apiVersion: example.com/v1
         kind: CustomResource
@@ -465,7 +459,6 @@ See [debugging.md#webhook-timeout-race-conditions](debugging.md#webhook-timeout-
 - name: verify-update-reconciliation
   try:
   - assert:
-      timeout: 2m
       resource:
         apiVersion: example.com/v1
         kind: CustomResource
@@ -502,7 +495,6 @@ See [debugging.md#webhook-timeout-race-conditions](debugging.md#webhook-timeout-
 
   # Wait for ready
   - assert:
-      timeout: 2m
       resource:
         apiVersion: example.com/v1
         kind: CustomResource
@@ -520,7 +512,6 @@ See [debugging.md#webhook-timeout-race-conditions](debugging.md#webhook-timeout-
 
   # Verify resource has deletionTimestamp but still exists (finalizer prevents deletion)
   - assert:
-      timeout: 30s
       resource:
         apiVersion: example.com/v1
         kind: CustomResource
@@ -532,7 +523,6 @@ See [debugging.md#webhook-timeout-race-conditions](debugging.md#webhook-timeout-
 
   # Wait for controller to remove finalizer
   - assert:
-      timeout: 2m
       resource:
         apiVersion: example.com/v1
         kind: CustomResource
@@ -649,16 +639,21 @@ kubectl explain query.status
 ### 3. Wait for Reconciliation
 
 ```yaml
-# ✅ GOOD: Wait for controller to reconcile
+# ✅ GOOD: Configure timeout in .chainsaw.yaml
+# In .chainsaw.yaml:
+spec:
+  timeout: 2m  # Allow time for reconciliation
+
+# In test:
 - assert:
-    timeout: 2m  # Allow time for reconciliation
     resource:
       kind: CustomResource
       status:
         phase: Ready
 
-# ❌ BAD: No timeout (uses default, may be too short)
+# ❌ BAD: Inline timeout in test
 - assert:
+    timeout: 2m
     resource:
       kind: CustomResource
       status:
@@ -759,7 +754,6 @@ spec:
     - apply:
         file: manifests/a03-model.yaml
     - assert:
-        timeout: 2m
         resource:
           kind: Model
           metadata:
@@ -777,7 +771,6 @@ spec:
   - name: validate-reconciliation
     try:
     - assert:
-        timeout: 2m
         resource:
           kind: CustomResource
           metadata:
@@ -808,7 +801,6 @@ spec:
           spec:
             field: new-value
     - assert:
-        timeout: 2m
         resource:
           kind: CustomResource
           status:
@@ -883,7 +875,6 @@ spec:
 - name: validate-conditions
   try:
   - assert:
-      timeout: 2m
       resource:
         apiVersion: example.com/v1
         kind: CustomResource
@@ -963,3 +954,392 @@ status:
 - apply:
     file: manifests/a05-query.yaml
 ```
+## OpenTelemetry Testing
+
+Testing operator telemetry output with OTEL Collector for observability and distributed tracing validation.
+
+### OTEL Collector Setup
+
+Operators can export telemetry to an OTEL Collector for CI/CD observability testing.
+
+**Typical cluster setup:**
+- OTEL Collector deployed in dedicated namespace (e.g., `otel-collector`)
+- File exporter configured to write to `/data/telemetry.json` (JSONL format)
+- Shared collector receives telemetry from all namespaces
+
+**Busybox sidecar pattern** for file access:
+
+```yaml
+# In OTEL Collector deployment
+containers:
+- name: otelcol
+  image: otel/opentelemetry-collector-contrib:latest
+  # ... collector configuration
+
+- name: telemetry-reader
+  image: busybox:1.36
+  command: ["sh", "-c", "while true; do sleep 3600; done"]
+  volumeMounts:
+    - name: data
+      mountPath: /data
+      readOnly: true
+
+volumes:
+- name: data
+  emptyDir: {}
+```
+
+### Reading Telemetry Data
+
+Extract telemetry from the collector:
+
+```yaml
+# In chainsaw test
+- name: extract-telemetry
+  try:
+  - script:
+      content: |
+        POD_NAME=$(kubectl get pod -n otel-collector -l app=otel-collector -o jsonpath='{.items[0].metadata.name}')
+        kubectl exec -n otel-collector $POD_NAME -c telemetry-reader -- \
+          cat /data/telemetry.json > /tmp/telemetry-all.json
+```
+
+### Filtering Telemetry in Concurrent Tests
+
+**CRITICAL:** When tests run concurrently, the shared OTEL collector batches spans from multiple traces together. You must filter by **trace ID**, not individual spans.
+
+#### The Problem
+
+```bash
+# ❌ WRONG: Filters individual spans by attribute
+jq '.[] | .resourceSpans[]?.scopeSpans[]?.spans[]? |
+  select(.attributes[]? | select(.key == "query.namespace" and .value.stringValue == $ns))'
+```
+
+**Why this fails:**
+- Root spans may not have the namespace attribute
+- Results in incomplete trace trees
+- Causes "missing root span" errors during validation
+- Filters out parent spans that lack the attribute
+
+#### The Solution
+
+**Extract complete trace trees** by finding matching trace IDs first:
+
+```bash
+# ✅ CORRECT: Filter by trace ID to get complete traces
+jq -s --arg ns "$NAMESPACE" '
+  # Step 1: Find trace IDs that have spans with our namespace
+  ([.[] | .resourceSpans[]?.scopeSpans[]?.spans[]? |
+    select(.attributes[]? | select(.key == "query.namespace" and .value.stringValue == $ns))] |
+    map(.traceId) | unique) as $matchingTraces |
+  
+  # Step 2: Extract ALL spans from those traces
+  [.[] | .resourceSpans[]?.scopeSpans[]?.spans[]? |
+    select(.traceId as $t | $matchingTraces | index($t) != null)] |
+  
+  # Step 3: Group and structure result
+  group_by(.traceId) |
+  map({traceId: .[0].traceId, spans: .}) |
+  .[0]' /tmp/telemetry-all.json > /tmp/telemetry.json
+```
+
+**Complete chainsaw test pattern:**
+
+```yaml
+- name: validate-telemetry
+  try:
+  - script:
+      content: |
+        set -e
+        
+        # Extract all telemetry
+        POD_NAME=$(kubectl get pod -n otel-collector -l app=otel-collector -o jsonpath='{.items[0].metadata.name}')
+        kubectl exec -n otel-collector $POD_NAME -c telemetry-reader -- \
+          cat /data/telemetry.json > /tmp/telemetry-all.json
+        
+        # Filter by trace ID (not individual spans)
+        jq -s --arg ns "$NAMESPACE" '
+          ([.[] | .resourceSpans[]?.scopeSpans[]?.spans[]? |
+            select(.attributes[]? | select(.key == "query.namespace" and .value.stringValue == $ns))] |
+            map(.traceId) | unique) as $matchingTraces |
+          [.[] | .resourceSpans[]?.scopeSpans[]?.spans[]? |
+            select(.traceId as $t | $matchingTraces | index($t) != null)] |
+          group_by(.traceId) |
+          map({traceId: .[0].traceId, spans: .}) |
+          .[0]' /tmp/telemetry-all.json > /tmp/telemetry.json
+      env:
+      - name: NAMESPACE
+        value: ($namespace)
+```
+
+### Key Points for Trace Filtering
+
+1. **Use `jq -s` (slurp)** when reading JSONL files
+2. **Filter returns an object** `{traceId: "...", spans: [...]}`, validation commands don't need `-s`
+3. **Always extract ENTIRE traces**, not individual matching spans
+4. **Two-step process**:
+   - Find trace IDs with matching attributes
+   - Extract ALL spans from those traces
+5. **Structure result** as `{traceId: "...", spans: [...]}`
+
+### Span Naming Conventions
+
+Validate span names follow consistent conventions:
+
+**Span naming patterns:**
+- Resource operations: `{resource}.{name}` (e.g., `query.test-query`, `agent.test-agent`)
+- LLM operations: `llm.{model}` (e.g., `llm.gpt-4o-mini`)
+- HTTP operations: `{METHOD}` (e.g., `POST`, `GET`)
+- Target operations: `target.{name}`
+
+**Example validation:**
+
+```yaml
+- name: validate-span-names
+  try:
+  - script:
+      content: |
+        # Validate query span exists
+        jq -e '.spans[] | select(.name | contains("query."))' /tmp/telemetry.json
+        
+        # Validate agent span exists
+        jq -e '.spans[] | select(.name | contains("agent."))' /tmp/telemetry.json
+        
+        # Validate LLM span exists
+        jq -e '.spans[] | select(.name | startswith("llm."))' /tmp/telemetry.json
+```
+
+### Span Attributes Validation
+
+Validate required attributes are present:
+
+```yaml
+- name: validate-span-attributes
+  try:
+  - script:
+      content: |
+        # Validate query span has name attribute
+        jq -e '.spans[] | select(.name | contains("query.")) |
+          .attributes[] | select(.key == "name")' /tmp/telemetry.json
+        
+        # Validate agent span has operation_type
+        jq -e '.spans[] | select(.name | contains("agent.")) |
+          .attributes[] | select(.key == "operation_type" and .value.stringValue == "Agent")' /tmp/telemetry.json
+        
+        # Validate LLM span has model name
+        jq -e '.spans[] | select(.name | startswith("llm.")) |
+          .attributes[] | select(.key == "llm.model_name")' /tmp/telemetry.json
+```
+
+### Span Hierarchy Validation
+
+Validate parent-child relationships in distributed traces:
+
+```yaml
+- name: validate-span-hierarchy
+  try:
+  - script:
+      content: |
+        # Create span lookup by ID
+        jq '.spans | map({(.spanId): .}) | add' /tmp/telemetry.json > /tmp/span-map.json
+        
+        # Validate query span is root (no parent)
+        jq -e '.spans[] | select(.name | contains("query.")) |
+          select(.parentSpanId == "" or .parentSpanId == null)' /tmp/telemetry.json
+        
+        # Validate agent span has query as parent
+        QUERY_SPAN_ID=$(jq -r '.spans[] | select(.name | contains("query.")) | .spanId' /tmp/telemetry.json)
+        jq -e --arg parent "$QUERY_SPAN_ID" '.spans[] |
+          select(.name | contains("agent.")) |
+          select(.parentSpanId == $parent)' /tmp/telemetry.json
+```
+
+### OpenInference Span Kinds
+
+Validate spans use correct OpenInference span kinds:
+
+**Span kind values:**
+- `CHAIN` - Orchestration/workflow spans (queries, teams)
+- `AGENT` - Agent execution spans
+- `LLM` - LLM API call spans
+- `TOOL` - Tool execution spans
+
+```yaml
+- name: validate-span-kinds
+  try:
+  - script:
+      content: |
+        # Validate query span is CHAIN
+        jq -e '.spans[] | select(.name | contains("query.")) |
+          .attributes[] | select(.key == "openinference.span.kind" and .value.stringValue == "CHAIN")' /tmp/telemetry.json
+        
+        # Validate agent span is AGENT
+        jq -e '.spans[] | select(.name | contains("agent.")) |
+          .attributes[] | select(.key == "openinference.span.kind" and .value.stringValue == "AGENT")' /tmp/telemetry.json
+        
+        # Validate LLM span is LLM
+        jq -e '.spans[] | select(.name | startswith("llm.")) |
+          .attributes[] | select(.key == "openinference.span.kind" and .value.stringValue == "LLM")' /tmp/telemetry.json
+```
+
+### Token Count Validation
+
+Validate LLM token counts are tracked:
+
+```yaml
+- name: validate-token-counts
+  try:
+  - script:
+      content: |
+        # Validate prompt tokens
+        jq -e '.spans[] | select(.name | startswith("llm.")) |
+          .attributes[] | select(.key == "llm.token_count.prompt" and .value.intValue > 0)' /tmp/telemetry.json
+        
+        # Validate completion tokens
+        jq -e '.spans[] | select(.name | startswith("llm.")) |
+          .attributes[] | select(.key == "llm.token_count.completion" and .value.intValue > 0)' /tmp/telemetry.json
+        
+        # Validate total tokens
+        jq -e '.spans[] | select(.name | startswith("llm.")) |
+          .attributes[] | select(.key == "llm.token_count.total" and .value.intValue > 0)' /tmp/telemetry.json
+```
+
+### Complete Telemetry Test Example
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: telemetry-validation
+spec:
+  description: Validate operator telemetry output
+  steps:
+  # 1. Run operator test that generates telemetry
+  - name: run-operator-test
+    try:
+    - apply:
+        file: manifests/test-query.yaml
+    - assert:
+        resource:
+          apiVersion: example.com/v1
+          kind: Query
+          metadata:
+            name: test-query
+          status:
+            phase: done
+  
+  # 2. Extract and filter telemetry
+  - name: extract-telemetry
+    try:
+    - script:
+        content: |
+          set -e
+          
+          # Get OTEL collector pod
+          POD_NAME=$(kubectl get pod -n otel-collector -l app=otel-collector -o jsonpath='{.items[0].metadata.name}')
+          
+          # Extract all telemetry
+          kubectl exec -n otel-collector $POD_NAME -c telemetry-reader -- \
+            cat /data/telemetry.json > /tmp/telemetry-all.json
+          
+          # Filter by trace ID
+          jq -s --arg ns "$NAMESPACE" '
+            ([.[] | .resourceSpans[]?.scopeSpans[]?.spans[]? |
+              select(.attributes[]? | select(.key == "query.namespace" and .value.stringValue == $ns))] |
+              map(.traceId) | unique) as $matchingTraces |
+            [.[] | .resourceSpans[]?.scopeSpans[]?.spans[]? |
+              select(.traceId as $t | $matchingTraces | index($t) != null)] |
+            group_by(.traceId) |
+            map({traceId: .[0].traceId, spans: .}) |
+            .[0]' /tmp/telemetry-all.json > /tmp/telemetry.json
+        env:
+        - name: NAMESPACE
+          value: ($namespace)
+  
+  # 3. Validate span structure
+  - name: validate-spans
+    try:
+    - script:
+        content: |
+          # Validate query span exists and is root
+          jq -e '.spans[] | select(.name | contains("query.")) |
+            select(.parentSpanId == "" or .parentSpanId == null)' /tmp/telemetry.json
+          
+          # Validate span count
+          SPAN_COUNT=$(jq '.spans | length' /tmp/telemetry.json)
+          test $SPAN_COUNT -gt 0
+  
+  # 4. Validate span attributes
+  - name: validate-attributes
+    try:
+    - script:
+        content: |
+          # Validate OpenInference span kinds
+          jq -e '.spans[] | select(.name | contains("query.")) |
+            .attributes[] | select(.key == "openinference.span.kind")' /tmp/telemetry.json
+          
+          # Validate operation types
+          jq -e '.spans[] | .attributes[] | select(.key == "operation_type")' /tmp/telemetry.json
+```
+
+## Telemetry Standards Compliance
+
+When testing operator telemetry, validate compliance with relevant standards:
+
+### OpenInference Conventions
+
+Validate spans follow OpenInference semantic conventions:
+- Span kinds: CHAIN, AGENT, LLM, TOOL, RETRIEVER, EMBEDDING
+- Attributes: `openinference.span.kind`, operation-specific attributes
+- Token counts: `llm.token_count.*` attributes
+
+**Reference:** [OpenInference Semantic Conventions](https://github.com/Arize-ai/openinference)
+
+### OpenTelemetry Gen-AI Conventions
+
+Validate spans follow OTel Gen-AI semantic conventions where applicable:
+- Gen-AI attributes: `gen_ai.system`, `gen_ai.request.model`, `gen_ai.response.model`
+- Token usage: `gen_ai.usage.*` attributes
+- System-specific attributes based on provider
+
+**Reference:** [OpenTelemetry Gen-AI Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/)
+
+### Common Compliance Issues
+
+**Context pollution:** Parent span attributes appearing on child spans
+```bash
+# Detect context pollution
+jq '.spans[] | select(.parentSpanId != "" and .parentSpanId != null) |
+  .attributes[] | select(.key | startswith("query."))' /tmp/telemetry.json
+```
+
+**Missing attributes:** Required attributes not present
+```bash
+# Check for missing openinference.span.kind
+jq -e '.spans[] | select(.attributes | map(.key) | contains(["openinference.span.kind"]) | not)' /tmp/telemetry.json
+```
+
+**Inconsistent naming:** Span names don't follow conventions
+```bash
+# Validate naming pattern
+jq -e '.spans[] | select(.name | test("^(query|agent|llm|target)\\."))'  /tmp/telemetry.json
+```
+
+## Best Practices for Telemetry Testing
+
+✅ **Do:**
+- Filter by trace ID to get complete trace trees
+- Use busybox sidecar for file access to OTEL data
+- Validate span hierarchy (parent-child relationships)
+- Check OpenInference span kinds are correct
+- Verify token counts for LLM spans
+- Test in concurrent scenarios to catch filtering issues
+
+❌ **Don't:**
+- Filter individual spans by attributes (loses parent spans)
+- Assume root spans have all namespace attributes
+- Skip hierarchy validation (can miss broken traces)
+- Ignore span kind validation (important for observability tools)
+- Test only in isolated scenarios (misses concurrency issues)
+
