@@ -27,7 +27,27 @@ issue-manager/scripts/list-open
 - Identifies issues with a `problem.md` file
 - Displays descriptive issue names (e.g., "agent-crd-embedding-in-tool", "query-message-observer")
 
-### 2. Archive Solved Issue
+### 2. List Solved Issues
+
+List all solved (archived) issues that have been completed:
+
+```bash
+issue-manager/scripts/list-solved
+```
+
+**When to use:**
+- Need to see what issues have been completed
+- Looking for reference implementations from past solutions
+- Getting an overview of completed work
+- Finding issues that might need to be reopened
+
+**How it works:**
+- Scans the `archive/` directory for issue folders
+- Identifies archived issues with a `problem.md` file
+- Displays descriptive issue names
+- Returns gracefully if no archive directory exists yet
+
+### 3. Archive Solved Issue
 
 Archive a solved issue by moving it from `issues/` to `archive/`:
 
@@ -55,7 +75,7 @@ issue-manager/scripts/archive agent-crd-embedding-in-tool
 - Issue must exist in the `issues/` directory
 - Issue should be fully solved with a `solution.md` file
 
-### 3. Refine Problem Definition
+### 4. Refine Problem Definition
 
 Launch the problem researcher agent to refine an issue's problem definition:
 
@@ -87,12 +107,14 @@ issue-manager/scripts/refine query-message-observer
 
 **Automatically use when:**
 - User mentions "list issues", "show issues", or "what issues are open"
+- User asks to "list solved", "show archived", or "what issues are solved"
 - User asks to "archive" or "close" an issue
 - User wants to "refine" or "improve" a problem definition
 - Working with files in the `issues/` directory
 
 **Explicitly use for:**
 - Getting an overview of open work items
+- Viewing completed/solved issues
 - Managing issue lifecycle (open → solved → archived)
 - Improving problem definitions before implementing solutions
 - Cleaning up solved issues from the active list
@@ -106,14 +128,19 @@ issue-manager/scripts/refine query-message-observer
    issue-manager/scripts/list-open
    ```
 
-2. **Refine problem** if definition is unclear:
+2. **List solved issues** to see what's been completed:
+   ```bash
+   issue-manager/scripts/list-solved
+   ```
+
+3. **Refine problem** if definition is unclear:
    ```bash
    issue-manager/scripts/refine agent-crd-embedding-in-tool
    ```
 
-3. **Work on solution** using the solve workflow
+4. **Work on solution** using the solve workflow
 
-4. **Archive when solved**:
+5. **Archive when solved**:
    ```bash
    issue-manager/scripts/archive agent-crd-embedding-in-tool
    ```
@@ -166,6 +193,11 @@ ISSUES_DIR=bugs ARCHIVE_DIR=resolved issue-manager/scripts/list-open
 **Check what's open before starting work:**
 ```bash
 issue-manager/scripts/list-open
+```
+
+**View completed issues for reference:**
+```bash
+issue-manager/scripts/list-solved
 ```
 
 **Archive after solving:**

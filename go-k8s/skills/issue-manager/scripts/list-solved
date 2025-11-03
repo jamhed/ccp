@@ -1,0 +1,18 @@
+#!/bin/bash
+# List all solved issues (archived)
+
+ARCHIVE_DIR="${ARCHIVE_DIR:-archive}"
+
+if [ ! -d "$ARCHIVE_DIR" ]; then
+  echo "No archive directory found at: $ARCHIVE_DIR"
+  exit 0
+fi
+
+for issue in "$ARCHIVE_DIR"/*; do
+  [ -d "$issue" ] || continue
+  issue_name=$(basename "$issue")
+
+  if [ -f "$issue/problem.md" ]; then
+    echo "$issue_name"
+  fi
+done
