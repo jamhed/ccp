@@ -116,16 +116,32 @@ golangci-lint run
 
 ## Phase 3: Comprehensive Testing
 
+### Check for Chainsaw Tests
+
+**ALWAYS check for chainsaw tests first**:
+```bash
+find tests/e2e -name "chainsaw-test.yaml" 2>/dev/null || echo "No E2E tests found"
+```
+
+**If chainsaw tests exist**: They MUST be run unless infrastructure actually fails.
+
 ### Run Tests
 
 1. **Run specific test** (created for this issue):
    ```bash
    go test ./path/to/package/... -v -run TestName
-   # OR
+   # OR for E2E Chainsaw tests:
    chainsaw test tests/e2e/test-name/
    ```
 
-2. **Run full test suite** (regression check):
+2. **Run all E2E Chainsaw tests** (if they exist):
+   ```bash
+   chainsaw test tests/e2e/
+   ```
+
+   **CRITICAL**: Do NOT skip chainsaw tests by assuming infrastructure is unavailable. ALWAYS attempt to run them. Only skip if the command actually fails with infrastructure errors.
+
+3. **Run full test suite** (regression check):
    ```bash
    make test
    # OR
@@ -142,10 +158,19 @@ The chainsaw-tester skill provides:
 - Assertion pattern fixes
 - RBAC and mock service issues
 
+**Infrastructure Issues**: Only cite infrastructure requirements if chainsaw command actually fails. Do not preemptively skip tests.
+
 ### Document Test Results
 
 ```markdown
 ## Test Results
+
+### Chainsaw E2E Tests
+**Check Command**: `find tests/e2e -name "chainsaw-test.yaml"`
+**Tests Found**: [count or "none"]
+**Command**: `chainsaw test tests/e2e/` (if tests exist)
+**Result**: PASSING ✅ / FAILING ❌ / NOT APPLICABLE
+**Output**: [actual output]
 
 ### Specific Test
 **Command**: `[command]`
@@ -183,6 +208,7 @@ Create comprehensive testing report with:
 - Code review findings with ratings
 - Improvements made during review
 - Linting results
+- Chainsaw test check and execution results (if applicable)
 - Test execution results (specific test and full suite)
 - Final approval decision and checklist
 
@@ -200,6 +226,8 @@ Write(
 - **ALWAYS use go-dev skill** for comprehensive code review
 - Apply modern Go 1.23+ idioms (see go-patterns.md)
 - Fix all linter issues before approval
+- **Check for chainsaw tests** using find command
+- **Run chainsaw tests if they exist** - always attempt, don't assume infrastructure issues
 - Run both specific test and full test suite
 - **Use chainsaw-tester skill** when E2E Chainsaw tests fail
 - Include actual test output in reports
@@ -211,6 +239,7 @@ Write(
 - Skip go-dev skill review
 - Approve code with linter failures
 - Skip running full test suite
+- **Skip chainsaw tests by assuming infrastructure is unavailable** - ALWAYS attempt to run them
 - Ignore test failures
 - Use placeholder test output
 - Approve without verifying all dimensions
@@ -249,7 +278,9 @@ Write(
    ```
 
 4. **Testing**:
+   - Checked for E2E tests: `find tests/e2e -name "chainsaw-test.yaml"`
    - Specific test: `TestTeamGraphInfiniteLoop` ✅ PASSING
+   - E2E Chainsaw tests: `chainsaw test tests/e2e/` ✅ PASSING (if applicable)
    - Full suite: `make test` ✅ PASSING (127/127 tests)
    - No regressions introduced
 
