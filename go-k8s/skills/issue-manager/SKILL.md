@@ -14,7 +14,7 @@ Expert assistant for managing project issues stored in the `issues/` folder. Pro
 List all open (non-archived) issues that have a `problem.md` file:
 
 ```bash
-issue-manager/scripts/list-open
+go-k8s/skills/issue-manager/scripts/list-open
 ```
 
 **When to use:**
@@ -32,7 +32,7 @@ issue-manager/scripts/list-open
 List all solved (archived) issues that have been completed:
 
 ```bash
-issue-manager/scripts/list-solved
+go-k8s/skills/issue-manager/scripts/list-solved
 ```
 
 **When to use:**
@@ -52,12 +52,12 @@ issue-manager/scripts/list-solved
 Archive a solved issue by moving it from `issues/` to `archive/`:
 
 ```bash
-issue-manager/scripts/archive <issue-name>
+go-k8s/skills/issue-manager/scripts/archive <issue-name>
 ```
 
 **Example:**
 ```bash
-issue-manager/scripts/archive agent-crd-embedding-in-tool
+go-k8s/skills/issue-manager/scripts/archive agent-crd-embedding-in-tool
 ```
 
 **When to use:**
@@ -80,12 +80,12 @@ issue-manager/scripts/archive agent-crd-embedding-in-tool
 Launch the problem researcher agent to refine an issue's problem definition:
 
 ```bash
-issue-manager/scripts/refine <issue-name>
+go-k8s/skills/issue-manager/scripts/refine <issue-name>
 ```
 
 **Example:**
 ```bash
-issue-manager/scripts/refine query-message-observer
+go-k8s/skills/issue-manager/scripts/refine query-message-observer
 ```
 
 **When to use:**
@@ -125,24 +125,24 @@ issue-manager/scripts/refine query-message-observer
 
 1. **List open issues** to see what needs work:
    ```bash
-   issue-manager/scripts/list-open
+   go-k8s/skills/issue-manager/scripts/list-open
    ```
 
 2. **List solved issues** to see what's been completed:
    ```bash
-   issue-manager/scripts/list-solved
+   go-k8s/skills/issue-manager/scripts/list-solved
    ```
 
 3. **Refine problem** if definition is unclear:
    ```bash
-   issue-manager/scripts/refine agent-crd-embedding-in-tool
+   go-k8s/skills/issue-manager/scripts/refine agent-crd-embedding-in-tool
    ```
 
 4. **Work on solution** using the solve workflow
 
 5. **Archive when solved**:
    ```bash
-   issue-manager/scripts/archive agent-crd-embedding-in-tool
+   go-k8s/skills/issue-manager/scripts/archive agent-crd-embedding-in-tool
    ```
 
 ## Directory Structure
@@ -178,7 +178,7 @@ The scripts support these environment variables:
 
 **Example with custom directories:**
 ```bash
-ISSUES_DIR=bugs ARCHIVE_DIR=resolved issue-manager/scripts/list-open
+ISSUES_DIR=bugs ARCHIVE_DIR=resolved go-k8s/skills/issue-manager/scripts/list-open
 ```
 
 ## Best Practices
@@ -192,17 +192,17 @@ ISSUES_DIR=bugs ARCHIVE_DIR=resolved issue-manager/scripts/list-open
 
 **Check what's open before starting work:**
 ```bash
-issue-manager/scripts/list-open
+go-k8s/skills/issue-manager/scripts/list-open
 ```
 
 **View completed issues for reference:**
 ```bash
-issue-manager/scripts/list-solved
+go-k8s/skills/issue-manager/scripts/list-solved
 ```
 
 **Archive after solving:**
 ```bash
 # After solution is complete and tested
-issue-manager/scripts/archive partial-tool-parameter-substitution
+go-k8s/skills/issue-manager/scripts/archive partial-tool-parameter-substitution
 ```
 
