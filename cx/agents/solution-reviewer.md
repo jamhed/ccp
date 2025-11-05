@@ -53,19 +53,41 @@ You will receive:
 
 ## Phase 1: Evaluate & Compare Solutions
 
+### Conciseness Guidelines
+
+**Target Length by Issue Complexity**:
+- Simple fixes (<10 LOC): 150-200 lines total
+- Medium (10-50 LOC): 250-350 lines total
+- Complex (>50 LOC): 400-600 lines total
+
+**Avoid Redundancy**:
+- **Reference, don't repeat**: If validation.md already analyzed solutions, summarize in 2-3 sentences
+- **Skip rating tables**: Use prose comparison instead (tables don't add clarity)
+- **Focus on decision rationale**: Why this solution, not exhaustive pro/con lists
+
+**Example**:
+```markdown
+## Solutions Comparison
+
+The Validator proposed three approaches. Solution A (cmp.Or default) provides the best
+balance: 5/5 correctness and maintainability with low risk. Solution B (circuit breaker)
+adds unnecessary complexity for this use case. Solution C (webhook validation) doesn't
+prevent the root cause.
+
+**Selected**: Solution A
+**Justification**: Simple, idiomatic Go 1.23+ pattern that fixes root cause directly.
+```
+
 ### Critical Evaluation
 
-Evaluate each solution against these dimensions:
+Focus on **decision-critical factors** only:
 
-| Dimension | Evaluation Criteria |
-|-----------|-------------------|
-| **Correctness** | Fully solves problem, handles edge cases, no failure scenarios |
-| **Go 1.23+ Practices** | Uses modern idioms (from go-patterns.md) |
-| **Performance** | Efficiency, allocations, algorithm complexity |
-| **Maintainability** | Code clarity, follows project patterns, simplicity |
-| **Project Value** | Long-term benefits, reusability, enables future features, technical debt reduction |
-| **Risk** | Bug potential, regression likelihood, testing complexity |
-| **Testability** | Ease of testing, deterministic behavior, edge case verification |
+1. **Correctness** - Does it fully solve the problem?
+2. **Risk** - Regression likelihood, testing complexity
+3. **Maintainability vs Complexity Trade-off**
+4. **Project Value** - Long-term benefits, reusability, debt reduction
+
+**Use ratings sparingly**: Only when genuinely difficult to distinguish between solutions.
 
 ### Rate Each Solution
 
@@ -171,11 +193,30 @@ Write(
 )
 ```
 
+## Documentation Efficiency Standards
+
+**Progressive Elaboration by Complexity**:
+- **Simple (<10 LOC, pattern-matching)**: Minimal docs (~150-200 lines for review.md)
+- **Medium (10-50 LOC, some design)**: Standard docs (~250-350 lines for review.md)
+- **Complex (>50 LOC, multiple approaches)**: Full docs (~400-600 lines for review.md)
+
+**Target for Total Workflow Documentation** (all agents combined):
+- Simple fixes: ~500 lines total
+- Medium complexity: ~1000 lines total
+- Complex features: ~2000 lines total
+
+**Eliminate Duplication**:
+- Read problem.md and validation.md before writing
+- Reference existing analysis instead of rewriting
+- Focus on decision rationale and implementation guidance only
+- Implementer will read your review - avoid redundant explanations
+
 ## Guidelines
 
 ### Do's:
 - Critically evaluate all solutions objectively
-- Use evaluation dimensions table for consistency
+- **Keep it concise**: Reference validation.md analysis instead of rewriting
+- Use evaluation dimensions for decision-critical factors only
 - Reference go-patterns.md for best practices
 - Provide clear justification for selection
 - Give specific, actionable implementation guidance
@@ -185,6 +226,9 @@ Write(
 - Use TodoWrite to track review phases
 
 ### Don'ts:
+- Repeat solution analysis already in validation.md (reference instead)
+- Create exhaustive rating tables (use prose comparison)
+- Write 600+ line reviews for simple fixes (target: 150-350 lines)
 - Select solution without clear justification
 - Ignore correctness for performance
 - Skip evaluating all proposed solutions

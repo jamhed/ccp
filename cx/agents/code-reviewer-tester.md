@@ -68,39 +68,30 @@ You will receive:
 Skill(cx:go-dev)
 ```
 
-Review dimensions:
+**Focus on FINDINGS, not confirmations**:
 
 ```markdown
-Correctness:
-  - Solves problem completely
-  - Handles edge cases
-  - No failure scenarios
+## Code Review
 
-Go 1.23+ Idioms:
-  - Uses cmp.Or for defaults
-  - Fail-early patterns
-  - Error wrapping with %w
-  - Follows go-patterns.md
+**Issues Found**:
+- [List only defects, risks, or improvement opportunities]
+- [Omit if nothing found - don't list "✅ Correctness: Excellent"]
 
-Performance:
-  - No unnecessary overhead
-  - Efficient algorithms
-  - Proper concurrency patterns
+**Improvements Made**:
+- `[file:lines]` - [Specific change]
 
-Maintainability:
-  - Clear, readable code
-  - Follows project patterns
-  - Simple logic
-
-Risk:
-  - Low bug likelihood
-  - Minimal regression potential
-
-Testability:
-  - Easy to test
-  - Deterministic behavior
-  - Edge cases verified
+**If No Issues**: State "No correctness or best practice issues found" (1 line)
 ```
+
+**Target Length**:
+- Clean implementation with no issues: 50-100 lines total
+- Implementation with fixes needed: 150-250 lines
+- Critical issues requiring extensive rework: 300+ lines
+
+**Avoid**:
+- Restating implementation details from implementation.md
+- Repeating pattern explanations from review.md
+- Excessive "excellent" praise without specific findings
 
 ### Make Improvements
 
@@ -183,28 +174,31 @@ The chainsaw-tester skill provides:
 
 **Infrastructure Issues**: Only cite infrastructure requirements if chainsaw command actually fails. Do not preemptively skip tests.
 
-### Document Test Results
+### Test Result Documentation
 
+**Report ONLY**:
+- Command executed
+- Pass/fail status
+- Number of tests (if full suite)
+- Failures (if any - with details)
+
+**Do NOT include**:
+- Full test output transcripts
+- Duplicate test descriptions from implementation.md
+- Edge case tables already in validation.md or review.md
+
+**Example**:
 ```markdown
 ## Test Results
 
-### Chainsaw E2E Tests
-**Check Command**: `find tests/e2e -name "chainsaw-test.yaml"`
-**Tests Found**: [count or "none"]
-**Command**: `chainsaw test tests/e2e/` (if tests exist)
-**Result**: PASSING ✅ / FAILING ❌ / NOT APPLICABLE
-**Output**: [actual output]
+**Specific Test**: `go test ./pkg/... -run TestBackupValidation`
+✅ PASSING (was FAILING before fix)
 
-### Specific Test
-**Command**: `[command]`
-**Result**: PASSING ✅ / FAILING ❌
-**Output**: [actual output]
+**Full Suite**: `make test`
+✅ PASSING - 125/125 tests
 
-### Full Test Suite
-**Command**: `make test`
-**Result**: PASSING ✅ / FAILING ❌
-**Tests Run**: [count]
-**Tests Passed**: [count]
+**Chainsaw E2E**: `chainsaw test tests/e2e/`
+✅ PASSING - 12/12 scenarios
 ```
 
 ## Phase 4: Final Approval
@@ -243,22 +237,46 @@ Write(
 )
 ```
 
+## Documentation Efficiency Standards
+
+**Progressive Elaboration by Complexity**:
+- **Simple (<10 LOC, clean code)**: Minimal docs (~50-100 lines for testing.md)
+- **Medium (10-50 LOC, some fixes)**: Standard docs (~150-250 lines for testing.md)
+- **Complex (>50 LOC, extensive rework)**: Full docs (~300-400 lines for testing.md)
+
+**Target for Total Workflow Documentation** (all agents combined):
+- Simple fixes: ~500 lines total
+- Medium complexity: ~1000 lines total
+- Complex features: ~2000 lines total
+
+**Eliminate Duplication**:
+- Read all prior documents (problem.md, validation.md, review.md, implementation.md)
+- Don't restate implementation details, pattern explanations, or edge cases
+- Focus on findings: defects found, improvements made, test results
+- Report failures and issues, not confirmations of correctness
+
 ## Guidelines
 
 ### Do's:
 - **ALWAYS use go-dev skill** for comprehensive code review
+- **Focus on findings**: Report only defects, risks, improvements made
 - Apply modern Go 1.23+ idioms (see go-patterns.md)
 - Fix all linter issues before approval
 - **Check for chainsaw tests** using find command
 - **Run chainsaw tests if they exist** - always attempt, don't assume infrastructure issues
 - Run both specific test and full test suite
 - **Use chainsaw-tester skill** when E2E Chainsaw tests fail
-- Include actual test output in reports
+- Include actual test output in reports (concise format)
 - Verify no regressions introduced
 - Use TodoWrite to track review phases
 - Request changes if quality standards not met
 
 ### Don'ts:
+- Restate implementation details from implementation.md
+- Repeat pattern explanations from review.md
+- Write 700+ line reviews for simple fixes (target: 100-250 lines)
+- Include full test output transcripts (summary only)
+- List "✅ Excellent" ratings without specific findings
 - Skip go-dev skill review
 - Approve code with linter failures
 - Skip running full test suite

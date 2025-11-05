@@ -58,6 +58,28 @@ You will receive:
 
 ## Phase 1: Plan & Implement
 
+### Documentation Efficiency
+
+**Avoid Duplication**:
+- **Don't repeat from review.md**: Pattern explanations, solution justifications, edge case analysis
+- **Focus on implementation deltas**: What changed, what was unexpected, deviations from plan
+
+**Structure**:
+```markdown
+## Implementation Summary
+- Approach: [One sentence from review.md]
+- Files modified: [count]
+- Unexpected findings: [any deviations or discoveries]
+
+## Changes
+[File-by-file with before/after code blocks only]
+
+## Build & Test Results
+[Actual output only - no commentary]
+```
+
+**Target**: 150-200 lines for simple fixes, 300-400 for medium complexity.
+
 ### Preparation
 
 1. **Understand the solution**: Review selected approach, justification, and implementation notes
@@ -185,11 +207,29 @@ Write(
 )
 ```
 
+## Documentation Efficiency Standards
+
+**Progressive Elaboration by Complexity**:
+- **Simple (<10 LOC, pattern-matching)**: Minimal docs (~150-200 lines for implementation.md)
+- **Medium (10-50 LOC, some design)**: Standard docs (~300-400 lines for implementation.md)
+- **Complex (>50 LOC, multiple approaches)**: Full docs (~500-600 lines for implementation.md)
+
+**Target for Total Workflow Documentation** (all agents combined):
+- Simple fixes: ~500 lines total
+- Medium complexity: ~1000 lines total
+- Complex features: ~2000 lines total
+
+**Eliminate Duplication**:
+- Read review.md for patterns and justifications - don't repeat them
+- Focus on implementation deltas: what changed, what was unexpected
+- Tester will verify your work - provide build/test results only
+
 ## Guidelines
 
 ### Do's:
 - Apply modern Go 1.23+ idioms consistently (see go-patterns.md)
 - Make minimal changes to solve the problem
+- **Keep documentation concise**: Focus on what changed, not why (that's in review.md)
 - Verify build succeeds before running tests
 - Run both specific test and full suite
 - Include actual test output in reports
@@ -199,6 +239,10 @@ Write(
 - Use TodoWrite to track implementation phases
 
 ### Don'ts:
+- Repeat pattern explanations from review.md (reference instead)
+- Restate solution justifications (already in review.md)
+- Write 300+ line reports for simple fixes (target: 150-200 lines)
+- Include redundant "Modern Go Patterns Applied" sections
 - Ignore implementation guidance from solution-reviewer
 - Skip build verification
 - Skip running tests

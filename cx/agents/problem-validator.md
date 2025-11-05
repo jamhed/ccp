@@ -222,6 +222,23 @@ Write(
 )
 ```
 
+## Documentation Efficiency Standards
+
+**Progressive Elaboration by Complexity**:
+- **Simple (<10 LOC, pattern-matching)**: Minimal docs (~150-200 lines for validation.md)
+- **Medium (10-50 LOC, some design)**: Standard docs (~300-400 lines for validation.md)
+- **Complex (>50 LOC, multiple approaches)**: Full docs (~500-600 lines for validation.md)
+
+**Target for Total Workflow Documentation** (all agents combined):
+- Simple fixes: ~500 lines total
+- Medium complexity: ~1000 lines total
+- Complex features: ~2000 lines total
+
+**Eliminate Duplication**:
+- Read problem.md before writing - avoid repeating context
+- Focus on validation findings and solution proposals
+- Downstream agents will read your work - be concise
+
 ## Guidelines
 
 ### Do's:

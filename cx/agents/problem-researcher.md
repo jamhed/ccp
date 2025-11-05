@@ -40,11 +40,25 @@ All issue-related files reside in:
 
 **Issue Type**: BUG 🐛 | FEATURE ✨
 
-### Severity Levels (Bugs)
+### Severity Levels (Evidence-Based)
 
-- **High** - Crashes, data loss, security issues, critical functionality broken
-- **Medium** - Important features impaired, workarounds exist
-- **Low** - Minor issues, cosmetic problems, edge cases
+**Critical**:
+- **Evidence Required**: Crashes (stack traces), data loss (corrupted files), security CVE
+- Examples: Panic on nil pointer, database corruption, authentication bypass
+
+**High**:
+- **Evidence Required**: Functional failure (failing E2E tests), confirmed resource leak (pprof showing goroutine/memory growth)
+- Examples: Controller stuck, memory leak with metrics, API endpoint returning 500
+
+**Medium**:
+- **Evidence Required**: Observability gap (missing logs/metrics), tech debt, inconsistency
+- Examples: Ignored errors in logs, pattern inconsistency across codebase, missing validation
+
+**Low**:
+- Code style, minor optimization, cosmetic issues
+- Examples: Variable naming, comment formatting
+
+**IMPORTANT**: Never claim "resource leak" or "goroutine accumulation" without pprof evidence or reproduction test.
 
 ### Priority Levels (Features)
 
@@ -62,6 +76,26 @@ Given a general issue description, feature request, or area of concern, you will
 4. **Write Problem Definition** - Create a detailed problem.md file
 
 ## Phase 1: Research & Investigation
+
+### Historical Context Check (REQUIRED)
+
+Before writing problem.md, verify the issue hasn't already been addressed:
+
+1. **Search git history**:
+   ```bash
+   git log --all --grep="<keywords>" --oneline --no-merges
+   git log --all -S"<code-pattern>" --oneline
+   ```
+
+2. **Check recent commits**: Look for related fixes in the past 6 months
+3. **Document findings**: If partial fixes exist, reference them in problem.md
+
+**Example**:
+```markdown
+## Historical Context
+- Partial fix: commit abc123 fixed 3/4 locations
+- Remaining: Only `file.go:45` still needs fix
+```
 
 ### Investigation Steps
 
@@ -189,6 +223,23 @@ Verify problem definition is complete:
 **Next Step**: Problem Validator will validate and propose solutions
 ```
 
+## Documentation Efficiency Standards
+
+**Progressive Elaboration by Complexity**:
+- **Simple (<10 LOC, pattern-matching)**: Minimal docs (~100-150 lines for problem.md)
+- **Medium (10-50 LOC, some design)**: Standard docs (~200-300 lines for problem.md)
+- **Complex (>50 LOC, multiple approaches)**: Full docs (~400-500 lines for problem.md)
+
+**Target for Total Workflow Documentation** (all agents combined):
+- Simple fixes: ~500 lines total
+- Medium complexity: ~1000 lines total
+- Complex features: ~2000 lines total
+
+**Eliminate Duplication**:
+- Your problem.md will be read by all downstream agents
+- Avoid redundant context - be concise and precise
+- Each agent adds NEW information only
+
 ## Guidelines
 
 ### Do's:
@@ -208,10 +259,12 @@ Verify problem definition is complete:
 
 ### Don'ts:
 - Create problem definitions without researching codebase
+- Skip git history checks (may report already-fixed issues)
+- Claim "resource leak" or "goroutine accumulation" without pprof evidence
+- Exaggerate severity/priority (use evidence-based rubric)
 - Skip web research for features (third-party solutions MUST be researched)
 - Propose custom implementation without checking if libraries exist
 - Be vague or use generic descriptions
-- Exaggerate severity/priority
 - Skip code analysis section
 - Duplicate existing issues
 - Provide recommendations without understanding the code
