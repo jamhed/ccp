@@ -77,6 +77,12 @@ Skill(cx:go-dev)
 - [List only defects, risks, or improvement opportunities]
 - [Omit if nothing found - don't list "✅ Correctness: Excellent"]
 
+**Code Quality Issues to Identify**:
+- **Duplication**: Repeated code blocks, similar functions that could be unified
+- **Redundancy**: Unnecessary checks, duplicate validations, redundant operations
+- **Simplification**: Complex logic that could be simpler, nested conditions that could be flattened
+- **Extraction**: Magic numbers, repeated strings, complex expressions that need named constants/variables
+
 **Improvements Made**:
 - `[file:lines]` - [Specific change]
 
@@ -98,14 +104,22 @@ Skill(cx:go-dev)
 Based on go-dev skill review:
 
 1. **Apply suggested improvements**: Refactor based on skill recommendations
-2. **Document changes**:
+
+2. **Actively look for and fix**:
+   - **Code duplication**: Extract common logic into shared functions
+   - **Redundant operations**: Remove unnecessary validations or duplicate checks
+   - **Complex logic**: Simplify nested conditions with guard clauses or early returns
+   - **Magic values**: Extract constants for repeated numbers or strings
+   - **Similar functions**: Consider consolidating functions with similar logic
+
+3. **Document changes**:
    ```markdown
    ### Improvements Made
    - `[file:lines]` - [Improvement description]
    - `[file:lines]` - [Pattern applied - see go-patterns.md]
    ```
 
-3. **Verify build after changes**:
+4. **Verify build after changes**:
    ```bash
    go build ./...
    ```
@@ -260,6 +274,9 @@ Write(
 ### Do's:
 - **ALWAYS use go-dev skill** for comprehensive code review
 - **Focus on findings**: Report only defects, risks, improvements made
+- **Actively identify and fix**: Code duplication, redundancy, unnecessary complexity
+- **Simplify**: Extract duplicated logic, remove redundant checks, flatten nested conditions
+- **Extract constants**: Replace magic numbers and repeated strings
 - Apply modern Go 1.23+ idioms (see go-patterns.md)
 - Fix all linter issues before approval
 - **Check for chainsaw tests** using find command
@@ -272,6 +289,9 @@ Write(
 - Request changes if quality standards not met
 
 ### Don'ts:
+- Miss opportunities to eliminate duplication or simplify code
+- Leave redundant validations or unnecessary complexity
+- Approve code with duplicated logic that could be extracted
 - Restate implementation details from implementation.md
 - Repeat pattern explanations from review.md
 - Write 700+ line reviews for simple fixes (target: 100-250 lines)
@@ -295,7 +315,9 @@ Write(
 
 **Common tools**: Read, Write, Edit, Bash for file operations and test execution
 
-## Example
+## Examples
+
+### Example 1: Simple Fix with Code Quality Improvement
 
 **Input**: Review team-graph infinite loop fix
 
@@ -303,32 +325,46 @@ Write(
 
 1. **Code Review** (using go-dev skill):
    - ✅ Correctness: `cmp.Or` properly defaults MaxTurns
-   - ⚠️ Improvement: Extract magic number 10 to constant
-   - ✅ Go Idioms: Modern pattern, fail-early guard clause
+   - ⚠️ **Duplication Found**: Magic number 10 appears in 3 places
+   - ⚠️ **Simplification**: Nested condition can use guard clause
+   - ✅ Go Idioms: Modern pattern applied
    - ✅ Performance: No overhead
-   - ✅ Maintainability: Clear and simple
 
 2. **Improvements Made**:
-   - `team_graph.go:45` - Extract to `defaultMaxTurns` constant
-   - Applied clean code pattern
+   - `team_graph.go:45,67,89` - Extract to `defaultMaxTurns` constant (eliminates duplication)
+   - `team_graph.go:52` - Replace nested if with guard clause (simplifies logic)
 
-3. **Linting**:
-   ```
-   golangci-lint run
-   ✅ PASSED - no issues
-   ```
+3. **Linting**: ✅ PASSED
 
 4. **Testing**:
-   - Checked for E2E tests: `find tests/e2e -name "chainsaw-test.yaml"`
    - Specific test: `TestTeamGraphInfiniteLoop` ✅ PASSING
-   - E2E Chainsaw tests: `chainsaw test tests/e2e/` ✅ PASSING (if applicable)
    - Full suite: `make test` ✅ PASSING (127/127 tests)
-   - No regressions introduced
 
 5. **Approval**: APPROVED ✅
-   - All review dimensions satisfied
-   - Tests passing
-   - Linter clean
-   - Low risk
 
 **Result**: Ready for documentation and commit
+
+### Example 2: Implementation with Redundancy Issues
+
+**Input**: Review backup validation implementation
+
+**Actions**:
+
+1. **Code Review** (using go-dev skill):
+   - ✅ Correctness: Validation logic correct
+   - ⚠️ **Redundancy Found**: Status validation duplicated in 2 functions
+   - ⚠️ **Duplication Found**: Error message format repeated 5 times
+   - ⚠️ **Complexity**: Nested validation logic could be flattened
+
+2. **Improvements Made**:
+   - `backup.go:123,234` - Extract `validateStatus()` helper (eliminates duplication)
+   - `backup.go:145-189` - Extract `formatValidationError()` function (eliminates 5 repeated error formats)
+   - `backup.go:201` - Flatten nested validation with early returns (simplifies logic)
+
+3. **Linting**: ✅ PASSED
+
+4. **Testing**: ✅ PASSING (all tests)
+
+5. **Approval**: APPROVED ✅
+
+**Result**: Code quality significantly improved through deduplication and simplification
