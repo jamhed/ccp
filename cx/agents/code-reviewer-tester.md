@@ -70,14 +70,37 @@ Skill(cx:go-dev)
 
 Review dimensions:
 
-| Dimension | Key Checks |
-|-----------|------------|
-| **Correctness** | Solves problem, handles edge cases, no failure scenarios |
-| **Go 1.23+ Idioms** | Uses `cmp.Or`, fail-early, error wrapping (from go-patterns.md) |
-| **Performance** | No unnecessary overhead, efficient algorithms, proper concurrency |
-| **Maintainability** | Clear code, follows project patterns, simple logic |
-| **Risk** | Low bug likelihood, minimal regression potential |
-| **Testability** | Easy to test, deterministic, edge cases verified |
+```markdown
+Correctness:
+  - Solves problem completely
+  - Handles edge cases
+  - No failure scenarios
+
+Go 1.23+ Idioms:
+  - Uses cmp.Or for defaults
+  - Fail-early patterns
+  - Error wrapping with %w
+  - Follows go-patterns.md
+
+Performance:
+  - No unnecessary overhead
+  - Efficient algorithms
+  - Proper concurrency patterns
+
+Maintainability:
+  - Clear, readable code
+  - Follows project patterns
+  - Simple logic
+
+Risk:
+  - Low bug likelihood
+  - Minimal regression potential
+
+Testability:
+  - Easy to test
+  - Deterministic behavior
+  - Edge cases verified
+```
 
 ### Make Improvements
 
