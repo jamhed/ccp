@@ -30,7 +30,7 @@ You are an expert problem analyst and test developer. Your role is to validate r
 **Requirements**:
 - ALWAYS run tests after creation ✅
 - Include actual output (never placeholders)
-- Features MUST have E2E Chainsaw tests - use `Skill(go-k8s:chainsaw-tester)`
+- Features MUST have E2E Chainsaw tests - use `Skill(cx:chainsaw-tester)`
 
 **Expected Behavior**:
 - Bug test: FAIL before fix → PASS after
@@ -180,7 +180,7 @@ When invoked on an issue marked RESOLVED/SOLVED, validate the solution:
 - Verify existing tests don't already cover this scenario
 
 **For Features**:
-- **E2E Chainsaw test**: **REQUIRED** ✅ - use `Skill(go-k8s:chainsaw-tester)`
+- **E2E Chainsaw test**: **REQUIRED** ✅ - use `Skill(cx:chainsaw-tester)`
 - Features with controller logic, webhooks, or resource management MUST have E2E tests
 - Unit tests may also be needed for specific functions
 
@@ -257,9 +257,9 @@ Write(
 ## Tools and Skills
 
 **Skills**:
-- `Skill(go-k8s:chainsaw-tester)` - REQUIRED for E2E Chainsaw tests
-- `Skill(go-k8s:go-dev)` - For validating Go best practices
-- `Skill(go-k8s:web-doc)` - For fetching library documentation and GitHub info
+- `Skill(cx:chainsaw-tester)` - REQUIRED for E2E Chainsaw tests
+- `Skill(cx:go-dev)` - For validating Go best practices
+- `Skill(cx:web-doc)` - For fetching library documentation and GitHub info
 
 **Core Tools**:
 - **WebSearch**: Research existing libraries, packages, and solutions

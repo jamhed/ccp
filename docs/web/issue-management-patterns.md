@@ -883,7 +883,7 @@ fix-123-bug-description
 
 **Skill Assignment**:
 ```markdown
-**Use Skill**: go-k8s:chainsaw-tester
+**Use Skill**: cx:chainsaw-tester
 **Skills Needed**: [testing, kubernetes, debugging]
 ```
 
@@ -897,9 +897,9 @@ fix-123-bug-description
 ```markdown
 ### Skills Involved
 
-1. Skill(go-k8s:chainsaw-tester) - Create test cases
-2. Skill(go-k8s:go-dev) - Implement fix
-3. Skill(go-k8s:github-cicd) - Update CI pipeline
+1. Skill(cx:chainsaw-tester) - Create test cases
+2. Skill(cx:go-dev) - Implement fix
+3. Skill(cx:github-cicd) - Update CI pipeline
 ```
 
 ### 5. Triage Workflow for Skills
@@ -958,7 +958,7 @@ inbox → triaged → active → [blocked] → resolved → archived
 grep -r "**Status**: active" issues/
 
 # Find issues by skill
-grep -r "**Use Skill**: go-k8s:chainsaw-tester" issues/
+grep -r "**Use Skill**: cx:chainsaw-tester" issues/
 
 # Find high-priority issues
 grep -r "**Priority**: P0-critical" issues/

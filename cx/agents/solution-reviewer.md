@@ -175,7 +175,7 @@ Write(
 ## Tools and Skills
 
 **Skills**:
-- `Skill(go-k8s:go-dev)` - For Go best practices validation
+- `Skill(cx:go-dev)` - For Go best practices validation
 
 **Common tools**: Grep, Glob, Read, Write for file operations
 

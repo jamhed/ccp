@@ -1,6 +1,6 @@
 {
-"name": "go-k8s",
-"description": "Golang for Kubernetes development",
+"name": "cx",
+"description": "Comprehensive development workflow toolkit for Go and Kubernetes",
 "version": "0.1.0",
 "author": { "name": "Roman Galeev" }
 }
