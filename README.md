@@ -132,15 +132,15 @@ Each file in the workflow provides comprehensive documentation for that phase:
 - Validation evidence (code references, test results)
 - Requirements clarity assessment
 - Additional considerations
+- Multiple proposed approaches (A, B, C)
+- Pros and cons for each approach
+- Solution comparison table
 
 #### review.md
 
-- Multiple proposed approaches (A, B, C)
-- Pros and cons for each approach
 - Complexity assessment per approach
 - Risk analysis per approach
 - Effort estimation
-- Solution comparison table
 - Recommendation with justification
 - Key decision factors
 
