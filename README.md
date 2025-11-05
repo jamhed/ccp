@@ -11,6 +11,7 @@ Comprehensive toolkit for Go 1.23+ and Kubernetes operator development with spec
 - **go-dev**: Expert Go development assistant covering modern Go 1.23+ idioms, fail-early patterns, error handling, and Kubernetes operator patterns
 - **chainsaw-tester**: E2E testing expert for Kubernetes operators using Chainsaw, JP assertions, webhook validation, and mock services
 - **github-cicd**: CI/CD pipeline specialist for GitHub Actions workflows, Docker builds, semantic versioning, and Kubernetes deployments
+- **issue-manager**: Manage project issues in the issues folder. List open issues, archive solved issues, and refine problem definitions
 - **web-doc**: Fetches and caches technical documentation locally in `docs/web/` for offline reference
 
 ### Agents
@@ -75,6 +76,12 @@ Executes all agents in sequence for issues/[issue-name]/problem.md:
 Each agent creates an audit trail file documenting its phase, providing complete traceability from problem to solution.
 
 **Example**: `/cx:solve bug-telemetry-nested-attribute-limit`
+
+### Scripts
+
+Helper scripts for batch operations:
+
+- **scripts/solve_unsolved_issues.sh**: Batch solver that processes all unsolved issues (issues with problem.md but no solution.md) sequentially using the `/cx:solve` workflow
 
 ## Issue Management System
 
