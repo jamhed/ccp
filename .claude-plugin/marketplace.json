@@ -5,7 +5,12 @@
     {
       "name": "cx",
       "source": "./cx",
-      "description": "Comprehensive development workflow toolkit for Go and Kubernetes"
+      "description": "Development workflow toolkit for Go and Kubernetes"
+    },
+    {
+      "name": "cxp",
+      "source": "./cxp",
+      "description": "Development workflow toolkit for Python"
     }
   ]
 }
