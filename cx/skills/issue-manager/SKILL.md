@@ -68,6 +68,8 @@ cx/skills/issue-manager/scripts/archive agent-crd-embedding-in-tool
 **How it works:**
 - Validates the issue exists in `issues/`
 - Creates the `archive/` directory if it doesn't exist
+- Checks if an issue with the same name already exists in archive
+- If duplicate exists, appends timestamp (YYYYMMDD-HHMMSS) to avoid conflicts
 - Moves the entire issue folder to `archive/`
 - Preserves all issue files (problem.md, solution.md, audit trail, etc.)
 
