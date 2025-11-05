@@ -2,7 +2,7 @@
 
 Custom Claude Code plugins for Go and Kubernetes development workflows.
 
-## go-k8s Plugin
+## cx Plugin
 
 Comprehensive toolkit for Go 1.23+ and Kubernetes operator development with specialized skills, agents, and commands.
 
@@ -25,7 +25,56 @@ Multi-phase problem-solving workflow agents:
 
 ### Commands
 
-- **/solve**: Orchestrates the complete problem-solving workflow from validation through implementation to documentation
+All commands are scoped to the plugin and should be invoked as `/cx:command`.
+
+#### /cx:problem [description]
+
+Research and define a new problem using the Problem Researcher agent.
+
+**Usage**: `/cx:problem [brief description of the issue]`
+
+**What it does**:
+- Analyzes the codebase to identify the root cause
+- Gathers evidence with file paths and line numbers
+- Creates a structured problem.md file in issues/[issue-name]/
+- Documents context, follow-up actions, and acceptance criteria
+
+**Example**: `/cx:problem telemetry spans exceeding attribute limits`
+
+#### /cx:refine [issue-name]
+
+Refine an existing problem definition using the Problem Researcher agent.
+
+**Usage**: `/cx:refine [issue-name]`
+
+**What it does**:
+- Re-analyzes the issue in issues/[issue-name]/problem.md
+- Updates evidence and clarifies requirements
+- Improves acceptance criteria
+- Ensures problem is well-defined before solving
+
+**Example**: `/cx:refine bug-telemetry-nested-attribute-limit`
+
+#### /cx:solve [issue-name]
+
+Orchestrates the complete problem-solving workflow from validation through implementation to documentation.
+
+**Usage**: `/cx:solve [issue-name]`
+
+**What it does**:
+Executes all agents in sequence for issues/[issue-name]/problem.md:
+
+1. **Problem Validator** - Validates issue and proposes solutions (creates validation.md)
+   - If "NOT A BUG": creates solution.md and skips to step 5
+   - If confirmed: continues to step 2
+2. **Solution Reviewer** - Evaluates approaches and selects best one (creates review.md)
+3. **Solution Implementer** - Implements the fix (creates implementation.md)
+4. **Code Reviewer & Tester** - Reviews code and runs tests (creates testing.md)
+5. **Documentation Updater** - Creates solution.md summary and commits changes
+
+Each agent creates an audit trail file documenting its phase, providing complete traceability from problem to solution.
+
+**Example**: `/cx:solve bug-telemetry-nested-attribute-limit`
 
 ## Issue Management System
 
@@ -197,8 +246,8 @@ Created by the Documentation Updater agent with:
 # add marketplace
 /plugin marketplace add jamhed/ccp
 
-# install go-k8s plugin
-/plugin install go-k8s@ccp
+# install cx plugin
+/plugin install cx@ccp
 ```
 
 After that just check your `~/.claude/plugins/marketplace` folder, to update agents pull and restart Claude.

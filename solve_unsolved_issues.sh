@@ -26,7 +26,7 @@ for issue_dir in "${unsolved_issues[@]}"; do
     issue_name=$(basename "$issue_dir")
 
     echo "=== Processing unsolved issue: $issue_name ==="
-    claude --print --dangerously-skip-permissions "/go-k8s:solve $issue_dir, create solution.md and then /commit" --output-format stream-json --verbose
+    claude --print --dangerously-skip-permissions "/cx:solve $issue_dir, create solution.md and then /commit" --output-format stream-json --verbose
     echo ""
 done
 
