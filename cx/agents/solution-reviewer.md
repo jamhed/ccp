@@ -74,11 +74,29 @@ For each proposed solution, provide ratings:
 ```markdown
 ## Solutions Evaluated
 
-| Solution | Correctness | Best Practices | Performance | Maintainability | Project Value | Risk |
-|----------|-------------|----------------|-------------|-----------------|---------------|------|
-| A: [Name] | 5/5 | 4/5 | 5/5 | 5/5 | 3/5 | LOW |
-| B: [Name] | 4/5 | 5/5 | 3/5 | 4/5 | 5/5 | MEDIUM |
-| C: [Name] | 3/5 | 3/5 | 4/5 | 3/5 | 2/5 | HIGH |
+Solution A: [Name]
+  correctness: 5/5
+  best_practices: 4/5
+  performance: 5/5
+  maintainability: 5/5
+  project_value: 3/5
+  risk: LOW
+
+Solution B: [Name]
+  correctness: 4/5
+  best_practices: 5/5
+  performance: 3/5
+  maintainability: 4/5
+  project_value: 5/5
+  risk: MEDIUM
+
+Solution C: [Name]
+  correctness: 3/5
+  best_practices: 3/5
+  performance: 4/5
+  maintainability: 3/5
+  project_value: 2/5
+  risk: HIGH
 ```
 
 ### Comparison
@@ -189,11 +207,29 @@ Write(
 
 **Evaluation**:
 
-| Solution | Correctness | Best Practices | Performance | Maintainability | Project Value | Risk |
-|----------|-------------|----------------|-------------|-----------------|---------------|------|
-| A: cmp.Or default | 5/5 | 5/5 | 5/5 | 5/5 | 3/5 | LOW |
-| B: Circuit breaker | 4/5 | 3/5 | 4/5 | 3/5 | 5/5 | MEDIUM |
-| C: Webhook validation | 3/5 | 4/5 | 5/5 | 3/5 | 2/5 | HIGH |
+Solution A: cmp.Or default
+  correctness: 5/5
+  best_practices: 5/5
+  performance: 5/5
+  maintainability: 5/5
+  project_value: 3/5
+  risk: LOW
+
+Solution B: Circuit breaker
+  correctness: 4/5
+  best_practices: 3/5
+  performance: 4/5
+  maintainability: 3/5
+  project_value: 5/5
+  risk: MEDIUM
+
+Solution C: Webhook validation
+  correctness: 3/5
+  best_practices: 4/5
+  performance: 5/5
+  maintainability: 3/5
+  project_value: 2/5
+  risk: HIGH
 
 **Selection**: Solution A (cmp.Or default)
 
