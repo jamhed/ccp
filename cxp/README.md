@@ -102,6 +102,12 @@ Each agent in the workflow creates an audit trail file documenting its phase, pr
 
 ## Python Best Practices Covered
 
+### Package Management
+- **UV** for fast, reliable package management (10-100x faster than pip)
+- Lock file support for reproducible builds
+- Virtual environment management
+- Python version management
+
 ### Modern Python (3.11+)
 - Type hints with generics, Protocol, TypeVar
 - Pattern matching with `match`/`case`
@@ -228,6 +234,7 @@ While `cx` focuses on Go and Kubernetes operator development, `cxp` specializes 
 | Feature | cx (Go/K8s) | cxp (Python) |
 |---------|-------------|--------------|
 | **Language** | Go 1.23+ | Python 3.11+ |
+| **Package Manager** | go mod | UV (10-100x faster than pip) |
 | **Type System** | Generics, interfaces | Type hints, Protocol, generics |
 | **Async** | Goroutines, channels | async/await, asyncio |
 | **Web Frameworks** | Kubernetes operators | FastAPI, Django, Flask |

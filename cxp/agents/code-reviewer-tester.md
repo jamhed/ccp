@@ -164,9 +164,11 @@ Document type errors found and fix them.
 
 ### Test Execution
 
+**Use UV to run all tests**:
+
 1. **Run pytest with coverage**:
    ```bash
-   pytest --cov=[package] --cov-report=term-missing -v
+   uv run pytest --cov=[package] --cov-report=term-missing -v
    ```
 
 2. **Check coverage percentage**:
@@ -176,16 +178,16 @@ Document type errors found and fix them.
 3. **Run specific test categories**:
    ```bash
    # Unit tests only
-   pytest tests/unit/
+   uv run pytest tests/unit/
 
    # Integration tests
-   pytest tests/integration/
+   uv run pytest tests/integration/
 
    # Async tests
-   pytest tests/test_async.py -v
+   uv run pytest tests/test_async.py -v
 
    # Slow tests (if marked)
-   pytest -m slow
+   uv run pytest -m slow
    ```
 
 ### Test Quality Review
@@ -455,13 +457,14 @@ Write(
 - **Write**: Create testing.md report
 - **TodoWrite**: Track review phases
 
-**Python Tools** (via Bash):
-- `ruff check` - Fast linter (replaces flake8, isort)
-- `ruff format` - Code formatter (replaces black)
-- `pyright` - Type checker (replaces mypy)
-- `bandit` - Security linter
-- `safety` - Dependency security checker
-- `pytest` - Test runner with coverage
+**Python Tools** (via UV):
+- `uv` - Package manager (10-100x faster than pip)
+- `uv run ruff check` - Fast linter (replaces flake8, isort)
+- `uv run ruff format` - Code formatter (replaces black)
+- `uv run pyright` - Type checker (replaces mypy)
+- `uv run bandit` - Security linter
+- `uv run safety` - Dependency security checker
+- `uv run pytest` - Test runner with coverage
 - `pytest-asyncio` - Async test support
 - `coverage` - Coverage reporting
 

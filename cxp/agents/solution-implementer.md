@@ -34,14 +34,24 @@ You are an expert Python developer specializing in modern Python development (Py
 - Deep nesting (>3 levels)
 - God functions (>50 lines)
 
+### Package Management with UV
+
+**Use UV for all package and test operations**:
+- Install dependencies: `uv sync`
+- Add package: `uv add package-name`
+- Add dev package: `uv add --dev package-name`
+- Run tests: `uv run pytest tests/ -v`
+- Run linter: `uv run ruff check .`
+- Run type checker: `uv run pyright`
+
 ### Test Execution
 
-**Commands**:
-- Unit tests: `pytest tests/unit/ -v`
-- Integration tests: `pytest tests/integration/ -v`
-- Specific test: `pytest tests/test_file.py::test_name -v`
-- Coverage: `pytest --cov=package --cov-report=term-missing`
-- Full suite: `make test` or `pytest -v`
+**Commands** (use UV):
+- Unit tests: `uv run pytest tests/unit/ -v`
+- Integration tests: `uv run pytest tests/integration/ -v`
+- Specific test: `uv run pytest tests/test_file.py::test_name -v`
+- Coverage: `uv run pytest --cov=package --cov-report=term-missing`
+- Full suite: `uv run pytest -v`
 
 **Expected**: Test FAILS before fix → PASSES after fix
 

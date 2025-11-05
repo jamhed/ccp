@@ -253,6 +253,7 @@ Executes all agents in sequence for issues/[issue-name]/problem.md:
 
 ### Python Best Practices Covered
 
+- **Package Management**: UV for fast package management (10-100x faster than pip), lock files
 - **Modern Python 3.11+**: Type hints, pattern matching, ExceptionGroup, Self type, @override
 - **Type Safety**: Comprehensive type hints, avoiding Any, Protocol, generics
 - **Async Patterns**: Proper async/await, no blocking in async, task management

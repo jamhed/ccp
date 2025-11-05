@@ -222,10 +222,31 @@ The assistant adapts based on the codebase:
 - **type-safety-patterns.md**: Type hints, generics, Protocol, TypeVar, avoiding Any, type narrowing
 - **async-patterns.md**: Async/await best practices, task management, cancellation, common pitfalls
 - **fastapi-patterns.md**: FastAPI-specific patterns, dependency injection, request validation, error handling
-- **django-patterns.md**: Django best practices, ORM patterns, views, middleware
-- **testing-patterns.md**: pytest best practices, fixtures, mocks, parametrize, async testing
+- **uv-guide.md**: UV package manager usage, project setup, dependency management, workflows
 
 Load references as needed based on the task at hand.
+
+## Package Management with UV
+
+Use UV for all package management tasks:
+
+```bash
+# Project setup
+uv init my-project
+uv venv
+uv sync
+
+# Add dependencies
+uv add fastapi pydantic
+uv add --dev pytest ruff pyright
+
+# Run commands
+uv run python script.py
+uv run pytest
+uv run ruff check .
+```
+
+See [references/uv-guide.md](references/uv-guide.md) for complete UV documentation.
 
 ## Example Usage
 
