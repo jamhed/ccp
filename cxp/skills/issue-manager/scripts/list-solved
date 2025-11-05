@@ -1,0 +1,18 @@
+#!/bin/bash
+# List all solved issues (not archived yet)
+
+ISSUES_DIR="${ISSUES_DIR:-issues}"
+
+if [ ! -d "$ISSUES_DIR" ]; then
+  echo "No issues directory found at: $ISSUES_DIR"
+  exit 0
+fi
+
+for issue in "$ISSUES_DIR"/*; do
+  [ -d "$issue" ] || continue
+  issue_name=$(basename "$issue")
+
+  if [ -f "$issue/solution.md" ]; then
+    echo "$issue_name"
+  fi
+done

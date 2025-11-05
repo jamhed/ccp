@@ -1,6 +1,16 @@
 # Claude Code Plugin Collection
 
-Custom Claude Code plugins for Go and Kubernetes development workflows.
+Custom Claude Code plugins for modern software development workflows.
+
+## Available Plugins
+
+### cx Plugin - Go & Kubernetes Development
+
+Comprehensive toolkit for Go 1.23+ and Kubernetes operator development with specialized skills, agents, and commands.
+
+### cxp Plugin - Modern Python Development
+
+Comprehensive toolkit for Python 3.11+ development with specialized skills, agents, and commands for building high-quality Python applications.
 
 ## cx Plugin
 
@@ -174,14 +184,96 @@ Each file in the workflow provides comprehensive documentation for that phase:
 - Commit information
 - Next steps (if applicable)
 
+## cxp Plugin
+
+Comprehensive toolkit for modern Python 3.11+ development with specialized skills, agents, and commands for building high-quality Python applications.
+
+### Skills
+
+- **python-dev**: Expert Python development assistant covering modern Python 3.11+ idioms, type safety, async patterns, and idiomatic error handling
+- **pytest-tester**: Testing expert for writing, debugging, and reviewing pytest tests with fixtures, parametrize, mocks, and async testing
+- **fastapi-dev**: FastAPI specialist for API design, dependency injection, async patterns, middleware, and comprehensive testing
+- **issue-manager**: Manage project issues in the issues folder. List open issues, archive solved issues, and refine problem definitions
+- **web-doc**: Fetches and caches technical documentation locally in `docs/web/` for offline reference
+
+### Agents
+
+Multi-phase problem-solving workflow agents for Python projects:
+
+- **Problem Researcher**: Researches Python codebases to identify bugs, performance issues, and feature requirements
+- **Problem Validator**: Validates issues, proposes solution approaches, and develops test cases
+- **Solution Reviewer**: Critically evaluates solutions and selects optimal approach
+- **Solution Implementer**: Implements fixes using modern Python best practices
+- **Code Reviewer & Tester**: Reviews code quality, runs linters, type checkers (mypy/pyright), and tests (pytest)
+- **Documentation Updater**: Creates solution documentation and git commits
+
+### Commands
+
+All commands are scoped to the plugin and should be invoked as `/cxp:command`.
+
+#### /cxp:problem [description]
+
+Research and define a new problem using the Problem Researcher agent for Python projects.
+
+**Usage**: `/cxp:problem [brief description of the issue]`
+
+**What it does**:
+- Analyzes the Python codebase to identify the root cause
+- Searches for existing Python packages/libraries that could help
+- Gathers evidence with file paths and line numbers
+- Creates a structured problem.md file in issues/[issue-name]/
+- Documents context, third-party solutions, and acceptance criteria
+
+**Example**: `/cxp:problem async exception handling in user creation endpoint`
+
+#### /cxp:refine [issue-name]
+
+Refine an existing problem definition using the Problem Researcher agent.
+
+**Usage**: `/cxp:refine [issue-name]`
+
+**Example**: `/cxp:refine bug-async-unhandled-exception`
+
+#### /cxp:solve [issue-name]
+
+Orchestrates the complete problem-solving workflow for Python projects from validation through implementation to documentation.
+
+**Usage**: `/cxp:solve [issue-name]`
+
+**What it does**:
+Executes all agents in sequence for issues/[issue-name]/problem.md:
+
+1. **Problem Validator** - Validates issue and proposes Python-specific solutions (creates validation.md)
+2. **Solution Reviewer** - Evaluates approaches and selects best one (creates review.md)
+3. **Solution Implementer** - Implements the fix using modern Python best practices (creates implementation.md)
+4. **Code Reviewer & Tester** - Reviews code, runs linters (ruff, black, isort), type checkers (mypy/pyright), and tests (pytest) (creates testing.md)
+5. **Documentation Updater** - Creates solution.md summary and commits changes
+
+**Example**: `/cxp:solve bug-async-unhandled-exception`
+
+### Python Best Practices Covered
+
+- **Modern Python 3.11+**: Type hints, pattern matching, ExceptionGroup, Self type, @override
+- **Type Safety**: Comprehensive type hints, avoiding Any, Protocol, generics
+- **Async Patterns**: Proper async/await, no blocking in async, task management
+- **Error Handling**: Specific exceptions, chaining with `from`, clear messages
+- **Testing**: pytest, fixtures, parametrize, mocks, pytest-asyncio, >80% coverage
+- **FastAPI**: Pydantic models, dependency injection, async routes, HTTPException
+- **Code Quality**: ruff, black, isort, mypy, pyright, bandit, safety
+
+See [cxp/README.md](cxp/README.md) for complete documentation.
+
 ## Install and update
 
 ```sh
 # add marketplace
 /plugin marketplace add jamhed/ccp
 
-# install cx plugin
+# install cx plugin (Go/Kubernetes)
 /plugin install cx@ccp
+
+# install cxp plugin (Python)
+/plugin install cxp@ccp
 ```
 
 After that just check your `~/.claude/plugins/marketplace` folder, to update agents pull and restart Claude.

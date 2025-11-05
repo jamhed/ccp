@@ -1,0 +1,30 @@
+#!/bin/bash
+# Archive a solved issue to archive folder
+
+if [ $# -ne 1 ]; then
+  echo "Usage: archive <issue-name>"
+  exit 1
+fi
+
+ISSUE_NAME="$1"
+ISSUES_DIR="${ISSUES_DIR:-issues}"
+ARCHIVE_DIR="${ARCHIVE_DIR:-archive}"
+
+if [ ! -d "$ISSUES_DIR/$ISSUE_NAME" ]; then
+  echo "Issue not found: $ISSUE_NAME"
+  exit 1
+fi
+
+mkdir -p "$ARCHIVE_DIR"
+
+# Check if issue already exists in archive
+TARGET_NAME="$ISSUE_NAME"
+if [ -d "$ARCHIVE_DIR/$ISSUE_NAME" ]; then
+  TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+  TARGET_NAME="${ISSUE_NAME}-${TIMESTAMP}"
+  echo "Warning: Issue '$ISSUE_NAME' already exists in archive"
+  echo "Archiving as: $TARGET_NAME"
+fi
+
+mv "$ISSUES_DIR/$ISSUE_NAME" "$ARCHIVE_DIR/$TARGET_NAME"
+echo "Archived: $ISSUE_NAME -> $ARCHIVE_DIR/$TARGET_NAME"
