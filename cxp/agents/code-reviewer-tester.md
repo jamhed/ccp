@@ -118,18 +118,9 @@ After the Solution Implementer completes their work, you will:
 
 ### Linting and Formatting
 
-Run these tools in order:
+Run ruff for both linting and formatting:
 
-1. **Black** (code formatter):
-   ```bash
-   black --check [files]
-   ```
-   If issues found, run:
-   ```bash
-   black [files]
-   ```
-
-2. **Ruff** (fast linter):
+1. **Ruff check** (linter):
    ```bash
    ruff check [files]
    ```
@@ -138,28 +129,22 @@ Run these tools in order:
    ruff check --fix [files]
    ```
 
-3. **isort** (import sorting):
+2. **Ruff format** (formatter, replaces black):
    ```bash
-   isort --check-only [files]
+   ruff format [files]
    ```
-   If issues found, run:
+   Check only:
    ```bash
-   isort [files]
+   ruff format --check [files]
    ```
 
 ### Type Checking
 
-Run both mypy and pyright for comprehensive type checking:
+Run pyright for type checking:
 
-1. **mypy**:
-   ```bash
-   mypy [files] --strict
-   ```
-
-2. **pyright** (optional, if configured):
-   ```bash
-   pyright [files]
-   ```
+```bash
+pyright [files]
+```
 
 Document type errors found and fix them.
 
@@ -218,13 +203,14 @@ Document type errors found and fix them.
 ### Priority of Fixes
 
 **Must Fix**:
-- Type errors (blocking mypy/pyright)
+- Type errors (blocking pyright)
 - Failing tests
 - Security vulnerabilities (bandit critical)
 - Critical code review issues
 
 **Should Fix**:
-- Linting errors (ruff, black)
+- Linting errors (ruff check)
+- Formatting issues (ruff format)
 - High severity code review issues
 - Missing tests for critical paths
 - Performance issues with evidence
@@ -284,35 +270,23 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/testing.md`:
 
 ## Automated Checks
 
-### Linting Results
+### Linting and Formatting Results
 
-**Black**:
-```
-[Output from black --check]
-```
-Status: ✅ Passed / ❌ Failed (fixed) / ⚠️ Skipped
-
-**Ruff**:
+**Ruff check** (linter):
 ```
 [Output from ruff check]
 ```
 Status: ✅ Passed / ❌ Failed (fixed) / ⚠️ Skipped
 
-**isort**:
+**Ruff format** (formatter):
 ```
-[Output from isort]
+[Output from ruff format --check]
 ```
 Status: ✅ Passed / ❌ Failed (fixed) / ⚠️ Skipped
 
 ### Type Checking Results
 
-**mypy**:
-```
-[Output from mypy --strict]
-```
-Status: ✅ Passed / ❌ Failed (fixed) / ⚠️ Skipped
-
-**pyright** (if applicable):
+**pyright**:
 ```
 [Output from pyright]
 ```
@@ -482,11 +456,9 @@ Write(
 - **TodoWrite**: Track review phases
 
 **Python Tools** (via Bash):
-- `black` - Code formatter
-- `ruff` - Fast linter
-- `isort` - Import sorter
-- `mypy` - Type checker
-- `pyright` - Alternative type checker
+- `ruff check` - Fast linter (replaces flake8, isort)
+- `ruff format` - Code formatter (replaces black)
+- `pyright` - Type checker (replaces mypy)
 - `bandit` - Security linter
 - `safety` - Dependency security checker
 - `pytest` - Test runner with coverage
@@ -537,15 +509,14 @@ None found ✅
 
 ### Linting Results
 
-**Black**: ✅ All files formatted correctly
-**Ruff**: ✅ No issues found
-**isort**: ✅ Imports correctly sorted
+**Ruff check**: ✅ No issues found
+**Ruff format**: ✅ All files formatted correctly
 
 ### Type Checking Results
 
-**mypy**: ✅ Success - no issues in 4 source files
+**pyright**: ✅ Success - no issues in 4 source files
 ```
-Success: no issues found in 4 source files
+0 errors, 0 warnings, 0 informations
 ```
 
 ### Security Scanning

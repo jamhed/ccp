@@ -148,8 +148,8 @@ Each agent in the workflow creates an audit trail file documenting its phase, pr
 - Authentication/authorization
 
 ### Code Quality
-- Linting with ruff, black, isort
-- Type checking with mypy/pyright
+- Linting and formatting with ruff
+- Type checking with pyright
 - Security scanning with bandit, safety
 - PEP 8 compliance
 - Clear naming and focused functions
@@ -190,7 +190,7 @@ After installation, check your `~/.claude/plugins/marketplace` folder. To update
 - Proposes multiple solutions (A: HTTPException, B: custom middleware, C: Pydantic validator)
 - Selects best approach (A: HTTPException for simplicity)
 - Implements the fix with type hints
-- Runs tests: pytest, mypy, ruff, black
+- Runs tests: pytest, pyright, ruff
 - Creates git commit with documentation
 
 **Files created in archive/bug-async-validation-error/**:
@@ -232,7 +232,8 @@ While `cx` focuses on Go and Kubernetes operator development, `cxp` specializes 
 | **Async** | Goroutines, channels | async/await, asyncio |
 | **Web Frameworks** | Kubernetes operators | FastAPI, Django, Flask |
 | **Testing** | go test, Chainsaw E2E | pytest, pytest-asyncio |
-| **Linting** | golangci-lint | ruff, black, isort, mypy |
+| **Linting** | golangci-lint | ruff (check + format) |
+| **Type Checking** | go vet | pyright |
 | **Error Handling** | Error wrapping with %w | Exception chaining with `from` |
 | **Data Validation** | Custom validation | Pydantic models |
 

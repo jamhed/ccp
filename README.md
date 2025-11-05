@@ -204,7 +204,7 @@ Multi-phase problem-solving workflow agents for Python projects:
 - **Problem Validator**: Validates issues, proposes solution approaches, and develops test cases
 - **Solution Reviewer**: Critically evaluates solutions and selects optimal approach
 - **Solution Implementer**: Implements fixes using modern Python best practices
-- **Code Reviewer & Tester**: Reviews code quality, runs linters, type checkers (mypy/pyright), and tests (pytest)
+- **Code Reviewer & Tester**: Reviews code quality, runs linters, type checkers (pyright), and tests (pytest)
 - **Documentation Updater**: Creates solution documentation and git commits
 
 ### Commands
@@ -246,7 +246,7 @@ Executes all agents in sequence for issues/[issue-name]/problem.md:
 1. **Problem Validator** - Validates issue and proposes Python-specific solutions (creates validation.md)
 2. **Solution Reviewer** - Evaluates approaches and selects best one (creates review.md)
 3. **Solution Implementer** - Implements the fix using modern Python best practices (creates implementation.md)
-4. **Code Reviewer & Tester** - Reviews code, runs linters (ruff, black, isort), type checkers (mypy/pyright), and tests (pytest) (creates testing.md)
+4. **Code Reviewer & Tester** - Reviews code, runs linters (ruff check + format), type checkers (pyright), and tests (pytest) (creates testing.md)
 5. **Documentation Updater** - Creates solution.md summary and commits changes
 
 **Example**: `/cxp:solve bug-async-unhandled-exception`
@@ -259,7 +259,7 @@ Executes all agents in sequence for issues/[issue-name]/problem.md:
 - **Error Handling**: Specific exceptions, chaining with `from`, clear messages
 - **Testing**: pytest, fixtures, parametrize, mocks, pytest-asyncio, >80% coverage
 - **FastAPI**: Pydantic models, dependency injection, async routes, HTTPException
-- **Code Quality**: ruff, black, isort, mypy, pyright, bandit, safety
+- **Code Quality**: ruff (check + format), pyright, bandit, safety
 
 See [cxp/README.md](cxp/README.md) for complete documentation.
 

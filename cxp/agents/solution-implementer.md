@@ -196,13 +196,9 @@ python -m py_compile file.py
 
 ## Phase 4: Type Checking
 
-Run type checkers to ensure type safety:
+Run pyright to ensure type safety:
 
 ```bash
-# mypy
-mypy package/
-
-# pyright (if configured)
 pyright package/
 ```
 
@@ -211,7 +207,7 @@ pyright package/
 **Document**:
 ```markdown
 ## Type Checking
-**Tool**: mypy
+**Tool**: pyright
 **Result**: SUCCESS ✅ / FAILED ❌
 **Output**: [if any issues]
 ```
@@ -277,9 +273,9 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/implementation.md`:
 **Type Hints Added**:
 - [List of functions/classes with new type hints]
 
-**mypy Results**:
+**pyright Results**:
 ```
-[mypy output]
+[pyright output]
 ```
 Status: ✅ Success
 
@@ -324,21 +320,16 @@ PASSED ✅
 - [file.py]: Y% (target: ≥80%)
 - Overall: Z%
 
-## Build/Linting
+## Linting and Formatting
 
-**black**:
-```
-All done! ✅
-```
-
-**ruff**:
+**ruff check**:
 ```
 All checks passed! ✅
 ```
 
-**isort**:
+**ruff format**:
 ```
-Imports are correctly sorted ✅
+All files formatted correctly! ✅
 ```
 
 ## Edge Cases Handled
