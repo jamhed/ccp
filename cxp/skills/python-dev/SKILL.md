@@ -175,15 +175,6 @@ mypy . --strict
 pyright .
 ```
 
-### Security
-```bash
-# bandit - security linter
-bandit -r .
-
-# safety - dependency security
-safety check
-```
-
 ### Testing
 ```bash
 # pytest - test runner

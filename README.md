@@ -260,7 +260,7 @@ Executes all agents in sequence for issues/[issue-name]/problem.md:
 - **Error Handling**: Specific exceptions, chaining with `from`, clear messages
 - **Testing**: pytest, fixtures, parametrize, mocks, pytest-asyncio, >80% coverage
 - **FastAPI**: Pydantic models, dependency injection, async routes, HTTPException
-- **Code Quality**: ruff (check + format), pyright, bandit, safety
+- **Code Quality**: ruff (check + format), pyright
 
 See [cxp/README.md](cxp/README.md) for complete documentation.
 

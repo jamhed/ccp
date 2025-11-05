@@ -79,7 +79,7 @@ After the Solution Implementer completes their work, you will:
 - [ ] No mixing sync/async without `asyncio.to_thread`
 - [ ] Context managers use `async with` when needed
 
-**Security**:
+**Security** (manual review):
 - [ ] No SQL injection vulnerabilities (use parameterized queries)
 - [ ] No command injection (avoid `shell=True`)
 - [ ] No path traversal (validate file paths)
@@ -107,8 +107,8 @@ After the Solution Implementer completes their work, you will:
 1. **Read implementation files**
 2. **Check against best practices** using checklist above
 3. **Identify issues** by severity:
-   - **Critical**: Security vulnerabilities, data corruption, crashes
-   - **High**: Type errors, incorrect logic, missing error handling
+   - **Critical**: Data corruption, crashes, type errors
+   - **High**: Incorrect logic, missing error handling, security issues
    - **Medium**: Code style, performance issues, missing tests
    - **Low**: Documentation, naming, minor refactoring
 
@@ -147,18 +147,6 @@ pyright [files]
 ```
 
 Document type errors found and fix them.
-
-### Security Scanning
-
-1. **bandit** (security linter):
-   ```bash
-   bandit -r [directory]
-   ```
-
-2. **safety** (dependency security):
-   ```bash
-   safety check
-   ```
 
 ## Phase 4: Run Tests
 
@@ -207,8 +195,8 @@ Document type errors found and fix them.
 **Must Fix**:
 - Type errors (blocking pyright)
 - Failing tests
-- Security vulnerabilities (bandit critical)
-- Critical code review issues
+- Critical code review issues (data corruption, crashes)
+- Security issues found in manual review
 
 **Should Fix**:
 - Linting errors (ruff check)
@@ -293,20 +281,6 @@ Status: ✅ Passed / ❌ Failed (fixed) / ⚠️ Skipped
 [Output from pyright]
 ```
 Status: ✅ Passed / ❌ Failed (fixed) / ⚠️ Skipped
-
-### Security Scanning
-
-**bandit**:
-```
-[Output from bandit]
-```
-Status: ✅ Passed / ⚠️ Warnings / ❌ Critical Issues
-
-**safety**:
-```
-[Output from safety check]
-```
-Status: ✅ Passed / ⚠️ Warnings / ❌ Vulnerabilities Found
 
 ## Test Results
 
@@ -462,8 +436,6 @@ Write(
 - `uv run ruff check` - Fast linter (replaces flake8, isort)
 - `uv run ruff format` - Code formatter (replaces black)
 - `uv run pyright` - Type checker (replaces mypy)
-- `uv run bandit` - Security linter
-- `uv run safety` - Dependency security checker
 - `uv run pytest` - Test runner with coverage
 - `pytest-asyncio` - Async test support
 - `coverage` - Coverage reporting
@@ -521,11 +493,6 @@ None found ✅
 ```
 0 errors, 0 warnings, 0 informations
 ```
-
-### Security Scanning
-
-**bandit**: ✅ No issues identified
-**safety**: ✅ All dependencies secure
 
 ## Test Results
 

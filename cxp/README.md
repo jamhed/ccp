@@ -156,9 +156,9 @@ Each agent in the workflow creates an audit trail file documenting its phase, pr
 ### Code Quality
 - Linting and formatting with ruff
 - Type checking with pyright
-- Security scanning with bandit, safety
 - PEP 8 compliance
 - Clear naming and focused functions
+- Manual security review practices
 
 ## Installation
 

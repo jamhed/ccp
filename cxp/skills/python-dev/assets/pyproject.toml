@@ -63,7 +63,6 @@ select = [
     "N",   # pep8-naming
     "ANN", # flake8-annotations
     "ASYNC", # flake8-async
-    "S",   # flake8-bandit
     "BLE", # flake8-blind-except
     "A",   # flake8-builtins
     "COM", # flake8-commas
