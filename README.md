@@ -104,8 +104,8 @@ archive/[issue-name]/
 ├── implementation.md   # Solution Implementer report (audit trail)
 ├── testing.md          # Code review and test results (audit trail)
 ├── solution.md         # Final documentation (summary)
-├── visited             # Marker file (empty)
-└── .codex-reviewed     # Review marker (empty)
+├── .opencode           # Marker file (empty)
+└── .codex              # Review marker (empty)
 ```
 
 Each agent in the workflow creates an audit trail file documenting its phase, providing complete traceability from problem to solution.
@@ -115,10 +115,7 @@ Each agent in the workflow creates an audit trail file documenting its phase, pr
 Each file in the workflow provides comprehensive documentation for that phase:
 
 #### problem.md
-**Created By**: Manual/Problem Researcher Agent
-**Purpose**: Issue definition with evidence and acceptance criteria
 
-**Contents**:
 - Title and summary
 - Context and background
 - Evidence with file paths and line numbers
@@ -126,10 +123,7 @@ Each file in the workflow provides comprehensive documentation for that phase:
 - Acceptance criteria for completion
 
 #### validation.md
-**Created By**: Problem Validator Agent
-**Purpose**: Confirms the problem exists, assesses feasibility, validates requirements
 
-**Contents**:
 - Feature validation status (confirmed/rejected)
 - Issue type classification (bug/feature/refactor)
 - Feasibility assessment (high/medium/low)
@@ -140,10 +134,7 @@ Each file in the workflow provides comprehensive documentation for that phase:
 - Additional considerations
 
 #### review.md
-**Created By**: Solution Reviewer Agent
-**Purpose**: Evaluates 2-3 solution approaches, selects best one, explains tradeoffs
 
-**Contents**:
 - Multiple proposed approaches (A, B, C)
 - Pros and cons for each approach
 - Complexity assessment per approach
@@ -154,22 +145,15 @@ Each file in the workflow provides comprehensive documentation for that phase:
 - Key decision factors
 
 #### implementation.md
-**Created By**: Solution Implementer Agent
-**Purpose**: Documents code changes, patterns used, rationale for each change
 
-**Contents**:
 - Files modified/created with change descriptions
 - Code changes with before/after snippets
-- Modern Go patterns applied (if applicable)
 - Design patterns and rationale
 - Edge cases handled
 - Implementation decisions explained
 
 #### testing.md
-**Created By**: Code Reviewer & Tester Agent
-**Purpose**: Test results, linting, coverage analysis, quality metrics
 
-**Contents**:
 - Test case creation and validation
 - Unit test results
 - E2E test results (if applicable)
@@ -180,10 +164,7 @@ Each file in the workflow provides comprehensive documentation for that phase:
 - Regression risk analysis
 
 #### solution.md
-**Created By**: Documentation Updater Agent
-**Purpose**: Executive summary of the entire workflow with commit info
 
-**Contents**:
 - Problem summary
 - Solution approach selected
 - Implementation details overview
@@ -192,60 +173,6 @@ Each file in the workflow provides comprehensive documentation for that phase:
 - Related issues
 - Commit information
 - Next steps (if applicable)
-
-### problem.md Format
-
-**For Active Issues:**
-```markdown
-Title: [Brief title]
-Summary: [One-line summary]
-Context: [Background and context]
-Evidence: [Code references with file:line numbers]
-Follow-up Actions: [What needs to be done]
-Acceptance Criteria: [Definition of done]
-```
-
-**For Archived Issues:**
-```markdown
-**Status**: RESOLVED
-**Resolved**: YYYY-MM-DD - See solution.md
-**Severity**: [High|Medium|Low]
-**Location**: [source file path]
-**Impact**: [description]
-
-## Problem Description
-[Detailed description of the issue]
-
-## Recommended Fix
-[Optional: suggested approach]
-```
-
-### solution.md (Auto-generated)
-
-Created by the Documentation Updater agent with:
-- Problem Summary
-- Solution Approach (selected from alternatives)
-- Implementation Details
-- Code Changes (files modified)
-- Testing Results (unit tests, E2E tests, linting)
-- Build Status
-- Related Issues
-- Commit Information
-
-### Archived Issue Examples
-
-**Simple Bug Fix** (`telemetry-required-parsing-inconsistent`):
-- Fixed environment variable parsing inconsistency
-- Changed literal string comparison to use `strconv.ParseBool`
-- Added comprehensive test coverage for all boolean formats
-- 6 workflow files documenting complete solution
-
-**Complex Test Coverage** (`mcp-e2e-coverage-gaps`):
-- Identified 31 missing E2E test scenarios
-- Proposed 5-week phased implementation plan
-- Created mock server infrastructure for error testing
-- Implemented first critical gap test
-- Comprehensive documentation with traceability matrix
 
 ## Install and update
 
