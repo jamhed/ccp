@@ -59,11 +59,11 @@ source .venv/bin/activate
 .venv\Scripts\activate
 
 # Create with specific Python version
-uv venv --python 3.11
-uv venv --python 3.12
+uv venv --python 3.14
+uv venv --python 3.13
 
 # UV auto-downloads Python versions if needed
-uv venv --python 3.13  # Downloads Python 3.13 if not installed
+uv venv --python 3.14  # Downloads Python 3.14 if not installed
 ```
 
 ### Installing Dependencies
@@ -157,7 +157,7 @@ uv sync
 [project]
 name = "my-project"
 version = "0.1.0"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 dependencies = [
     "fastapi>=0.104.0",
     "pydantic>=2.5.0",
@@ -185,7 +185,7 @@ index-url = "https://pypi.org/simple"
 ### .python-version
 
 ```
-3.11
+3.14
 ```
 
 UV will automatically use this Python version when creating virtual environments.
@@ -257,7 +257,7 @@ jobs:
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
       - name: Set up Python
-        run: uv venv --python 3.11
+        run: uv venv --python 3.14
 
       - name: Install dependencies
         run: uv sync
@@ -290,9 +290,9 @@ jobs:
 | Command | Description |
 |---------|-------------|
 | `uv venv` | Create virtual environment |
-| `uv venv --python 3.11` | Create with specific Python |
+| `uv venv --python 3.14` | Create with specific Python |
 | `uv python list` | List available Python versions |
-| `uv python install 3.12` | Install Python version |
+| `uv python install 3.14` | Install Python version |
 
 ### Package Installation
 
@@ -360,10 +360,10 @@ uv sync
 
 ```bash
 # Create .python-version
-echo "3.11" > .python-version
+echo "3.14" > .python-version
 
 # UV will use this version automatically
-uv venv  # Uses Python 3.11
+uv venv  # Uses Python 3.14
 ```
 
 ### 3. Separate Dev Dependencies
@@ -429,7 +429,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 ```bash
 # Install Python with UV
-uv python install 3.11
+uv python install 3.14
 
 # List available versions
 uv python list
@@ -499,7 +499,7 @@ uv pip freeze                # Freeze dependencies
 
 # Python versions
 uv python list               # List available versions
-uv python install 3.11       # Install Python version
+uv python install 3.14       # Install Python version
 ```
 
 This guide covers the essential UV commands and workflows for modern Python development.

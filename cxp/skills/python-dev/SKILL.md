@@ -1,17 +1,20 @@
 ---
 name: python-dev
-description: Expert Python development assistant for writing new code and reviewing existing codebases. Covers modern Python idioms (Python 3.11+), best practices, type safety, async patterns, and idiomatic error handling.
+description: Expert Python development assistant for writing new code and reviewing existing codebases. Covers modern Python idioms (Python 3.14+), best practices, type safety, async patterns, JIT optimization, and idiomatic error handling.
 ---
 
 # Python Development Assistant
 
-Expert assistant for Python development, covering both writing new code and reviewing existing codebases with modern Python idioms (Python 3.11+) and best practices.
+Expert assistant for Python development, covering both writing new code and reviewing existing codebases with modern Python idioms (Python 3.14+) and best practices.
 
 ## Core Capabilities
 
 ### 1. Writing New Python Code
 When writing new Python code:
-- Use modern Python features (3.11+: ExceptionGroup, Self type, @override)
+- Use modern Python features (3.14+: JIT compiler, enhanced pattern matching, improved async)
+- Use Python 3.13+ features (TypedDict for **kwargs, improved error messages)
+- Use Python 3.12+ features (type parameter syntax, @override decorator)
+- Use Python 3.11+ features (ExceptionGroup, Self type, TaskGroup)
 - Apply type hints comprehensively (parameters, returns, attributes)
 - Use pattern matching (`match`/`case`) for complex conditionals
 - Implement proper error handling with specific exceptions and chaining
@@ -74,10 +77,12 @@ Use this skill when:
    - For web APIs: review [references/fastapi-patterns.md](references/fastapi-patterns.md)
 
 3. **Implement code**
-   - Use modern Python features (type unions with `|`, pattern matching, ExceptionGroup)
-   - Add comprehensive type hints
+   - Use modern Python 3.14+ features (enhanced pattern matching, improved async, JIT-friendly patterns)
+   - Use Python 3.13+ features (TypedDict for **kwargs, improved type hints)
+   - Use type unions with `|`, pattern matching, ExceptionGroup, type parameter syntax
+   - Add comprehensive type hints with modern syntax
    - Implement proper error handling
-   - Use async/await correctly
+   - Use async/await correctly with improved 3.14 features
    - Add docstrings for public APIs
 
 4. **Review implementation**
@@ -197,21 +202,24 @@ The assistant adapts based on the codebase:
 
 ## Key Principles
 
-1. **Type Safety**: Comprehensive type hints, use of generics, Protocol, TypeVar
-2. **Modern Features**: Python 3.11+ features (ExceptionGroup, Self, @override, pattern matching)
-3. **Async Correctness**: No blocking in async, proper cancellation, task lifecycle
-4. **Error Handling**: Specific exceptions, proper chaining with `from`, clear messages
-5. **Code Style**: PEP 8 compliance, clear naming, focused functions
-6. **Testing**: pytest, fixtures, mocks, async testing with pytest-asyncio
-7. **Security**: No SQL/command injection, secrets in environment, input validation
-8. **Performance**: Profile before optimizing, use generators, avoid N+1 queries
-9. **Documentation**: Docstrings for public APIs, type hints as documentation
+1. **Type Safety**: Comprehensive type hints, use of generics, Protocol, TypeVar, TypedDict for **kwargs
+2. **Modern Features**: Python 3.14+ features (JIT compiler, enhanced pattern matching, improved async)
+3. **Modern Features**: Python 3.13+ features (TypedDict **kwargs, improved error messages)
+4. **Modern Features**: Python 3.12+ features (type parameter syntax, @override decorator)
+5. **Modern Features**: Python 3.11+ features (ExceptionGroup, Self, TaskGroup, pattern matching)
+6. **Async Correctness**: No blocking in async, proper cancellation, task lifecycle, use 3.14 improvements
+7. **Error Handling**: Specific exceptions, proper chaining with `from`, clear messages
+8. **Code Style**: PEP 8 compliance, clear naming, focused functions
+9. **Testing**: pytest, fixtures, mocks, async testing with pytest-asyncio
+10. **Security**: No SQL/command injection, secrets in environment, input validation
+11. **Performance**: Use JIT-friendly patterns, generators, avoid N+1 queries, profile before optimizing
+12. **Documentation**: Docstrings for public APIs, type hints as documentation
 
 ## Reference Files
 
-- **modern-python-2025.md**: Modern Python 3.11+ features, type hints, error handling, async/await, best practices
-- **type-safety-patterns.md**: Type hints, generics, Protocol, TypeVar, avoiding Any, type narrowing
-- **async-patterns.md**: Async/await best practices, task management, cancellation, common pitfalls
+- **modern-python-2025.md**: Modern Python 3.14+ features (JIT, enhanced patterns), 3.13+ (TypedDict **kwargs), 3.12+ (type params, @override), 3.11+ features, type hints, error handling, async/await, best practices
+- **type-safety-patterns.md**: Type hints, generics, Protocol, TypeVar, TypedDict, avoiding Any, type narrowing
+- **async-patterns.md**: Async/await best practices with 3.14 improvements, task management, cancellation, common pitfalls
 - **fastapi-patterns.md**: FastAPI-specific patterns, dependency injection, request validation, error handling
 - **uv-guide.md**: UV package manager usage, project setup, dependency management, workflows
 
@@ -271,14 +279,17 @@ See [references/uv-guide.md](references/uv-guide.md) for complete UV documentati
 
 ### Example 3: Refactoring to Modern Python
 
-**User**: "Help me refactor this old Python 3.7 code to modern Python 3.11+"
+**User**: "Help me refactor this old Python 3.7 code to modern Python 3.14+"
 
 **Assistant**:
 1. Loads modern-python-2025.md
 2. Identifies opportunities:
    - Replace `Union[X, None]` with `X | None`
-   - Add pattern matching for complex conditionals
-   - Use ExceptionGroup for multiple errors
-   - Add comprehensive type hints
+   - Use enhanced pattern matching (3.14)
+   - Use TypedDict for **kwargs (3.13)
+   - Use type parameter syntax (3.12)
+   - Use ExceptionGroup for multiple errors (3.11)
+   - Add comprehensive type hints with modern syntax
    - Use dataclasses or Pydantic models
+   - Optimize for JIT compiler (3.14)
 3. Provides refactored code with explanations

@@ -10,7 +10,7 @@ Comprehensive toolkit for Go 1.23+ and Kubernetes operator development with spec
 
 ### cxp Plugin - Modern Python Development
 
-Comprehensive toolkit for Python 3.11+ development with specialized skills, agents, and commands for building high-quality Python applications.
+Comprehensive toolkit for Python 3.14+ development with JIT compilation, enhanced pattern matching, and modern async/await. Includes specialized skills, agents, and commands for building high-quality Python applications.
 
 ## cx Plugin
 

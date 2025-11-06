@@ -1,6 +1,100 @@
 # Async/Await Patterns in Python
 
-Comprehensive guide to asynchronous programming in Python using async/await with asyncio.
+Comprehensive guide to asynchronous programming in Python using async/await with asyncio, including Python 3.14+ improvements.
+
+## Python 3.14+ Async Improvements
+
+### Enhanced asyncio.timeout() (3.14+)
+
+```python
+import asyncio
+
+# More ergonomic timeout API with better error messages
+async def fetch_with_improved_timeout[T](coro: Awaitable[T], timeout: float) -> T:
+    """Generic timeout with enhanced error context."""
+    async with asyncio.timeout(timeout):  # Better cancellation semantics in 3.14
+        return await coro
+
+# Improved timeout reschedule (adjust timeout dynamically)
+async def adaptive_timeout_fetch(url: str) -> dict[str, str]:
+    """Timeout that adapts based on progress."""
+    timeout_cm = asyncio.timeout(5.0)
+    async with timeout_cm:
+        # Can now reschedule timeout mid-operation (3.14+)
+        data = await fetch_partial(url)
+        if data["needs_more_time"]:
+            timeout_cm.reschedule(asyncio.get_event_loop().time() + 10.0)
+        return await fetch_complete(url, data)
+```
+
+### Improved TaskGroup Error Handling (3.14+)
+
+```python
+# Enhanced TaskGroup with better exception aggregation
+async def fetch_all_improved(urls: list[str]) -> list[dict[str, str]]:
+    """Better error handling and cancellation in TaskGroup."""
+    results = []
+    async with asyncio.TaskGroup() as tg:
+        tasks = [tg.create_task(fetch_data(url), name=f"fetch-{url}") for url in urls]
+
+    # Better exception context in 3.14 - includes task names in traceback
+    for task in tasks:
+        try:
+            results.append(task.result())
+        except Exception as e:
+            # Enhanced error messages show which task failed
+            print(f"Task {task.get_name()} failed: {e}")
+            results.append({"error": str(e)})
+
+    return results
+
+# Improved cancellation propagation
+async def cancelable_batch_processing(items: list[str]) -> None:
+    """Better cancellation handling in 3.14."""
+    try:
+        async with asyncio.TaskGroup() as tg:
+            for item in items:
+                tg.create_task(process_item(item))
+    except asyncio.CancelledError:
+        # In 3.14, cancellation is more graceful and predictable
+        print("Batch cancelled, all tasks properly cleaned up")
+        raise
+```
+
+### JIT-Friendly Async Patterns (3.14+)
+
+```python
+# Write async code that plays well with JIT compiler
+async def jit_optimized_loop(items: list[int]) -> int:
+    """Async loop optimized for JIT compilation."""
+    total = 0
+    # Avoid excessive dynamic dispatch - JIT can optimize better
+    process = lambda x: x * 2  # Inline simple operations
+
+    for item in items:
+        # JIT can optimize tight loops with minimal async overhead
+        if item % 100 == 0:
+            await asyncio.sleep(0)  # Yield control periodically
+        total += process(item)
+
+    return total
+
+# Avoid anti-patterns that hurt JIT performance
+async def jit_friendly_fetch(urls: list[str]) -> list[str]:
+    """Fetch pattern that JIT compiler can optimize."""
+    # Pre-allocate results list (helps JIT)
+    results: list[str] = [""] * len(urls)
+
+    async with asyncio.TaskGroup() as tg:
+        for i, url in enumerate(urls):
+            # Use closure to capture index (JIT-friendly)
+            async def fetch_and_store(idx: int, u: str) -> None:
+                results[idx] = await fetch_data(u)
+
+            tg.create_task(fetch_and_store(i, url))
+
+    return results
+```
 
 ## Async Basics
 
@@ -98,7 +192,7 @@ task = asyncio.create_task(
 )
 ```
 
-### asyncio.TaskGroup() (Python 3.11+)
+### asyncio.TaskGroup() (Python 3.11+, Enhanced in 3.14)
 
 ```python
 # Structured concurrency with TaskGroup
@@ -151,7 +245,7 @@ async def fetch_multiple_with_timeout(
         return [{"error": "timeout"} for _ in urls]
 ```
 
-### timeout context manager (Python 3.11+)
+### timeout context manager (Python 3.11+, Enhanced in 3.14)
 
 ```python
 # Timeout context manager
@@ -722,7 +816,7 @@ async def task() -> None:
         raise  # Re-raise
 ```
 
-### 4. Use TaskGroup for Structured Concurrency (Python 3.11+)
+### 4. Use TaskGroup for Structured Concurrency (Python 3.11+, Enhanced in 3.14)
 
 ```python
 # Prefer TaskGroup

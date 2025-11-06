@@ -1,10 +1,10 @@
 # cxp Plugin - Modern Python Development
 
-Comprehensive toolkit for modern Python development (Python 3.11+) with specialized skills, agents, and commands for building high-quality Python applications.
+Comprehensive toolkit for modern Python development (Python 3.14+) with specialized skills, agents, and commands for building high-quality Python applications. Includes support for JIT compilation, enhanced pattern matching, TypedDict for **kwargs, and improved async/await.
 
 ## Skills
 
-- **python-dev**: Expert Python development assistant covering modern Python 3.11+ idioms, type safety, async patterns, and idiomatic error handling
+- **python-dev**: Expert Python development assistant covering modern Python 3.14+ idioms (JIT, enhanced patterns, TypedDict **kwargs), type safety, async patterns, and idiomatic error handling
 - **pytest-tester**: Testing expert for writing, debugging, and reviewing pytest tests with fixtures, parametrize, mocks, and async testing
 - **fastapi-dev**: FastAPI specialist for API design, dependency injection, async patterns, middleware, and comprehensive testing
 - **issue-manager**: Manage project issues in the issues folder. List open issues, archive solved issues, and refine problem definitions
@@ -233,7 +233,7 @@ While `cx` focuses on Go and Kubernetes operator development, `cxp` specializes 
 
 | Feature | cx (Go/K8s) | cxp (Python) |
 |---------|-------------|--------------|
-| **Language** | Go 1.23+ | Python 3.11+ |
+| **Language** | Go 1.23+ | Python 3.14+ |
 | **Package Manager** | go mod | UV (10-100x faster than pip) |
 | **Type System** | Generics, interfaces | Type hints, Protocol, generics |
 | **Async** | Goroutines, channels | async/await, asyncio |

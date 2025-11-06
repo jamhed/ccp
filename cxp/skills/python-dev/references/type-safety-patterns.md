@@ -1,6 +1,98 @@
 # Type Safety Patterns in Python
 
-Comprehensive guide to writing type-safe Python code using mypy and pyright with modern type hints.
+Comprehensive guide to writing type-safe Python code using mypy and pyright with modern type hints, including Python 3.13+ and 3.14+ features.
+
+## Python 3.13+ Type System Improvements
+
+### TypedDict for **kwargs (PEP 692, Python 3.13+)
+
+```python
+from typing import TypedDict, Unpack
+
+# Define typed kwargs structure
+class PersonKwargs(TypedDict):
+    name: str
+    age: int
+    email: str
+    city: str | None  # Optional field
+
+def create_person(**kwargs: Unpack[PersonKwargs]) -> dict[str, str | int]:
+    """Function with typed **kwargs."""
+    return {
+        "name": kwargs["name"],
+        "age": kwargs["age"],
+        "email": kwargs["email"],
+        "city": kwargs.get("city", "Unknown"),
+    }
+
+# Type checker validates kwargs at call site
+create_person(name="Alice", age=30, email="alice@example.com", city="NYC")  # ✅
+create_person(name="Bob", age="30", email="bob@example.com")  # ❌ Type error: age must be int
+create_person(name="Charlie")  # ❌ Type error: missing required kwargs
+
+# Partial kwargs with Required/NotRequired
+from typing import Required, NotRequired
+
+class PartialKwargs(TypedDict):
+    name: Required[str]  # Required
+    age: Required[int]   # Required
+    email: NotRequired[str]  # Optional
+    city: NotRequired[str]   # Optional
+
+def create_user(**kwargs: Unpack[PartialKwargs]) -> dict[str, str | int]:
+    """Only name and age are required."""
+    result = {
+        "name": kwargs["name"],
+        "age": kwargs["age"],
+    }
+    if "email" in kwargs:
+        result["email"] = kwargs["email"]
+    return result
+
+# Works with defaults
+create_user(name="Alice", age=30)  # ✅ email and city optional
+```
+
+### Enhanced Type Parameter Syntax (Python 3.12+, Improved in 3.14)
+
+```python
+# Old way (still works)
+from typing import TypeVar, Generic
+
+T = TypeVar('T')
+
+class Stack(Generic[T]):
+    def push(self, item: T) -> None: ...
+
+# New way (Python 3.12+)
+class Stack[T]:
+    """Generic stack with new syntax."""
+    def __init__(self) -> None:
+        self._items: list[T] = []
+
+    def push(self, item: T) -> None:
+        self._items.append(item)
+
+    def pop(self) -> T:
+        return self._items.pop()
+
+# Generic functions with new syntax
+def first[T](items: list[T]) -> T | None:
+    """Get first item with type safety."""
+    return items[0] if items else None
+
+def map_values[K, V, R](d: dict[K, V], func: Callable[[V], R]) -> dict[K, R]:
+    """Map dictionary values with full type safety."""
+    return {k: func(v) for k, v in d.items()}
+
+# Multiple type parameters
+def merge[K, V1, V2](
+    d1: dict[K, V1],
+    d2: dict[K, V2]
+) -> dict[K, V1 | V2]:
+    """Merge two dicts with different value types."""
+    return {**d1, **d2}
+```
 
 ## Type Hint Fundamentals
 
@@ -516,7 +608,7 @@ class Point:
 
 ```toml
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.14"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -547,7 +639,7 @@ ignore_missing_imports = true
 
 ```ini
 [mypy]
-python_version = 3.11
+python_version = 3.14
 warn_return_any = True
 warn_unused_configs = True
 disallow_untyped_defs = True
@@ -586,7 +678,7 @@ ignore_missing_imports = True
   "typeCheckingMode": "strict",
   "reportMissingTypeStubs": false,
   "reportUnknownMemberType": false,
-  "pythonVersion": "3.11",
+  "pythonVersion": "3.14",
   "pythonPlatform": "Linux"
 }
 ```

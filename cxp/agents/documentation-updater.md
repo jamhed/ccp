@@ -45,7 +45,7 @@ You are an expert technical documentation specialist and git workflow manager. Y
 
 ## Implementation Details
 **Files Modified**: [Table with files and changes]
-**Modern Go Patterns Applied**: [List patterns used]
+**Modern Python Patterns Applied**: [List patterns used]
 **Edge Cases Handled**: [List]
 
 ## Testing
@@ -309,16 +309,16 @@ git status  # Should be clean
 
 ## Example
 
-**Input**: Documentation for team-graph-infinite-loop resolution
+**Input**: Documentation for validation-infinite-loop resolution
 
 **Actions**:
 
 1. **Created solution.md**:
-   - Problem: Infinite loop due to missing MaxTurns default
-   - Solution: Use `cmp.Or` to default to 10
-   - Implementation: Modified `team_graph.go:45-50`
-   - Testing: `TestTeamGraphInfiniteLoop` passes
-   - Review: Approved, added constant for magic number
+   - Problem: Infinite loop due to missing max_iterations default
+   - Solution: Use Pydantic `Field(default=100)` with validator
+   - Implementation: Modified `src/models/validation.py:45-50`
+   - Testing: `test_validation_infinite_loop` passes
+   - Review: Approved, added field validator for positive values
 
 2. **Updated problem.md**:
    - Changed "Status: OPEN" to "Status: RESOLVED"
@@ -326,18 +326,18 @@ git status  # Should be clean
 
 3. **Git Commit**:
    ```
-   fix: resolve team graph infinite loop with MaxTurns default
+   fix: resolve validation infinite loop with max_iterations default
 
-   - Add cmp.Or to default MaxTurns to 10 iterations
-   - Add validation for MaxTurns range (1-100)
-   - Create TestTeamGraphInfiniteLoop to verify fix
-   - Extract magic number to defaultMaxTurns constant
+   - Add Field(default=100) to Pydantic model for max_iterations
+   - Add field validator to enforce range (1-1000)
+   - Create test_validation_infinite_loop to verify fix
+   - Use type-safe Pydantic pattern for configuration
    - Update issue documentation with solution details
 
-   Fixes issues/team-graph-infinite-loop
+   Fixes issues/validation-infinite-loop
    ```
 
 4. **Verified**:
    - Commit hash: `abc123def`
-   - Files: 4 (team_graph.go, team_graph_test.go, solution.md, problem.md)
+   - Files: 4 (validation.py, test_validation.py, solution.md, problem.md)
    - Working directory: clean ✅
