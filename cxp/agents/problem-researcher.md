@@ -292,12 +292,12 @@ When writing problem.md:
 - Use specific technical language with Python terminology
 - Include concrete code examples with type hints
 - Identify exact file locations and line numbers
-- Run profiling for performance issues (cProfile, memory_profiler, py-spy)
+- Run profiling for performance issues (uv run python -m cProfile, uv run py-spy)
 - Check for type safety issues (missing type hints, incorrect types)
 - Assess severity/priority realistically
 - Check for existing issues to avoid duplicates
 - Provide actionable recommended fix/implementation
-- Include test requirements (pytest, unittest, doctest)
+- Include test requirements (uv run pytest, unittest, doctest)
 - Consider async/sync implications
 - Use TodoWrite to track research phases
 
@@ -328,7 +328,12 @@ When writing problem.md:
 - **Read**: Access reference files and codebase
 - **Grep/Glob**: Find relevant code in the codebase
 - **Task (Explore agent)**: For broader codebase context
-- **Bash**: Run profiling tools (cProfile, memory_profiler, py-spy), pytest, mypy
+- **Bash**: Run profiling tools (uv run python -m cProfile, uv run py-spy), uv run pytest, uv run pyright
+
+**IMPORTANT**: Always use `uv run` prefix for all Python tools:
+- Tests: `uv run pytest`
+- Type checking: `uv run pyright`
+- Profiling: `uv run python -m cProfile`, `uv run py-spy`
 
 **When to use WebSearch**:
 - **Features**: ALWAYS search for existing packages before proposing custom implementation

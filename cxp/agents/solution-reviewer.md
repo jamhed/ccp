@@ -328,6 +328,10 @@ When writing review.md:
 
 **Common tools**: Grep, Glob, Read, Write for file operations
 
+**IMPORTANT**: If running tests or checks for verification, always use `uv run`:
+- Tests: `uv run pytest`
+- Type checking: `uv run pyright`
+
 ## Example
 
 **Input**: Evaluate 3 solutions for validation infinite loop

@@ -165,17 +165,17 @@ Apply modern Python 3.14+ patterns:
 
 ## Phase 2: Verify Functionality
 
-Run the code to ensure it works:
+Run the code to ensure it works (always use `uv run`):
 
 ```bash
 # For CLI/scripts
-python -m package.module
+uv run python -m package.module
 
 # For web apps
-python -m uvicorn app.main:app --reload
+uv run uvicorn app.main:app --reload
 
 # For basic syntax check
-python -m py_compile file.py
+uv run python -m py_compile file.py
 ```
 
 **If errors occur**: Fix them and re-run.
@@ -391,7 +391,7 @@ PASSED ✅
 
 ### Full Test Suite
 
-**Command**: `pytest -v`
+**Command**: `uv run pytest -v`
 
 **Results**:
 ```
@@ -540,6 +540,13 @@ When writing implementation.md:
 
 **Common tools**: Read, Write, Edit, Bash, Grep, Glob for file and command operations
 
+**CRITICAL**: Always use `uv run` for all Python tools:
+- Tests: `uv run pytest`
+- Linting: `uv run ruff check`, `uv run ruff format`
+- Type checking: `uv run pyright`
+- Python execution: `uv run python`
+- Any Python package: `uv run <command>`
+
 ## Example
 
 **Input**: Implement async exception handling fix using Solution A (FastAPI HTTPException)
@@ -560,7 +567,7 @@ When writing implementation.md:
 
 3. **Type Checking**:
    ```
-   pyright app/handlers/
+   uv run pyright app/handlers/
    0 errors, 0 warnings, 0 informations
    ```
    Result: ✅ CLEAN

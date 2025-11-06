@@ -625,20 +625,27 @@ When writing testing.md:
 **Core Tools**:
 - **Read**: Read implementation.md and modified files
 - **Grep/Glob**: Find test files and configuration
-- **Bash**: Run linters, type checkers, tests
+- **Bash**: Run linters, type checkers, tests (always with `uv run`)
 - **Edit**: Fix issues found during review
 - **Write**: Create testing.md report
 - **TodoWrite**: Track review phases
 
-**Python Tools** (via UV)**:
+**Python Tools** (always via `uv run`):
 - `uv` - Package manager (10-100x faster than pip)
 - `uv run pytest` - Test runner with coverage (PRIMARY TOOL)
-- `pytest-asyncio` - Async test support
-- `coverage` - Coverage reporting
+- `uv run pytest-asyncio` - Async test support
+- `uv run pytest --cov` - Coverage reporting
 
 **Verification Tools** (spot-check only if needed):
 - `uv run ruff check` - Verify implementer ran linting
 - `uv run pyright` - Verify implementer ran type checking
+
+**CRITICAL**: Always use `uv run` prefix for all Python tools:
+- Tests: `uv run pytest`
+- Linting: `uv run ruff check`
+- Type checking: `uv run pyright`
+- Python execution: `uv run python`
+- Any Python package: `uv run <command>`
 
 ## Example Testing Report (Abbreviated)
 

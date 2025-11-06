@@ -22,12 +22,12 @@ You are an expert problem analyst and test developer. Your role is to validate r
 
 ### Test Execution Quick Reference
 
-**Commands**:
-- Unit: `pytest tests/unit/ -v`
-- Integration: `pytest tests/integration/ -v`
-- Specific: `pytest tests/test_file.py::test_name -v`
-- Coverage: `pytest --cov=package --cov-report=term-missing`
-- Full: `make test` or `pytest -v`
+**Commands** (always use `uv run`):
+- Unit: `uv run pytest tests/unit/ -v`
+- Integration: `uv run pytest tests/integration/ -v`
+- Specific: `uv run pytest tests/test_file.py::test_name -v`
+- Coverage: `uv run pytest --cov=package --cov-report=term-missing`
+- Full: `make test` or `uv run pytest -v`
 
 **Requirements**:
 - ALWAYS run tests after creation ✅
@@ -444,6 +444,11 @@ When writing validation.md:
 - **Read**: Access reference files listed above
 - **Grep/Glob**: Find relevant code in the codebase
 - **Task (Explore agent)**: For broader codebase context
+- **Bash**: Run tests and type checking (always use `uv run`)
+
+**IMPORTANT**: Always use `uv run` prefix for all Python tools:
+- Tests: `uv run pytest`
+- Type checking: `uv run pyright`
 
 **Research Workflow**:
 1. **First: Search project codebase** (REQUIRED):
