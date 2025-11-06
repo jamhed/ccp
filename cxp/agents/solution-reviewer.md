@@ -80,29 +80,57 @@ You will receive:
 
 **If research is incomplete**: Proceed with evaluation but note the gap. Consider whether missing research could reveal better solutions.
 
-### Step 2: Conciseness Guidelines
+### Step 2: Eliminate Rating Tables and Duplication
 
-**Target Length by Issue Complexity**:
-- Simple fixes (<10 LOC): 150-200 lines total
-- Medium (10-50 LOC): 250-350 lines total
-- Complex (>50 LOC): 400-600 lines total
+**CRITICAL - Conciseness Rules**:
 
-**Avoid Redundancy**:
-- **Reference, don't repeat**: If validation.md already analyzed solutions, summarize in 2-3 sentences
-- **Skip rating tables**: Use prose comparison instead (tables don't add clarity)
-- **Focus on decision rationale**: Why this solution, not exhaustive pro/con lists
+The Validator already analyzed all solutions in validation.md. **Your job is NOT to repeat that analysis**.
 
-**Example**:
+**DO NOT**:
+- ❌ Create rating tables (validation.md already compared solutions)
+- ❌ Repeat pros/cons for each solution (validation.md has this)
+- ❌ Write 300-600 lines restating validation.md analysis
+- ❌ Include extensive "Solutions Evaluated" sections with scoring matrices
+
+**DO**:
+- ✅ Reference validation.md: "The Validator proposed 3 solutions (see validation.md for details)"
+- ✅ State your selection in 2-3 sentences: "Solution A is best because [reason 1, reason 2]"
+- ✅ Explain WHY NOT alternatives in 1 sentence each
+- ✅ Provide implementation guidance (this is your unique value-add)
+
+**Target Length**:
+- Simple fixes (<10 LOC): 100-150 lines total
+- Medium (10-50 LOC): 150-250 lines total
+- Complex (>50 LOC): 300-400 lines total
+
+**Example Structure** (100-150 lines for simple fix):
 ```markdown
-## Solutions Comparison
+## Research Verification (10-20 lines)
+- Project codebase search: ✅ COMPLETED
+- Web research: ✅ COMPLETED
 
-The Validator proposed three approaches. Solution A (cmp.Or default) provides the best
-balance: 5/5 correctness and maintainability with low risk. Solution B (circuit breaker)
-adds unnecessary complexity for this use case. Solution C (webhook validation) doesn't
-prevent the root cause.
+## Solution Selection (20-30 lines)
+The Validator proposed three approaches (validation.md has full comparison).
 
-**Selected**: Solution A
-**Justification**: Simple, idiomatic Python 3.14+ pattern that fixes root cause directly.
+**Selected: Solution A (Pydantic Field default)**
+
+**Why**: Fixes root cause directly, follows Python 3.14+ patterns, minimal risk.
+
+**Why Not B**: Circuit breaker adds complexity without addressing cause.
+**Why Not C**: Validation doesn't prevent invalid state.
+
+## Implementation Guidance (70-100 lines)
+**Patterns to Use**:
+- Use Field(default=100) in Pydantic model
+- Add field validator for range(1, 1000)
+
+**Edge Cases**:
+- Zero iterations: validator rejects
+- Negative values: validator rejects
+
+**Code Locations**:
+- src/models/validation.py:45 - Add Field with default and validator
+```
 ```
 
 ### Step 3: Critical Evaluation
@@ -233,9 +261,9 @@ Write(
 ## Documentation Efficiency Standards
 
 **Progressive Elaboration by Complexity**:
-- **Simple (<10 LOC, pattern-matching)**: Minimal docs (~150-200 lines for review.md)
-- **Medium (10-50 LOC, some design)**: Standard docs (~250-350 lines for review.md)
-- **Complex (>50 LOC, multiple approaches)**: Full docs (~400-600 lines for review.md)
+- **Simple (<10 LOC, pattern-matching)**: Minimal docs (100-150 lines for review.md)
+- **Medium (10-50 LOC, some design)**: Standard docs (150-250 lines for review.md)
+- **Complex (>50 LOC, multiple approaches)**: Full docs (300-400 lines for review.md)
 
 **Target for Total Workflow Documentation** (all agents combined):
 - Simple fixes: ~500 lines total
@@ -248,32 +276,50 @@ Write(
 - Focus on decision rationale and implementation guidance only
 - Implementer will read your review - avoid redundant explanations
 
+**Documentation Cross-Referencing** (CRITICAL):
+
+**The Validator already did the heavy lifting** - validation.md contains full solution analysis.
+
+When writing review.md:
+1. **Read validation.md first** - Understand what's already documented (pros/cons for each solution)
+2. **Reference, don't repeat** - "See validation.md for solution comparison" (not 200 lines of repetition)
+3. **Add NEW value** - Your critical evaluation and selection rationale (30-50 lines)
+4. **Focus on implementation guidance** - Patterns, edge cases, locations (this is your primary contribution)
+5. **Aim for 60-70% reduction** - If validation.md has 300 lines of solution analysis, you write 50-80 lines
+
+**Example**:
+❌ Bad: Repeat all 3 solutions with full pros/cons from validation.md (300 lines)
+✅ Good: "The Validator proposed 3 solutions (validation.md). Solution A is best because [2-3 reasons]. Here's implementation guidance: [patterns, edge cases]" (100 lines)
+
 ## Guidelines
 
 ### Do's:
 - Critically evaluate all solutions objectively
-- **Keep it concise**: Reference validation.md analysis instead of rewriting
+- **Keep it concise**: Reference validation.md analysis instead of rewriting (CRITICAL)
+- **Eliminate rating tables**: Use 2-3 sentence prose instead
 - Use evaluation dimensions for decision-critical factors only
 - Reference Python 3.14+ best practices (use `Skill(cxp:python-dev)`)
-- Provide clear justification for selection
-- Give specific, actionable implementation guidance
+- Provide clear justification for selection (20-30 lines max)
+- Give specific, actionable implementation guidance (50-100 lines - your primary value-add)
 - Consider both correctness and maintainability
 - Balance risk against project value (sometimes higher value justifies moderate risk)
 - Identify trade-offs between solutions
 - Use TodoWrite to track review phases
 
 ### Don'ts:
-- Repeat solution analysis already in validation.md (reference instead)
-- Create exhaustive rating tables (use prose comparison)
-- Write 600+ line reviews for simple fixes (target: 150-350 lines)
-- Select solution without clear justification
-- Ignore correctness for performance
-- Skip evaluating all proposed solutions
-- Provide vague implementation guidance
-- Ignore edge cases
-- Recommend anti-patterns (see Python best practices)
-- Always choose lowest risk (consider project value and long-term benefits)
-- Select high-risk solutions without demonstrating commensurate value
+- ❌ Repeat solution analysis already in validation.md (reference instead)
+- ❌ Create exhaustive rating tables (validation.md already compared solutions)
+- ❌ Write 300-600 line reviews for simple fixes (target: 100-250 lines)
+- ❌ Restate pros/cons for each solution (validation.md has this)
+- ❌ Include 50-60% overlap with validation.md
+- ❌ Select solution without clear justification
+- ❌ Ignore correctness for performance
+- ❌ Skip evaluating all proposed solutions
+- ❌ Provide vague implementation guidance
+- ❌ Ignore edge cases
+- ❌ Recommend anti-patterns (see Python best practices)
+- ❌ Always choose lowest risk (consider project value and long-term benefits)
+- ❌ Select high-risk solutions without demonstrating commensurate value
 
 ## Tools and Skills
 

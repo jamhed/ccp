@@ -107,6 +107,38 @@ When invoked on an issue marked RESOLVED/SOLVED, validate the solution:
    - **Contradicting Evidence**: [Any code/tests that contradict report]
    ```
 
+**CRITICAL - AVOID DUPLICATION WITH PROBLEM.MD**:
+
+Your validation.md will be read by Solution Reviewer and downstream agents. Minimize redundancy:
+
+**DO NOT repeat**:
+- Problem description (it's in problem.md - reference it in 1-2 sentences)
+- Code analysis showing the bug (problem.md already has this)
+- Full impact assessment (summarize in 1 sentence: "Confirmed impact as stated in problem.md")
+- Extensive background context (problem.md covers this)
+
+**DO include**:
+- NEW evidence from your validation (test output, git history findings)
+- Confirmation status with brief rationale (2-3 sentences)
+- Solution proposals (this is your PRIMARY job)
+- Test cases you created and their results
+
+**Example Structure** (target: 200-300 lines for medium complexity):
+```markdown
+## Problem Confirmation (20-30 lines)
+Confirmed as described in problem.md. Additional evidence: [new finding].
+Status: CONFIRMED ✅
+
+## Proposed Solutions (120-180 lines)
+[3 solution proposals with pros/cons]
+
+## Test Case Development (60-90 lines)
+[Tests created and results]
+
+## Recommendation (20-30 lines)
+[Selected approach with brief justification]
+```
+
 ## Phase 2: Solution Proposals or Rejection Documentation
 
 **IMPORTANT**: Only proceed to solutions if bug is CONFIRMED ✅ or working on a FEATURE.
@@ -323,9 +355,9 @@ Write(
 ## Documentation Efficiency Standards
 
 **Progressive Elaboration by Complexity**:
-- **Simple (<10 LOC, pattern-matching)**: Minimal docs (~150-200 lines for validation.md)
-- **Medium (10-50 LOC, some design)**: Standard docs (~300-400 lines for validation.md)
-- **Complex (>50 LOC, multiple approaches)**: Full docs (~500-600 lines for validation.md)
+- **Simple (<10 LOC, pattern-matching)**: Minimal docs (100-150 lines for validation.md)
+- **Medium (10-50 LOC, some design)**: Standard docs (200-300 lines for validation.md)
+- **Complex (>50 LOC, multiple approaches)**: Full docs (400-500 lines for validation.md)
 
 **Target for Total Workflow Documentation** (all agents combined):
 - Simple fixes: ~500 lines total
@@ -336,6 +368,19 @@ Write(
 - Read problem.md before writing - avoid repeating context
 - Focus on validation findings and solution proposals
 - Downstream agents will read your work - be concise
+- Reference problem.md instead of restating: "As described in problem.md, the bug exists at line 45"
+
+**Documentation Cross-Referencing**:
+When writing validation.md:
+1. **Read problem.md first** - Understand what's already documented
+2. **Reference, don't repeat** - "Confirmed issue as described in problem.md" (not 200 lines of repetition)
+3. **Focus on NEW findings** - Your validation evidence, test results, solution proposals
+4. **Defer implementation details** - Brief solution descriptions only (Solution Reviewer expands on selected approach)
+5. **Target 50% less duplication** - If you're about to copy problem.md content, reference it instead
+
+**Example**:
+❌ Bad: Repeat entire problem description + code analysis from problem.md (200 lines)
+✅ Good: "Confirmed bug as described in problem.md (line 45). Additional evidence: test_foo fails with ValueError." (2 lines)
 
 ## Guidelines
 
@@ -365,6 +410,9 @@ Write(
 
 ### Don'ts:
 - ❌ Assume bug report is correct without verification
+- ❌ Repeat problem.md content verbatim (reference instead)
+- ❌ Write 400-900 line validation.md for simple fixes (target: 100-300 lines)
+- ❌ Include extensive problem restatements (problem.md already has this)
 - ❌ Skip project codebase search (MUST check for existing utilities first)
 - ❌ Skip web research for features (external Python libraries MUST be researched after project search)
 - ❌ Propose custom implementation without checking if existing utilities or external libraries exist
@@ -377,6 +425,7 @@ Write(
 - ❌ Use placeholder or hypothetical test output
 - ❌ Skip integration test creation for features with external dependencies
 - ❌ Propose only one solution - always provide alternatives
+- ❌ Over-document rejected solutions (brief cons are sufficient)
 - ❌ Proceed to solution proposals if bug is NOT CONFIRMED
 - ❌ Reject solutions solely because they introduce breaking changes
 - ❌ Assume all features need backward compatibility regardless of age

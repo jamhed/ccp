@@ -60,6 +60,23 @@ All issue-related files reside in:
 
 **IMPORTANT**: Never claim "memory leak" or "performance issue" without profiling evidence or benchmarks.
 
+**CRITICAL - Evidence Requirements**:
+- **Never claim "memory leak"** without memory_profiler/tracemalloc output showing actual memory growth
+- **Never claim "performance issue"** without cProfile/py-spy benchmarks with concrete numbers
+- **Never claim "High/Critical severity"** without reproducing the bug with actual error output
+- **Include actual profiling data** - Attach cProfile output, memory graphs, or benchmark results in problem.md
+- **Distinguish theoretical vs actual impact** - "Could cause X" vs "Causes X (reproduced)"
+- **Use concrete metrics** - "3-5 second delay" not "slow", "250MB leak" not "memory issue"
+
+**Example**:
+```markdown
+❌ Bad: "This causes a memory leak affecting production (High severity)"
+✅ Good: "memory_profiler shows 250MB growth per 1000 iterations (attached profile.png). Extrapolated: 2.5GB/day in production (High severity)"
+
+❌ Bad: "Performance bottleneck in query handler (Critical)"
+✅ Good: "cProfile shows 4.8s p95 latency, 99% time in db.execute() (N+1 queries). Target: <100ms (High severity)"
+```
+
 ### Priority Levels (Features)
 
 - **High** - Core functionality, blocking other work, user-facing impact
@@ -242,9 +259,9 @@ Verify problem definition is complete:
 ## Documentation Efficiency Standards
 
 **Progressive Elaboration by Complexity**:
-- **Simple (<20 LOC, pattern-matching)**: Minimal docs (~100-150 lines for problem.md)
-- **Medium (20-100 LOC, some design)**: Standard docs (~200-300 lines for problem.md)
-- **Complex (>100 LOC, multiple approaches)**: Full docs (~400-500 lines for problem.md)
+- **Simple (<20 LOC, pattern-matching)**: Minimal docs (100-150 lines for problem.md)
+- **Medium (20-100 LOC, some design)**: Standard docs (150-250 lines for problem.md)
+- **Complex (>100 LOC, multiple approaches)**: Full docs (300-400 lines for problem.md)
 
 **Target for Total Workflow Documentation** (all agents combined):
 - Simple fixes: ~500 lines total
@@ -255,6 +272,14 @@ Verify problem definition is complete:
 - Your problem.md will be read by all downstream agents
 - Avoid redundant context - be concise and precise
 - Each agent adds NEW information only
+- Focus on WHAT and WHERE, not extensive HOW (implementation details belong in later phases)
+
+**Documentation Cross-Referencing**:
+When writing problem.md:
+1. **Check existing issues** - Reference related issues instead of repeating context
+2. **Focus on the problem** - Not solution implementation details
+3. **Be surgical with code examples** - 10-20 lines max, show the bug/gap clearly
+4. **Limit solution proposals** - 1-2 sentences each for 2-3 approaches (detailed comparison is Validator's job)
 
 ## Guidelines
 
@@ -279,14 +304,17 @@ Verify problem definition is complete:
 ### Don'ts:
 - Create problem definitions without researching codebase
 - Skip git history checks (may report already-fixed issues)
-- Claim "memory leak" or "performance issue" without profiling evidence
-- Exaggerate severity/priority (use evidence-based rubric)
+- Claim "memory leak" or "performance issue" without profiling evidence (CRITICAL)
+- Exaggerate severity/priority (use evidence-based rubric with concrete data)
 - Skip web research for features (third-party packages MUST be researched)
 - Propose custom implementation without checking if packages exist
-- Be vague or use generic descriptions
+- Be vague or use generic descriptions ("slow", "inefficient" without numbers)
 - Skip code analysis section
 - Duplicate existing issues
 - Provide recommendations without understanding the code
+- Write 400+ line problem.md for simple fixes (target: 100-150 lines)
+- Include extensive implementation details (that's for later phases)
+- Propose 4-5 solutions (limit to 2-3 brief descriptions)
 - Omit test requirements
 - Ignore third-party package viability (always document findings)
 - Ignore Python version compatibility issues

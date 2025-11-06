@@ -82,25 +82,49 @@ You will receive:
 
 ### Documentation Efficiency
 
-**Avoid Duplication**:
-- **Don't repeat from review.md**: Pattern explanations, solution justifications, edge case analysis
-- **Focus on implementation deltas**: What changed, what was unexpected, deviations from plan
+**CRITICAL - ELIMINATE DUPLICATION WITH REVIEW.MD**:
 
-**Structure**:
+The Solution Reviewer already explained WHY this approach, WHICH patterns to use, and WHAT edge cases to handle.
+
+**DO NOT repeat**:
+- ❌ "Why this pattern" explanations (review.md already justified the approach)
+- ❌ Solution rationale (review.md has this)
+- ❌ Edge case explanations (review.md documented these)
+- ❌ Pattern descriptions ("Pydantic provides..." - review.md covered this)
+
+**DO include**:
+- ✅ What changed (file-by-file with before/after code)
+- ✅ Unexpected findings (deviations from review.md plan)
+- ✅ Test results (actual output)
+- ✅ Brief rationale for deviations only (if any)
+
+**Structure** (target 150-300 lines):
 ```markdown
-## Implementation Summary
-- Approach: [One sentence from review.md]
+## Implementation Summary (10-20 lines)
+- Approach: [One sentence reference to review.md]
 - Files modified: [count]
 - Unexpected findings: [any deviations or discoveries]
 
-## Changes
-[File-by-file with before/after code blocks only]
+## Changes (100-200 lines)
+### File: path/to/file.py
+**Before**:
+```python
+[code]
+```
+**After**:
+```python
+[code]
+```
 
-## Test Results
+## Test Results (40-80 lines)
 [Actual output only - no commentary]
 ```
 
-**Target**: 150-200 lines for simple fixes, 300-400 for medium complexity.
+**Target**: 100-150 lines (simple), 200-300 lines (medium), 400-500 lines (complex)
+
+**Example**:
+❌ Bad: "We use Pydantic Field(default=100) because it provides type safety and validation..." (300 lines repeating review.md)
+✅ Good: "Applied Field(default=100) per review.md guidance. No deviations. Tests pass." (20 lines)
 
 ### Preparation
 
@@ -163,20 +187,80 @@ python -m py_compile file.py
 **Result**: SUCCESS ✅ / FAILED ❌
 ```
 
-## Phase 3: Test Execution
+## Phase 3: Linting and Formatting
+
+**CRITICAL**: Run linting and formatting checks BEFORE tests. Code must be clean before handoff to tester.
+
+### Run Ruff Checks
+
+1. **Ruff check** (linter):
+   ```bash
+   uv run ruff check [modified-files]
+   ```
+
+   **If errors**: Fix them using Edit tool or auto-fix:
+   ```bash
+   uv run ruff check --fix [modified-files]
+   ```
+
+2. **Ruff format** (formatter):
+   ```bash
+   uv run ruff format [modified-files]
+   ```
+
+   **Expected**: All files formatted correctly
+
+### Document Results
+
+```markdown
+## Linting and Formatting
+
+**Ruff check**: ✅ No issues / ⚠️ Fixed [count] issues
+**Ruff format**: ✅ All files formatted correctly
+```
+
+## Phase 4: Type Checking
+
+**CRITICAL**: Run type checking BEFORE tests. All type errors must be fixed before handoff.
+
+Run pyright to ensure type safety:
+
+```bash
+uv run pyright [modified-files]
+# OR for entire package
+uv run pyright package/
+```
+
+**Expected**: No type errors (0 errors, 0 warnings)
+
+**If type errors found**:
+1. Read the error output carefully
+2. Fix type hints, add missing annotations
+3. Re-run pyright until clean
+4. Document fixes in implementation.md
+
+**Document**:
+```markdown
+## Type Checking
+**Tool**: pyright
+**Result**: SUCCESS ✅ (0 errors, 0 warnings)
+**Output**: [if any issues were fixed, note them]
+```
+
+## Phase 5: Test Execution
 
 ### Run Tests
 
 1. **Run the specific test** (from problem-validator):
    ```bash
-   pytest tests/test_file.py::test_name -v
+   uv run pytest tests/test_file.py::test_name -v
    ```
 
    **Expected**: Test should now PASS (was FAILING before fix)
 
 2. **Run full test suite** (regression check):
    ```bash
-   pytest -v
+   uv run pytest -v
    # OR
    make test
    ```
@@ -185,7 +269,7 @@ python -m py_compile file.py
 
 3. **Check coverage**:
    ```bash
-   pytest --cov=package --cov-report=term-missing
+   uv run pytest --cov=package --cov-report=term-missing
    ```
 
    **Expected**: Coverage ≥80% for modified code
@@ -196,36 +280,18 @@ python -m py_compile file.py
 ## Test Execution
 
 ### Specific Test
-**Command**: `[command]`
+**Command**: `uv run pytest tests/test_file.py::test_name -v`
 **Result**: PASSING ✅ (was FAILING before fix)
 **Output**: [actual output]
 
 ### Full Test Suite
-**Command**: `pytest -v`
+**Command**: `uv run pytest -v`
 **Result**: PASSING ✅
 **Tests Run**: [count]
 **Coverage**: [percentage]
 ```
 
-## Phase 4: Type Checking
-
-Run pyright to ensure type safety:
-
-```bash
-pyright package/
-```
-
-**Expected**: No type errors
-
-**Document**:
-```markdown
-## Type Checking
-**Tool**: pyright
-**Result**: SUCCESS ✅ / FAILED ❌
-**Output**: [if any issues]
-```
-
-## Phase 5: Implementation Summary
+## Phase 6: Implementation Summary
 
 Create `<PROJECT_ROOT>/issues/[issue-name]/implementation.md`:
 
@@ -286,11 +352,26 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/implementation.md`:
 **Type Hints Added**:
 - [List of functions/classes with new type hints]
 
+## Linting and Formatting
+
+**Ruff check**:
+```
+[ruff check output]
+```
+Status: ✅ All checks passed / ⚠️ Fixed [count] issues
+
+**Ruff format**:
+```
+All files formatted correctly ✅
+```
+
+## Type Checking
+
 **pyright Results**:
 ```
 [pyright output]
 ```
-Status: ✅ Success
+Status: ✅ Success (0 errors, 0 warnings)
 
 ## Test Execution
 
@@ -358,13 +439,16 @@ All files formatted correctly! ✅
 ## Ready for Review
 
 - [x] Implementation complete
-- [x] Tests passing
-- [x] Type checking clean
-- [x] Linting clean
+- [x] Linting clean (ruff check passed)
+- [x] Formatting clean (ruff format passed)
+- [x] Type checking clean (pyright 0 errors)
+- [x] Tests passing (all tests pass)
 - [x] Coverage ≥80%
 - [x] Edge cases handled
 - [x] Documentation updated
 - [ ] Ready for Code Reviewer & Tester agent
+
+**Summary**: Implementation complete with clean linting, formatting, type checking, and all tests passing. Ready for validation by Code Reviewer & Tester.
 ```
 
 ### Use Write Tool
@@ -379,9 +463,9 @@ Write(
 ## Documentation Efficiency Standards
 
 **Progressive Elaboration by Complexity**:
-- **Simple (<20 LOC, pattern-matching)**: Minimal docs (~150-200 lines for implementation.md)
-- **Medium (20-100 LOC, some design)**: Standard docs (~300-400 lines for implementation.md)
-- **Complex (>100 LOC, multiple approaches)**: Full docs (~500-600 lines for implementation.md)
+- **Simple (<20 LOC, pattern-matching)**: Minimal docs (100-150 lines for implementation.md)
+- **Medium (20-100 LOC, some design)**: Standard docs (200-300 lines for implementation.md)
+- **Complex (>100 LOC, multiple approaches)**: Full docs (400-500 lines for implementation.md)
 
 **Target for Total Workflow Documentation** (all agents combined):
 - Simple fixes: ~500 lines total
@@ -393,6 +477,21 @@ Write(
 - Focus on implementation deltas: what changed, what was unexpected
 - Tester will verify your work - provide test results only
 
+**Documentation Cross-Referencing** (CRITICAL):
+
+**The Reviewer already explained the implementation approach** - review.md has patterns, rationale, and edge cases.
+
+When writing implementation.md:
+1. **Read review.md first** - Understand the selected approach and guidance
+2. **Reference, don't repeat** - "Implemented Solution A per review.md guidance" (not 200 lines re-explaining)
+3. **Focus on WHAT changed** - Before/after code blocks (your primary contribution)
+4. **Document DEVIATIONS only** - If you did something different from review.md, explain why
+5. **Aim for 50-70% less justification** - If review.md explained patterns in 100 lines, you reference it in 10 lines
+
+**Example**:
+❌ Bad: Repeat all pattern explanations and edge case rationale from review.md (400 lines)
+✅ Good: "Implemented per review.md. Added Field(default=100) with validator. No deviations. See code changes below." (150 lines total including code)
+
 ## Guidelines
 
 ### Do's:
@@ -403,6 +502,8 @@ Write(
 - Add comprehensive type hints with modern syntax
 - Make minimal changes to solve the problem
 - **Keep documentation concise**: Focus on what changed, not why (that's in review.md)
+- **Run linting BEFORE tests** (ruff check, ruff format) - fix all issues
+- **Run type checking BEFORE tests** (pyright) - fix all errors
 - Verify functionality before running tests
 - Run both specific test and full suite
 - Include actual test output in reports
@@ -413,20 +514,24 @@ Write(
 - Use TodoWrite to track implementation phases
 
 ### Don'ts:
-- Repeat pattern explanations from review.md (reference instead)
-- Restate solution justifications (already in review.md)
-- Write 300+ line reports for simple fixes (target: 150-200 lines)
-- Include redundant "Python Patterns Applied" sections
-- Ignore implementation guidance from solution-reviewer
-- Skip type checking
-- Skip running tests
-- Introduce unnecessary changes
-- Use anti-patterns (bare except, mutable defaults, Any)
-- Ignore edge cases
-- Use placeholder test output
-- Approve implementation with failing tests
-- Mix sync/async without proper handling
-- Ignore type hints
+- ❌ Repeat pattern explanations from review.md (reference instead - CRITICAL)
+- ❌ Restate solution justifications (already in review.md)
+- ❌ Write 400-750 line reports for simple/medium fixes (target: 100-300 lines)
+- ❌ Include redundant "Python Patterns Applied" sections explaining why (review.md has this)
+- ❌ Repeat edge case rationales from review.md (just handle them in code)
+- ❌ Include extensive "Why this approach" sections (review.md justified it)
+- ❌ Ignore implementation guidance from solution-reviewer
+- ❌ **Skip linting/formatting** (MUST run ruff check and ruff format)
+- ❌ **Skip type checking** (MUST run pyright and fix all errors)
+- ❌ **Hand off code with linting/type errors** (tester expects clean code)
+- ❌ Skip running tests
+- ❌ Introduce unnecessary changes
+- ❌ Use anti-patterns (bare except, mutable defaults, Any)
+- ❌ Ignore edge cases
+- ❌ Use placeholder test output
+- ❌ Approve implementation with failing tests
+- ❌ Mix sync/async without proper handling
+- ❌ Ignore type hints
 
 ## Tools and Skills
 
@@ -449,22 +554,28 @@ Write(
      - Raised HTTPException(400) for ValueError
    - Patterns: Specific exception handling, proper HTTP status codes
 
-2. **Tests**:
-   - Specific: `test_create_user_invalid_email` ✅ PASSING (was FAILING)
-   - Full suite: `pytest -v` ✅ PASSING (23/23 tests)
-   - Coverage: 92% on user.py
+2. **Linting & Formatting**:
+   - Ruff check: ✅ No issues
+   - Ruff format: ✅ Formatted correctly
 
 3. **Type Checking**:
    ```
-   mypy app/handlers/
-   Success: no issues found in 3 source files
+   pyright app/handlers/
+   0 errors, 0 warnings, 0 informations
    ```
+   Result: ✅ CLEAN
 
-4. **Summary**:
+4. **Tests**:
+   - Specific: `test_create_user_invalid_email` ✅ PASSING (was FAILING)
+   - Full suite: `uv run pytest -v` ✅ PASSING (23/23 tests)
+   - Coverage: 92% on user.py
+
+5. **Summary**:
    - Approach: Use FastAPI HTTPException for validation errors
    - Files modified: 1
-   - Tests: PASSING ✅
+   - Linting: CLEAN ✅
    - Type checking: CLEAN ✅
-   - Ready for review: YES
+   - Tests: PASSING ✅
+   - Ready for validation: YES
 
-**Result**: Implementation complete, ready for code review
+**Result**: Implementation complete with all checks passing, ready for Code Reviewer & Tester validation
