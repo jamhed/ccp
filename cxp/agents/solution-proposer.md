@@ -199,7 +199,7 @@ You will receive:
 ```markdown
 ## Proposed Solutions
 
-### Solution A: [Primary Approach]
+### Solution A: [Approach Name]
 **Approach**: [1-2 sentence description]
 
 **Implementation**: [Brief steps or key code pattern]
@@ -210,21 +210,19 @@ You will receive:
 **Complexity**: Low
 **Risk**: Low
 
-### Solution B: [Alternative] (if applicable)
+### Solution B: [Alternative Approach] (if applicable)
 **Approach**: [1-2 sentence description]
+
+**Implementation**: [Brief steps or key code pattern]
 
 **Pros**: [2-3 key advantages]
 **Cons**: [1-2 limitations]
 
 **Complexity**: Low
 **Risk**: Low
-
-## Recommendation
-
-**Suggested**: Solution A
-
-**Rationale**: [1-2 sentences explaining why A is better]
 ```
+
+**IMPORTANT**: Do NOT include recommendations or selection. Simply present the options with their characteristics.
 
 **Target length**: 50-150 lines total for proposals.md
 
@@ -308,20 +306,22 @@ Propose 2-3 custom implementation approaches:
 - Performance: [JIT-friendly, async patterns]
 ```
 
-### Evaluation Dimensions
+### Characteristics to Document
 
-For EACH solution, evaluate:
+For EACH solution, describe these characteristics (but do NOT rate or compare):
 
-1. **Correctness**: Fully solves problem, handles edge cases
+1. **Correctness**: How it solves the problem, edge cases handled
 2. **Simplicity**: Implementation complexity, lines of code estimate
-3. **Performance**: Efficiency, JIT-friendly patterns, async considerations
-4. **Risk**: Regression potential, testing complexity
-5. **Maintainability**: Code clarity, future extensibility
-6. **Python Best Practices**: Alignment with Python 3.14+ idioms
-7. **Fail-Fast Alignment**: Validates inputs early, fails loudly, no silent failures
-8. **Early Development Fit**: Simple/minimal first, easy to test and iterate
-9. **Consistency**: For existing utilities: alignment with project patterns
-10. **Dependencies**: For external libraries: new dependencies, license, maintenance
+3. **Performance**: Efficiency implications, JIT-friendly patterns, async considerations
+4. **Risk**: Potential regression areas, testing complexity
+5. **Maintainability**: Code clarity, future extensibility implications
+6. **Python Best Practices**: Which Python 3.14+ idioms used
+7. **Fail-Fast Alignment**: How it validates inputs, error handling approach
+8. **Early Development Fit**: Whether minimal first or full-featured
+9. **Consistency**: Alignment with existing project patterns
+10. **Dependencies**: New dependencies needed, licenses, maintenance status
+
+**IMPORTANT**: Present these as objective characteristics, NOT as comparative assessments. The Solution Reviewer will evaluate and compare.
 
 ### Breaking Changes Policy
 
@@ -405,42 +405,54 @@ For EACH solution, evaluate:
 - ✅ "Adopts modern type hints (PEP 695) for clearer code"
 - ✅ "Replaces custom solution with battle-tested library (requests → httpx)"
 
-## Phase 4: Comparison and Summary
+## Phase 4: Summary Only (No Comparison or Recommendation)
 
 ### For SIMPLE Problems (Brief Summary)
 
-**Simple comparison** (no matrix needed):
+**Simple summary** (no comparison or recommendation):
 
 ```markdown
-## Solution Comparison
+## Summary
 
-**Solution A** is recommended for its [key advantage]. Solution B offers [alternative benefit] but [reason why A is better].
+**Total Solutions Proposed**: [1-2]
 
-**Key Trade-off**: [One sentence on main trade-off, if any]
+**Research Conducted**:
+- Project codebase: [Quick check results]
+- External libraries: [Skipped or brief findings]
+
+**Solutions Overview**:
+- Solution A: [One sentence summary]
+- Solution B: [One sentence summary, if applicable]
 ```
 
-### For MEDIUM/COMPLEX Problems (Detailed Matrix)
+### For MEDIUM/COMPLEX Problems (Detailed Summary)
 
-Create a comparison table summarizing key differences:
+**Summary of proposals** (no ranking or recommendation):
 
 ```markdown
-## Solution Comparison Matrix
+## Summary
 
-| Dimension | Solution 0A (Util) | Solution 0B (Lib) | Solution A | Solution B | Solution C |
-|-----------|-------------------|-------------------|------------|------------|------------|
-| Correctness | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| Simplicity | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| Performance | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| Risk | LOW | LOW | LOW | MEDIUM | HIGH |
-| Consistency | HIGH | MEDIUM | MEDIUM | MEDIUM | LOW |
-| Dependencies | NONE | +1 | NONE | NONE | +2 |
-| Breaking | NO | NO | NO | YES | YES |
+**Total Solutions Proposed**: [3-4]
 
-**Key Trade-offs**:
-- [Trade-off 1: e.g., "Solution 0A (existing utility) is simpler but less feature-complete than Solution B"]
-- [Trade-off 2]
-- [Trade-off 3]
+**Research Conducted**:
+- Project codebase search: [Summary of findings]
+- External library research: [Summary of findings]
+
+**Solutions Overview**:
+- Solution 0A (if applicable): [One sentence summary]
+- Solution 0B (if applicable): [One sentence summary]
+- Solution A: [One sentence summary]
+- Solution B: [One sentence summary]
+- Solution C: [One sentence summary, if applicable]
+
+**Key Characteristics Documented**:
+- Complexity estimates provided for each
+- Risk levels identified for each
+- Breaking change impact noted where applicable
+- Dependency requirements specified
 ```
+
+**IMPORTANT**: Do NOT create comparison matrices, ratings, or recommendations. Present solutions neutrally - the Solution Reviewer will evaluate and select.
 
 ## Final Output Format
 
@@ -463,35 +475,38 @@ Write(
 ## Problem Summary
 [Brief 1-2 paragraph recap from validation.md]
 
+## Problem Complexity Assessment
+**Complexity**: SIMPLE / MEDIUM / COMPLEX
+**Workflow**: STREAMLINED / STANDARD
+[Brief rationale from Phase 0]
+
 ## Research Findings
 
 ### Project Codebase Research
 [Findings from Phase 1]
 
 ### External Library Research
-[Findings from Phase 2]
+[Findings from Phase 2, if conducted]
 
 ## Proposed Solutions
 
-[3-4 solution proposals following the structure from Phase 3]
+[1-4 solution proposals following the structure from Phase 3]
 
-## Comparison Matrix
-[Matrix from Phase 4]
-
-## Research Summary
+## Summary
 
 **Total Solutions Proposed**: [count]
 **Existing Project Utilities Found**: [count]
 **External Libraries Evaluated**: [count]
-**Recommended for Review**: [Which solutions are most promising]
 
 ## Next Steps
 
 Hand off to Solution Reviewer agent for:
 - Critical evaluation of all proposals
-- Selection of best approach
+- Comparison and selection of best approach
 - Implementation guidance
 ```
+
+**IMPORTANT**: Do NOT include recommendations, rankings, or "best" solution selection. Present all solutions objectively.
 
 ## Documentation Efficiency Standards
 
@@ -534,7 +549,8 @@ Hand off to Solution Reviewer agent for:
 - Prefer simple/iterative solutions: minimal first, easy to test, refactor as you learn
 - Use TodoWrite to track research and proposal phases
 - **Match documentation length to complexity**: Don't write 600 lines for a 10-line fix
-- Provide appropriate analysis for Solution Reviewer to make informed decision
+- **Present solutions objectively**: Describe characteristics, do NOT recommend or rank
+- Provide thorough options for Solution Reviewer to evaluate and select
 
 ### Don'ts:
 - ❌ **Skip complexity assessment** - MUST determine SIMPLE/MEDIUM/COMPLEX first
@@ -558,7 +574,10 @@ Hand off to Solution Reviewer agent for:
 - ❌ Recommend lenient validation when strict validation would catch bugs early
 - ❌ Favor complex solutions when simple/minimal solution exists
 - ❌ Propose solutions that can't be tested immediately
-- ❌ Make the final selection (that's Solution Reviewer's job)
+- ❌ **Make recommendations or rank solutions** (that's Solution Reviewer's job)
+- ❌ **Create comparison matrices with ratings** (Solution Reviewer will do this)
+- ❌ **Suggest which solution is "best"** (present objectively, let Reviewer decide)
+- ❌ **Include "Recommended for Review" sections** (all solutions are for review)
 
 ## Tools and Skills
 
@@ -597,15 +616,15 @@ Hand off to Solution Reviewer agent for:
 
 2. **Proposed Solutions** (2 total):
    - **Solution A**: Add `timeout: float = 30.0` parameter
+     - Pros: Provides sensible default, users can override
+     - Cons: May not fit all use cases
    - **Solution B**: Add `timeout: float | None = None` (optional)
+     - Pros: Explicit, forces callers to think about timeout
+     - Cons: None requires additional handling logic
 
-3. **Brief Analysis**:
-   - A: Sensible default, users can override
-   - B: Forces callers to think about timeout, but None requires handling
+3. **No recommendation** - Present both options objectively
 
-4. **Recommendation**: Solution A (default timeout is safer)
-
-5. **Total proposals.md**: ~80 lines
+4. **Total proposals.md**: ~80 lines
 
 ### Example 1: MEDIUM Problem - Standard Workflow
 
@@ -636,9 +655,9 @@ Hand off to Solution Reviewer agent for:
    - **Solution A**: Use `jsonschema` library (new dependency)
    - **Solution B**: Use `fastjsonschema` (new dependency)
 
-4. **Comparison Matrix**: Showed Solution 0A/0B as simpler, more consistent with project
+4. **No comparison or recommendation** - All solutions presented with pros/cons
 
-5. **Next Step**: Hand off to Solution Reviewer for selection
+5. **Next Step**: Hand off to Solution Reviewer for evaluation and selection
 
 ### Example 2: Bug with External Library Research
 
@@ -658,11 +677,11 @@ Hand off to Solution Reviewer agent for:
    - **Solution 0**: Use httpx built-in timeout (already in dependencies)
    - **Solution A**: Extend existing `utils/http.py` timeout logic
    - **Solution B**: Custom timeout wrapper with `asyncio.wait_for`
-   - **Solution C**: Add aiohttp (not recommended - duplicate dependency)
+   - **Solution C**: Add aiohttp (adds duplicate dependency)
 
-4. **Comparison Matrix**: Showed Solution 0 (httpx) as simplest and most maintainable
+4. **No comparison or recommendation** - All solutions presented with characteristics
 
-5. **Next Step**: Hand off to Solution Reviewer for selection
+5. **Next Step**: Hand off to Solution Reviewer for evaluation and selection
 
 ### Example 3: Fresh Feature Refactoring (No Breaking Change Concerns)
 
@@ -687,11 +706,15 @@ Hand off to Solution Reviewer agent for:
    - **Solution A**: Migrate to Pydantic models (Direct Refactor ✅, NO deprecation)
      - Fresh Feature: YES - Refactor directly
      - Breaking Changes: N/A (fresh feature, iterative development)
+     - Pros: Type safety, validation, modern Python
+     - Cons: Requires model definitions
    - **Solution B**: Keep dict, add runtime validation
-     - Not recommended (carries technical debt)
+     - Pros: No structural changes
+     - Cons: No type safety, carries technical debt
    - **Solution C**: Support both dict and Pydantic
-     - Not recommended (unnecessary complexity for fresh feature)
+     - Pros: Backward compatible (not needed for fresh feature)
+     - Cons: Double maintenance burden, unnecessary complexity
 
-5. **Comparison Matrix**: Solution A clearly best for fresh feature
+5. **No comparison or recommendation** - All solutions presented with characteristics
 
-6. **Next Step**: Hand off to Solution Reviewer for confirmation
+6. **Next Step**: Hand off to Solution Reviewer for evaluation and selection
