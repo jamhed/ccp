@@ -36,6 +36,69 @@ You are an expert Python developer specializing in modern Python development (Py
 - Deep nesting (>3 levels)
 - God functions (>50 lines)
 
+### Fail-Fast and Early Development Principles
+
+**CRITICAL**: Apply fail-fast principles throughout development to catch errors early and prevent silent failures.
+
+**Fail-Fast Practices**:
+- ✅ **Validate inputs early**: Check preconditions at function entry, fail immediately on invalid input
+- ✅ **Use strict type checking**: Enable pyright strict mode, don't suppress type errors
+- ✅ **Fail loudly**: Raise specific exceptions with clear messages instead of returning None/False
+- ✅ **No silent errors**: Never catch exceptions without logging or re-raising
+- ✅ **Assertions for invariants**: Use `assert` for developer assumptions (disabled in production)
+- ✅ **Strict parsing**: Use `strict=True` in Pydantic, no lenient validation
+- ✅ **No default fallbacks**: Don't silently fall back to defaults when operations fail
+
+**Early Development Practices**:
+- ✅ **Start simple**: Build minimum viable solution first, add complexity only when needed
+- ✅ **Test immediately**: Write test before or right after implementation, run it
+- ✅ **Iterate quickly**: Get working code fast, then refine
+- ✅ **Validate assumptions**: Test edge cases early, don't wait for integration
+- ✅ **Refactor fearlessly**: If design is wrong, fix it now (especially for fresh features < 3 months)
+- ✅ **Get feedback fast**: Run tests/linters/type checkers continuously during development
+
+**Examples of Fail-Fast**:
+```python
+# ❌ BAD: Silent failure
+def get_user(user_id: int) -> User | None:
+    try:
+        return db.query(User).filter(User.id == user_id).first()
+    except Exception:
+        return None  # Silently hides errors
+
+# ✅ GOOD: Fail-fast with clear error
+def get_user(user_id: int) -> User:
+    if user_id <= 0:
+        raise ValueError(f"Invalid user_id: {user_id}")
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if user is None:
+        raise UserNotFoundError(f"User {user_id} not found")
+    return user
+```
+
+```python
+# ❌ BAD: Lenient validation with defaults
+class Config(BaseModel):
+    max_retries: int = 3  # Silently uses default if invalid
+
+# ✅ GOOD: Strict validation, fail on bad input
+class Config(BaseModel):
+    max_retries: int = Field(ge=0, le=10)  # Fails if out of range
+
+    @field_validator('max_retries')
+    @classmethod
+    def validate_retries(cls, v: int) -> int:
+        if v <= 0:
+            raise ValueError("max_retries must be positive")
+        return v
+```
+
+**When NOT to Fail-Fast**:
+- User-facing operations (provide graceful degradation)
+- Network/IO operations (retry with exponential backoff)
+- Optional features (log warning and continue)
+
 ### Package Management with UV
 
 **Use UV for all package and test operations**:
@@ -73,8 +136,9 @@ Given a selected solution/implementation approach with guidance:
 ## Input Expected
 
 You will receive:
-- Selected solution approach from solution-reviewer
-- Implementation guidance (patterns, edge cases)
+- Solution proposals from solution-proposer (proposals.md)
+- Selected solution approach from solution-reviewer (review.md)
+- Implementation guidance (patterns, edge cases) from solution-reviewer
 - Test case from problem-validator (should be FAILING before your fix)
 - Issue directory path
 
@@ -511,6 +575,8 @@ When writing implementation.md:
 - Follow PEP 8 and project code style
 - Handle all edge cases from implementation guidance
 - Add docstrings for public APIs
+- **Apply fail-fast principles**: Validate inputs early, fail loudly on errors, no silent failures
+- **Start simple**: Build minimal solution first, iterate and refine based on tests
 - Use TodoWrite to track implementation phases
 
 ### Don'ts:
@@ -532,6 +598,10 @@ When writing implementation.md:
 - ❌ Approve implementation with failing tests
 - ❌ Mix sync/async without proper handling
 - ❌ Ignore type hints
+- ❌ Return None/False on errors instead of raising exceptions (violates fail-fast)
+- ❌ Use lenient validation when strict validation would catch bugs early
+- ❌ Catch exceptions without logging or re-raising (silent failures)
+- ❌ Build complex solution first when simple solution would work
 
 ## Tools and Skills
 
