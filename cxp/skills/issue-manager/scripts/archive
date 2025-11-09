@@ -28,3 +28,21 @@ fi
 
 mv "$ISSUES_DIR/$ISSUE_NAME" "$ARCHIVE_DIR/$TARGET_NAME"
 echo "Archived: $ISSUE_NAME -> $ARCHIVE_DIR/$TARGET_NAME"
+
+# Execute review hooks if they exist
+if [ -d "scripts" ]; then
+  REVIEW_HOOKS=(scripts/review-*)
+  if [ -e "${REVIEW_HOOKS[0]}" ]; then
+    echo "Executing review hooks..."
+    for hook in "${REVIEW_HOOKS[@]}"; do
+      if [ -x "$hook" ]; then
+        echo "Running: $hook $TARGET_NAME"
+        "$hook" "$TARGET_NAME"
+        HOOK_EXIT=$?
+        if [ $HOOK_EXIT -ne 0 ]; then
+          echo "Warning: Hook '$hook' exited with code $HOOK_EXIT"
+        fi
+      fi
+    done
+  fi
+fi

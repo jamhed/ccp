@@ -24,7 +24,7 @@ Multi-phase problem-solving workflow agents:
 Standalone code quality agents:
 
 - **Code Quality Reviewer**: Reviews Python code as a senior developer to identify refactoring opportunities, code duplication, complexity issues, and modern Python 3.14+ best practice improvements
-- **Bug Hunter**: Critically reviews code to identify potential bugs, security vulnerabilities, performance bottlenecks, async issues, and edge cases
+- **Bug Hunter**: Critically reviews code to identify logic errors, oversights, refactoring remnants, edge cases, and potential bugs
 
 ## Commands
 
@@ -139,74 +139,83 @@ Analyze code quality and create refactoring issues ready for the `/cxp:solve` wo
 
 ### /cxp:audit [scope]
 
-Critical security and bug audit to identify vulnerabilities, potential bugs, and performance issues.
+Comprehensive bug audit to identify logic errors, oversights, refactoring remnants, and potential bugs.
 
-**Usage**: `/cxp:audit [file-path | module-name | "critical" | "all"]`
+**Usage**: `/cxp:audit [file-path | module-name | "all"]`
 
 **What it does**:
-1. **Security scanning**:
-   - Injection vulnerabilities (SQL, command, path traversal, XSS)
-   - Authentication/authorization bypasses
-   - Hardcoded secrets, weak cryptography
-   - Insecure deserialization
+1. **Logic error detection**:
+   - Off-by-one errors, wrong operators, incorrect algorithms
+   - Boolean logic mistakes, copy-paste errors
 
-2. **Bug detection**:
-   - Logic errors (off-by-one, wrong operators, incorrect algorithms)
-   - Edge cases (None checks, division by zero, index out of bounds)
-   - Type safety issues (runtime type errors)
-   - Error handling gaps (unhandled exceptions, silent failures)
+2. **Oversight detection**:
+   - Missing None checks, empty collection handling
+   - Boundary conditions, division by zero
+   - Missing input validation
 
-3. **Performance analysis** (with profiling evidence):
-   - N+1 query patterns
-   - Memory leaks (with profiling data)
-   - Blocking calls in async code
-   - CPU bottlenecks
+3. **Refactoring remnants**:
+   - Dead code, unused variables/functions
+   - Commented-out code, TODO/FIXME markers
+   - Incomplete migrations, orphaned functions
 
-4. **Async/concurrency issues**:
+4. **Type safety & error handling**:
+   - Missing type hints leading to runtime errors
+   - Unhandled exceptions, silent failures
+   - Missing cleanup (context managers)
+
+5. **Async/await issues**:
    - Blocking I/O in async functions
    - Missing await statements
-   - Race conditions, deadlocks
-   - Task management issues
+   - Race conditions
 
-5. **Creates individual issues** in `issues/` folder:
+6. **Performance issues** (with evidence):
+   - N+1 query patterns
+   - Blocking calls
+
+7. **Basic security** (obvious cases only):
+   - SQL injection, hardcoded secrets
+
+8. **Creates individual issues** in `issues/` folder:
    - Prioritized by severity (Critical/High/Medium/Low)
-   - Includes evidence (tool output, profiling, reproduction steps)
+   - Includes evidence (tool output, reproduction steps)
    - Ready for `/cxp:solve [issue-name]` workflow
 
 **Examples**:
-- `/cxp:audit auth` - Audit authentication module for security issues
+- `/cxp:audit services/user` - Audit user service for bugs and oversights
 - `/cxp:audit app/api/handlers.py` - Audit specific file
-- `/cxp:audit critical` - Audit only critical paths (auth, payments, data processing)
 - `/cxp:audit all` - Audit entire codebase
 
 **Output**:
-- `issues/bug-[name]/problem.md` - Individual bug/security issues (ready for `/cxp:solve`)
+- `issues/bug-[name]/problem.md` - Individual bug/issue reports (ready for `/cxp:solve`)
 - `audit-report-[timestamp].md` - Comprehensive audit summary
 
 **Example Workflow**:
 ```bash
-# 1. Audit authentication module
-/cxp:audit auth
+# 1. Audit user service
+/cxp:audit services/user
 
-# Output: Created 4 issues
-# - bug-sql-injection-login (Critical - FIX IMMEDIATELY!)
-# - bug-weak-password-hash (Critical)
-# - bug-missing-rate-limit (High)
-# - bug-session-timeout-missing (Medium)
+# Output: Created 5 issues
+# - bug-off-by-one-pagination (High - logic error)
+# - bug-missing-none-check-user-email (High - oversight causing crashes)
+# - bug-unused-function-old-validation (Medium - refactoring remnant)
+# - bug-blocking-db-call-async (Medium - async issue)
+# - bug-sql-injection-user-search (High - obvious security)
 
-# 2. Fix critical security issues immediately
-/cxp:solve bug-sql-injection-login
+# 2. Fix high severity bugs first
+/cxp:solve bug-off-by-one-pagination
 
-# 3. Fix remaining bugs
-/cxp:solve bug-weak-password-hash
-/cxp:solve bug-missing-rate-limit
+# 3. Fix oversights
+/cxp:solve bug-missing-none-check-user-email
+
+# 4. Clean up refactoring remnants
+/cxp:solve bug-unused-function-old-validation
 ```
 
 **Difference from /cxp:review**:
-- **`/cxp:audit`**: Finds **bugs, security vulnerabilities, crashes**
+- **`/cxp:audit`**: Finds **bugs, logic errors, oversights, refactoring remnants**
 - **`/cxp:review`**: Finds **refactoring opportunities, code quality improvements**
 
-**Tools used**: Bandit, Ruff (security checks), Pyright, cProfile, py-spy, manual security review
+**Tools used**: Ruff (bug detection), Pyright, Vulture (dead code), cProfile, manual code review
 
 ## Issue Management System
 
@@ -343,40 +352,44 @@ After installation, check your `~/.claude/plugins/marketplace` folder. To update
 ### 3. Archive
 Issue automatically moved to `archive/bug-async-validation-error/` with all audit trail files.
 
-### 4. Security & Bug Audit (Critical)
+### 4. Bug Audit (Recommended)
 ```
-/cxp:audit auth
+/cxp:audit services/user
 ```
 
-**Result**: Creates **4 bug/security issues** in `issues/` folder + audit report:
-- `bug-sql-injection-login` (Critical - FIX IMMEDIATELY!)
-- `bug-weak-password-hash` (Critical)
-- `bug-missing-rate-limit` (High)
-- `bug-session-timeout-missing` (Medium)
+**Result**: Creates **5 bug/issue reports** in `issues/` folder + audit report:
+- `bug-off-by-one-pagination` (High - logic error)
+- `bug-missing-none-check-user-email` (High - oversight causing crashes)
+- `bug-unused-function-old-validation` (Medium - refactoring remnant)
+- `bug-blocking-db-call-async` (Medium - async issue)
+- `bug-sql-injection-user-search` (High - obvious security)
 
 **Audit report** (`audit-report-[timestamp].md`) includes:
-- All issues organized by severity (Critical/High/Medium)
-- Security posture assessment
-- Critical priorities (fix immediately)
-- Tool findings (Bandit, Ruff, Pyright)
+- All issues organized by severity and category
+- Bug type breakdown (logic errors, oversights, remnants)
+- Priorities (fix high severity first)
+- Tool findings (Ruff, Pyright, Vulture)
 
-**Next step**: Fix critical issues immediately
+**Next step**: Fix high severity bugs first
 
 ```bash
-# Fix critical security issues ASAP
-/cxp:solve bug-sql-injection-login
-/cxp:solve bug-weak-password-hash
+# Fix logic errors
+/cxp:solve bug-off-by-one-pagination
 
-# Then high severity bugs
-/cxp:solve bug-missing-rate-limit
+# Fix oversights causing crashes
+/cxp:solve bug-missing-none-check-user-email
+
+# Clean up refactoring remnants
+/cxp:solve bug-unused-function-old-validation
 ```
 
 **Use this to**:
-- Find security vulnerabilities before attackers do
-- Identify potential crashes and data corruption
-- Detect performance bottlenecks (with profiling evidence)
-- Fix async/await issues and race conditions
-- Handle edge cases and improve error handling
+- Find logic errors and off-by-one bugs
+- Identify oversights (missing None checks, edge cases)
+- Clean up refactoring remnants (dead code, unused variables)
+- Fix type safety issues leading to runtime errors
+- Detect async/await mistakes
+- Find obvious security issues (SQL injection, hardcoded secrets)
 
 ### 5. Proactive Code Quality Review (Recommended)
 ```

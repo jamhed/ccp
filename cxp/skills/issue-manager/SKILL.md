@@ -70,6 +70,10 @@ cxp/skills/issue-manager/scripts/archive agent-crd-embedding-in-tool
 - Creates the `archive/` directory if it doesn't exist
 - Checks if an issue with the same name already exists in archive
 - If duplicate exists, appends timestamp (YYYYMMDD-HHMMSS) to avoid conflicts
+- Executes review hooks if they exist in the `scripts/` directory:
+  - Looks for executable scripts starting with `review-`
+  - Runs each hook sequentially, passing the issue name as an argument
+  - Continues archiving even if hooks fail (warnings are displayed)
 - Moves the entire issue folder to `archive/`
 - Preserves all issue files (problem.md, solution.md, audit trail, etc.)
 
@@ -183,12 +187,47 @@ The scripts support these environment variables:
 ISSUES_DIR=bugs ARCHIVE_DIR=resolved cxp/skills/issue-manager/scripts/list-open
 ```
 
+## Review Hooks
+
+The archive script supports custom review hooks that execute before archiving an issue. This allows you to run automated checks, validations, or custom workflows.
+
+**Setting up review hooks:**
+
+1. Create executable scripts in the `scripts/` directory
+2. Name them starting with `review-` (e.g., `review-checklist`, `review-tests`)
+3. Make them executable: `chmod +x scripts/review-*`
+4. The script receives the issue name as the first argument
+
+**Example review hook:**
+```bash
+#!/bin/bash
+# scripts/review-validate
+ISSUE_NAME="$1"
+echo "Validating issue: $ISSUE_NAME"
+
+# Check if solution.md exists
+if [ ! -f "issues/$ISSUE_NAME/solution.md" ]; then
+  echo "Error: No solution.md found"
+  exit 1
+fi
+
+echo "Validation passed"
+exit 0
+```
+
+**Hook execution:**
+- Hooks run sequentially in alphabetical order
+- Each hook receives the issue name as an argument
+- Non-zero exit codes generate warnings but don't stop archiving
+- Hook output is displayed during the archive process
+
 ## Best Practices
 
 1. **Before archiving:** Ensure the issue has a complete `solution.md` file
 2. **Refine early:** Use refine to clarify problem definitions before implementation
 3. **Regular cleanup:** Archive solved issues to keep the issues/ directory focused
 4. **Preserve history:** Archived issues retain all files for future reference
+5. **Use review hooks:** Automate checks before archiving (e.g., solution validation, test verification)
 
 ## Common Patterns
 
