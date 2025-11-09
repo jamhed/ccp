@@ -21,6 +21,10 @@ Multi-phase problem-solving workflow agents:
 - **Code Reviewer & Tester**: Reviews code quality, runs linters, type checkers, and tests
 - **Documentation Updater**: Creates solution documentation and git commits
 
+Standalone code quality agents:
+
+- **Code Quality Reviewer**: Reviews Python code as a senior developer to identify refactoring opportunities, code duplication, complexity issues, and modern Python 3.14+ best practice improvements
+
 ## Commands
 
 All commands are scoped to the plugin and should be invoked as `/cxp:command`.
@@ -74,6 +78,63 @@ Executes all agents in sequence for issues/[issue-name]/problem.md:
 Each agent creates an audit trail file documenting its phase, providing complete traceability from problem to solution.
 
 **Example**: `/cxp:solve bug-async-unhandled-exception`
+
+### /cxp:review [scope]
+
+Analyze code quality and create refactoring issues ready for the `/cxp:solve` workflow.
+
+**Usage**: `/cxp:review [file-path | module-name | "all"]`
+
+**What it does**:
+1. **Analyzes code** for refactoring opportunities:
+   - Code duplication (repeated logic across files)
+   - God classes/functions (complexity, SRP violations)
+   - Architecture issues (tight coupling, missing patterns)
+   - Type safety gaps (missing type hints on public APIs)
+   - Performance issues (N+1 queries, with profiling evidence)
+   - Modern Python 3.14+ upgrade opportunities
+
+2. **Creates individual issues** in `issues/` folder:
+   - Each issue is a focused, actionable refactoring opportunity
+   - Includes clear problem statement with evidence (LOC, complexity scores, duplication count)
+   - Prioritized by impact and effort (High/Medium/Low)
+   - Ready for `/cxp:solve [issue-name]` workflow
+
+3. **Generates summary report**:
+   - Lists all created issues with priorities and categories
+   - Identifies "quick wins" (high impact, low effort)
+   - Provides recommended execution order
+   - Estimates total impact if all issues are resolved
+
+**Examples**:
+- `/cxp:review services/user` - Review the user service module
+- `/cxp:review app/api/handlers.py` - Review specific file
+- `/cxp:review all` - Review entire codebase
+
+**Output**:
+- `issues/refactor-[name]/problem.md` - Individual refactoring issues (ready for `/cxp:solve`)
+- `code-review-summary-[timestamp].md` - Summary report with all findings and recommendations
+
+**Example Workflow**:
+```bash
+# 1. Review code
+/cxp:review services/user
+
+# Output: Created 5 issues
+# - refactor-split-user-service-god-class (High priority)
+# - refactor-extract-validation-logic (High priority - Quick Win!)
+# - refactor-add-type-hints-user-module (Medium priority)
+# - refactor-introduce-repository-pattern (Medium priority)
+# - refactor-use-dataclasses-user-models (Low priority)
+
+# 2. Start with quick wins
+/cxp:solve refactor-extract-validation-logic
+
+# 3. Tackle high priority issues
+/cxp:solve refactor-split-user-service-god-class
+
+# 4. Continue with remaining issues as capacity allows
+```
 
 ## Issue Management System
 
@@ -209,6 +270,43 @@ After installation, check your `~/.claude/plugins/marketplace` folder. To update
 
 ### 3. Archive
 Issue automatically moved to `archive/bug-async-validation-error/` with all audit trail files.
+
+### 4. Proactive Code Quality Review (Recommended)
+```
+/cxp:review services/user
+```
+
+**Result**: Creates **5 refactoring issues** in `issues/` folder + summary report:
+- `refactor-split-user-service-god-class` (High priority)
+- `refactor-extract-validation-logic` (High priority - Quick Win!)
+- `refactor-add-type-hints-user-module` (Medium priority)
+- `refactor-introduce-repository-pattern` (Medium priority)
+- `refactor-use-dataclasses-user-models` (Low priority)
+
+**Summary report** (`code-review-summary-[timestamp].md`) includes:
+- All issues organized by priority and category
+- Quick wins identified (high impact, low effort)
+- Estimated impact: ~200 LOC reduction, complexity from 42→8, type coverage 45%→95%
+- Recommended execution order
+
+**Next step**: Solve the issues one at a time using `/cxp:solve [issue-name]`
+
+```bash
+# Start with quick win
+/cxp:solve refactor-extract-validation-logic
+
+# Then tackle high priority
+/cxp:solve refactor-split-user-service-god-class
+
+# Continue with others as capacity allows
+```
+
+**Use this to**:
+- Proactively identify and fix technical debt
+- Reduce code duplication and complexity
+- Modernize to Python 3.14+ features
+- Improve architecture and testability
+- Build a prioritized refactoring roadmap
 
 ## Skill Usage
 
