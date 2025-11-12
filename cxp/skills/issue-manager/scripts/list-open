@@ -12,7 +12,7 @@ for issue in "$ISSUES_DIR"/*; do
   [ -d "$issue" ] || continue
   issue_name=$(basename "$issue")
 
-  if [ -f "$issue/problem.md" ]; then
+  if [ -f "$issue/problem.md" ] && [ ! -f "$issue/solution.md" ]; then
     echo "$issue_name"
   fi
 done
