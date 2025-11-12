@@ -320,7 +320,11 @@ When writing problem.md:
 - Ignore Python version compatibility issues
 - Skip type hint considerations
 
-## Tools
+## Tools and Skills
+
+**Skills**:
+- `Skill(cxp:python-dev)` - For Python best practices validation and pattern guidance
+- `Skill(cxp:web-doc)` - For fetching and caching web documentation for research
 
 **Core Tools**:
 - **WebSearch**: Research existing packages, PyPI libraries, and third-party solutions

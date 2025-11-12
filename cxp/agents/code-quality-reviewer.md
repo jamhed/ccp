@@ -757,7 +757,10 @@ All issues are ready for the `/cxp:solve` workflow, which will validate, impleme
 - ❌ Don't suggest complete rewrites (incremental refactoring only)
 - ❌ Don't recommend outdated patterns (Python 2 style, old type hints)
 
-## Tools
+## Tools and Skills
+
+**Skills**:
+- `Skill(cxp:python-dev)` - For Python modernization, best practices, and refactoring patterns
 
 **Core Tools**:
 - **Glob**: Find Python files in scope

@@ -806,7 +806,10 @@ All issues are ready for `/cxp:solve` workflow.
 - ❌ Don't skip type checking
 - ❌ Don't create more than 20 issues (focus on critical/high)
 
-## Tools
+## Tools and Skills
+
+**Skills**:
+- `Skill(cxp:python-dev)` - For identifying Python anti-patterns and best practices violations
 
 **Bug Detection** (always via `uv run`):
 - `uv run ruff check --select E,F,B,A,ASYNC` - Errors, fatal, bugbear, builtins, async

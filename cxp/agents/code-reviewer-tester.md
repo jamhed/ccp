@@ -791,7 +791,11 @@ When writing testing.md:
 - ❌ Fix tests without understanding what they're testing
 - ❌ Proceed to "Next Steps" if re-implementation is required (report and stop)
 
-## Tools
+## Tools and Skills
+
+**Skills**:
+- `Skill(cxp:python-dev)` - For validating Python best practices during code review
+- `Skill(cxp:pytest-tester)` - For pytest testing guidance and best practices
 
 **Core Tools**:
 - **Read**: Read implementation.md and modified files
