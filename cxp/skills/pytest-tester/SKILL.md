@@ -48,6 +48,51 @@ Use this skill when:
 - Testing async code
 - Improving test coverage
 
+## Manual Testing Best Practices
+
+**CRITICAL**: Always perform manual smoke testing of CLI commands after implementation.
+
+### Why Manual Testing Matters
+
+- Integration tests may mock async execution or miss edge cases
+- Runtime warnings (coroutines, async/await bugs) only appear in actual execution
+- CLI UX issues (formatting, error messages) need human verification
+
+### Lesson Learned
+
+**Issue Example**:
+- Tool execution had missing `await` wrapper
+- Result: Returned coroutine object instead of executing, RuntimeWarning
+- Root cause: Async code path not manually tested
+- Discovery: User ran command and encountered error
+- All integration tests passed, but didn't catch the runtime async bug
+
+### Manual Testing Checklist
+
+1. Run automated tests: `pytest tests/integration/cli/test_<command>.py -v`
+2. Manual smoke test: Run actual CLI command with real data
+3. Test all output formats: `--output-format=text|json|query` (or equivalent)
+4. Test error conditions (invalid input, missing resources)
+5. Test with verbose logging: `-v`, `-vv` (catch warnings)
+
+### Example Manual Testing
+
+```bash
+# Test primary code path with real data
+python -m myapp command --args
+
+# Test all output formats
+python -m myapp command --output-format=json
+python -m myapp command --output-format=query
+
+# Test error conditions
+python -m myapp command invalid-input  # Invalid input
+python -m myapp nonexistent-command   # Missing command
+
+# Test with verbose logging to catch warnings
+python -m myapp command -vv
+```
+
 ## Pytest Best Practices
 
 ### Test Organization
@@ -222,6 +267,28 @@ def test_validate_email_invalid(email, error_message):
         validate_email(email)
 ```
 
+## Test Markers and Organization
+
+Use markers for selective test execution (recommended markers):
+
+- `@pytest.mark.unit` - Unit tests (< 1s, fast, parallel)
+- `@pytest.mark.integration` - Integration tests (fast subset)
+- `@pytest.mark.slow` - Slow tests (> 1s, timeout tests, sequential)
+- `@pytest.mark.fast` - Fast tests (< 1s, parallel)
+- `@pytest.mark.asyncio` - Async tests requiring pytest-asyncio
+- `@pytest.mark.timeout` - Tests involving timeout behavior
+
+```bash
+# Run only fast tests
+pytest -m fast -n auto
+
+# Exclude slow tests
+pytest -m "not slow" -n auto
+
+# Run timeout tests only
+pytest -m timeout -v
+```
+
 ## Pytest Configuration
 
 ### pytest.ini
@@ -242,10 +309,12 @@ addopts =
     --cov-report=html
     --cov-fail-under=80
 markers =
-    unit: Unit tests
+    unit: Unit tests (fast, parallel)
     integration: Integration tests
-    slow: Slow tests (run with -m slow)
+    slow: Slow tests (run with -m slow, sequential)
+    fast: Fast tests (< 1s, parallel)
     asyncio: Async tests
+    timeout: Tests involving timeout behavior
 asyncio_mode = auto
 ```
 
@@ -295,6 +364,8 @@ pytest -k "test_create"
 
 # Run tests with specific marker
 pytest -m integration
+pytest -m "not slow"        # Exclude slow tests
+pytest -m "fast and unit"   # Combine markers
 
 # Run last failed tests
 pytest --lf
@@ -322,6 +393,30 @@ pytest --testmon
 
 # Parallel execution
 pytest -n auto  # requires pytest-xdist
+```
+
+## Development Workflow (recommended)
+
+```bash
+# Development cycle (lint + fast tests)
+make dev
+
+# CI workflow (lint + all tests + coverage)
+make ci
+
+# Specific test suites
+make test-unit              # Unit tests (fast, parallel)
+make test-integration       # Integration tests (fast, parallel)
+make test-integration-slow  # Slow integration tests (sequential)
+make test-all               # All tests
+
+# Linting and formatting
+make lint                   # All linting checks
+uv run ruff format src/ tests/
+
+# Debug specific tests
+pytest tests/unit/test_file.py::test_name -v
+pytest -m "not mcp" -n auto  # Exclude specific markers
 ```
 
 ## Debugging Test Failures
@@ -363,6 +458,7 @@ pytest --cov=app.services.user --cov-report=term-missing
 - Share fixtures with broad scope when not needed
 - Ignore flaky tests (fix them)
 - Skip coverage of error paths
+- **Skip manual CLI testing** (automated tests may miss runtime async bugs)
 
 ### Do:
 - Keep tests focused and isolated
@@ -374,6 +470,8 @@ pytest --cov=app.services.user --cov-report=term-missing
 - Use async tests for async code
 - Aim for >80% coverage
 - Test edge cases
+- **Always perform manual smoke testing for CLI commands**
+- Use test markers (unit, integration, slow, fast) for selective test execution
 
 ## Example Test Suite Structure
 
@@ -444,3 +542,19 @@ pytest --cov=app --cov-fail-under=80
 - **async-testing.md**: Async test patterns with pytest-asyncio
 - **mock-patterns.md**: Mocking strategies and best practices
 - **fixture-patterns.md**: Advanced fixture usage and patterns
+
+## Best Practices Summary
+
+This skill incorporates modern Python testing practices:
+
+- **Manual Testing is Critical**: Integration tests may mock async execution or miss edge cases. Always perform manual smoke testing of CLI commands.
+- **Test Markers**: Use markers (unit, integration, slow, fast, mcp, timeout) for selective test execution
+- **Test Organization**: Separate unit (fast, parallel) from integration (may be slow, sequential) tests
+- **Development Workflow**: `make dev` (lint + fast tests), `make ci` (full CI workflow)
+- **Manual Testing Checklist**:
+  1. Run automated tests
+  2. Manual smoke test with real data
+  3. Test all output formats
+  4. Test error conditions
+  5. Test with verbose logging to catch warnings
+- **Lesson Learned**: Runtime warnings (async/await bugs) only appear in actual execution, not mocked tests

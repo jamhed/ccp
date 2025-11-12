@@ -1,27 +1,27 @@
 ---
 name: python-dev
-description: Expert Python development assistant for writing new code and reviewing existing codebases. Covers modern Python idioms (Python 3.14+), best practices, type safety, async patterns, JIT optimization, and idiomatic error handling.
+description: Expert Python development assistant for writing new code and reviewing existing codebases. Covers modern Python idioms (Python 3.13+), best practices, type safety, async patterns, structured logging, and idiomatic error handling.
 ---
 
 # Python Development Assistant
 
-Expert assistant for Python development, covering both writing new code and reviewing existing codebases with modern Python idioms (Python 3.14+) and best practices.
+Expert assistant for Python development, covering both writing new code and reviewing existing codebases with modern Python idioms (Python 3.13+) and best practices.
 
 ## Core Capabilities
 
 ### 1. Writing New Python Code
 When writing new Python code:
-- Use modern Python features (3.14+: JIT compiler, enhanced pattern matching, improved async)
-- Use Python 3.13+ features (TypedDict for **kwargs, improved error messages)
-- Use Python 3.12+ features (type parameter syntax, @override decorator)
-- Use Python 3.11+ features (ExceptionGroup, Self type, TaskGroup)
+- **Use modern Python 3.11-3.13 features**:
+  - Python 3.13: TypedDict for **kwargs, improved error messages, improved typing
+  - Python 3.12: type parameter syntax, @override decorator
+  - Python 3.11: ExceptionGroup, Self type, TaskGroup, pattern matching (`match`/`case`)
 - Apply type hints comprehensively (parameters, returns, attributes)
-- Use pattern matching (`match`/`case`) for complex conditionals
-- Implement proper error handling with specific exceptions and chaining
+- **Implement specific exception handling**: Catch specific exceptions, never broad `Exception` in library code
 - **Apply fail-fast principles**: Validate inputs early, fail loudly, no silent failures
 - **Start simple and iterate**: Build minimal solution first, add complexity only when needed
-- Use structured logging with `logging` module or `structlog`
+- **Use structured logging**: `logger.debug("event key=%s", value)` format with % formatting (NOT f-strings)
 - Apply async/await patterns correctly (no blocking in async functions)
+- **Avoid thin wrappers**: Only create wrappers that add transformation, logging, or coordination value
 - Use dataclasses, pydantic models for data structures
 - Follow PEP 8 and modern Python conventions
 
@@ -30,13 +30,16 @@ When writing new Python code:
 ### 2. Reviewing Existing Python Code
 When reviewing Python code:
 - Check for type safety (comprehensive type hints, no `Any` abuse)
+- **Check exception handling**: Specific exceptions in library code, broad catches only in allowed modules (CLI, executors, tools)
 - **Check fail-fast patterns**: Input validation at entry, no silent failures, fail loudly on errors
 - **Check early development patterns**: Simple before complex, easily testable, quick to iterate
+- **Check for thin wrappers**: Identify functions that just forward calls without adding value
+- **Check logging format**: Structured `event key=value` format, % formatting (not f-strings), lowercase with underscores
 - Identify async/await anti-patterns
-- Review error handling (specific exceptions, proper chaining, no returning None on errors)
+- Review error handling (specific exceptions, proper chaining with `from e`, no returning None on errors)
 - Look for performance issues (N+1 queries, blocking calls)
 - Validate security patterns (SQL injection, command injection, XSS)
-- Check testing patterns (pytest best practices, fixtures, mocks)
+- Check testing patterns (pytest best practices, fixtures, mocks, manual CLI testing)
 - Review code style (PEP 8 compliance)
 
 **References**:
@@ -82,21 +85,27 @@ Use this skill when:
 
 3. **Implement code**
    - **Start simple**: Build minimum viable solution first, iterate based on tests
-   - Use modern Python 3.14+ features (enhanced pattern matching, improved async, JIT-friendly patterns)
-   - Use Python 3.13+ features (TypedDict for **kwargs, improved type hints)
-   - Use type unions with `|`, pattern matching, ExceptionGroup, type parameter syntax
+   - **Use modern Python 3.11-3.13 features**:
+     - Python 3.13: TypedDict for **kwargs, improved type hints, improved error messages
+     - Python 3.12: type parameter syntax, @override decorator
+     - Python 3.11: ExceptionGroup, Self type, TaskGroup, pattern matching
    - Add comprehensive type hints with modern syntax
-   - **Apply fail-fast**: Validate inputs at entry, fail loudly with clear exceptions
-   - Implement proper error handling (specific exceptions, no returning None on errors)
+   - **Catch specific exceptions**: Never catch broad `Exception` in library code, only in allowed modules (CLI, executors, tools, tests)
+   - **Apply fail-fast**: Validate inputs at entry, fail loudly with clear exceptions, use exception chaining with `from e`
+   - **Avoid thin wrappers**: Only create functions that add transformation, logging, error context, or coordination
+   - **Use structured logging**: Format as `logger.debug("event key=%s", value)` with % formatting, lowercase event names
    - **Use strict validation**: Pydantic `strict=True`, no lenient defaults
-   - Use async/await correctly with improved 3.14 features
+   - Use async/await correctly
    - Add docstrings for public APIs
 
 4. **Review implementation**
    - Self-review against best practices
+   - Check exception handling (specific exceptions, proper use of broad catches)
    - Check fail-fast patterns (input validation, no silent failures)
-   - Verify simplicity (no unnecessary complexity)
+   - Verify simplicity (no unnecessary complexity, no thin wrappers)
+   - Check logging format (structured, % formatting, lowercase)
    - Run type checker (mypy/pyright)
+   - **Perform manual CLI testing** if implementing CLI commands
    - Suggest improvements if needed
 
 ### For Reviewing Existing Code
@@ -154,12 +163,29 @@ Brief overview of the code and its purpose.
 ### Positive Patterns
 - <what the code does well>
 
+### Exception Handling Analysis
+- **Specific exceptions**: Does library code catch specific exceptions, not broad `Exception`?
+- **Broad catches**: Are broad catches only in allowed modules (CLI, executors, tools, tests)?
+- **Exception chaining**: Does code use `from e` to preserve original exceptions?
+- **Documented catches**: Are broad catches documented with clear rationale?
+
 ### Fail-Fast Analysis
 - **Input validation**: Does code validate inputs at function entry?
 - **Error handling**: Does code fail loudly with clear exceptions (no returning None/False on errors)?
 - **Silent failures**: Are exceptions caught and logged/re-raised, or swallowed?
 - **Strict validation**: Is Pydantic using `strict=True` where appropriate?
 - **Early detection**: Are preconditions checked early?
+
+### Function Abstraction Analysis
+- **Thin wrappers**: Are there functions that just forward calls without adding value?
+- **Wrapper value**: Do wrappers add transformation, logging, error context, or coordination?
+- **Naming**: Could internal functions be public with better names?
+
+### Logging Standards Analysis
+- **Format**: Is logging using `event key=value` structured format?
+- **Lazy evaluation**: Using % formatting (not f-strings)?
+- **Capitalization**: Lowercase with underscores (snake_case)?
+- **Log levels**: INFO for user-visible, DEBUG for implementation details?
 
 ### Simplicity Analysis
 - **Complexity**: Is the solution as simple as possible, or unnecessarily complex?
@@ -174,6 +200,11 @@ Brief overview of the code and its purpose.
 
 ### Security Review (if applicable)
 - <SQL injection, command injection, XSS, secrets management>
+
+### Testing Review (if applicable)
+- **Test markers**: Are tests properly marked (unit, integration, slow, fast)?
+- **Manual testing**: For CLI commands, is manual smoke testing documented/performed?
+- **Coverage**: Are edge cases and error paths tested?
 ```
 
 ## Tool Integration
@@ -269,30 +300,40 @@ def get_user(user_id: int) -> User:
 
 ## Key Principles
 
-1. **Type Safety**: Comprehensive type hints, use of generics, Protocol, TypeVar, TypedDict for **kwargs
-2. **Fail-Fast**: Validate inputs early, fail loudly with clear exceptions, no silent failures, no returning None on errors
-3. **Simplicity First**: Start with minimal solution, add complexity only when needed, easy to test and iterate
-4. **Modern Features**: Python 3.14+ features (JIT compiler, enhanced pattern matching, improved async)
-5. **Modern Features**: Python 3.13+ features (TypedDict **kwargs, improved error messages)
-6. **Modern Features**: Python 3.12+ features (type parameter syntax, @override decorator)
-7. **Modern Features**: Python 3.11+ features (ExceptionGroup, Self, TaskGroup, pattern matching)
-8. **Async Correctness**: No blocking in async, proper cancellation, task lifecycle, use 3.14 improvements
-9. **Error Handling**: Specific exceptions, proper chaining with `from`, clear messages, no lenient fallbacks
-10. **Code Style**: PEP 8 compliance, clear naming, focused functions
-11. **Testing**: pytest, fixtures, mocks, async testing with pytest-asyncio, test immediately after implementation
-12. **Security**: No SQL/command injection, secrets in environment, input validation at entry points
-13. **Performance**: Use JIT-friendly patterns, generators, avoid N+1 queries, profile before optimizing
-14. **Documentation**: Docstrings for public APIs, type hints as documentation
+1. **Modern Python Features** (3.11-3.13): TypedDict for **kwargs (3.13), improved error messages (3.13), type parameter syntax (3.12), @override decorator (3.12), ExceptionGroup (3.11), Self type (3.11), TaskGroup (3.11), pattern matching (3.11)
+2. **Type Safety**: Comprehensive type hints, use of generics, Protocol, TypeVar, TypedDict for **kwargs
+3. **Exception Handling**: Catch specific exceptions in library code, broad catches only in allowed modules (CLI, executors, tools, tests), always chain with `from e`
+4. **Fail-Fast**: Validate inputs early, fail loudly with clear exceptions, no silent failures, no returning None on errors
+5. **Simplicity First**: Start with minimal solution, add complexity only when needed, easy to test and iterate
+6. **Function Abstraction**: Avoid thin wrappers that just forward calls, only create wrappers that add transformation, logging, error context, or coordination
+7. **Structured Logging**: Format as `logger.debug("event key=%s", value)` with % formatting (NOT f-strings), lowercase event names, INFO for user-visible, DEBUG for implementation
+8. **Async Correctness**: No blocking in async, proper cancellation, task lifecycle
+9. **Code Style**: PEP 8 compliance, clear naming, focused functions
+10. **Testing**: pytest, fixtures, mocks, async testing with pytest-asyncio, **manual CLI smoke testing required**, test immediately after implementation
+11. **Security**: No SQL/command injection, secrets in environment, input validation at entry points
+12. **Performance**: Generators, avoid N+1 queries, profile before optimizing
+13. **Documentation**: Docstrings for public APIs, type hints as documentation
 
 ## Reference Files
 
-- **modern-python-2025.md**: Modern Python 3.14+ features (JIT, enhanced patterns), 3.13+ (TypedDict **kwargs), 3.12+ (type params, @override), 3.11+ features, type hints, error handling, async/await, best practices
+- **modern-python-2025.md**: Modern Python 3.11-3.13 features, type hints, error handling, async/await, best practices
 - **type-safety-patterns.md**: Type hints, generics, Protocol, TypeVar, TypedDict, avoiding Any, type narrowing
-- **async-patterns.md**: Async/await best practices with 3.14 improvements, task management, cancellation, common pitfalls
+- **async-patterns.md**: Async/await best practices, task management, cancellation, common pitfalls
 - **fastapi-patterns.md**: FastAPI-specific patterns, dependency injection, request validation, error handling
 - **uv-guide.md**: UV package manager usage, project setup, dependency management, workflows
 
 Load references as needed based on the task at hand.
+
+## Modern Python Best Practices Summary
+
+This skill incorporates modern Python development best practices:
+
+- **Exception Handling Policy**: Specific exceptions in library code, documented broad catches only in allowed modules
+- **Function Abstraction Guidelines**: Avoid thin wrappers, decision framework for creating wrappers
+- **Logging Standards**: Structured format `event key=value`, % formatting, lowercase, appropriate log levels
+- **Manual Testing**: Always perform manual CLI smoke testing after implementation
+- **Test Organization**: Use markers (unit, integration, slow, fast), separate test suites, proper fixtures
+- **Development Workflow**: `make dev` (lint + fast tests), `make ci` (full workflow), manual testing checklist
 
 ## Package Management with UV
 
@@ -352,17 +393,20 @@ See [references/uv-guide.md](references/uv-guide.md) for complete UV documentati
 
 ### Example 3: Refactoring to Modern Python
 
-**User**: "Help me refactor this old Python 3.7 code to modern Python 3.14+"
+**User**: "Help me refactor this old Python 3.7 code to modern Python 3.13"
 
 **Assistant**:
 1. Loads modern-python-2025.md
 2. Identifies opportunities:
    - Replace `Union[X, None]` with `X | None`
-   - Use enhanced pattern matching (3.14)
    - Use TypedDict for **kwargs (3.13)
    - Use type parameter syntax (3.12)
+   - Use @override decorator (3.12)
+   - Use pattern matching for complex conditionals (3.11)
    - Use ExceptionGroup for multiple errors (3.11)
+   - Use Self type for method chaining (3.11)
    - Add comprehensive type hints with modern syntax
+   - Catch specific exceptions, avoid broad `Exception`
+   - Use structured logging with % formatting
    - Use dataclasses or Pydantic models
-   - Optimize for JIT compiler (3.14)
 3. Provides refactored code with explanations
