@@ -173,6 +173,23 @@ Status: CONFIRMED ✅
 - Unit tests may also be needed for specific functions
 - Use `Skill(cxp:python-dev)` for guidance on test patterns
 
+**CRITICAL - Mark Validation Tests**:
+- **Mark structural validation tests** with `@pytest.mark.validation` so they can be removed later
+- Behavioral tests that should be kept permanently should NOT have the `@pytest.mark.validation` marker
+- Example of a validation test to mark:
+  ```python
+  @pytest.mark.validation
+  def test_method_exists():
+      """Structural validation - will be removed after implementation"""
+      assert hasattr(obj, 'method_name')
+  ```
+- Example of a behavioral test (no marker needed):
+  ```python
+  def test_method_returns_correct_value():
+      """Behavioral test - permanent"""
+      assert obj.method_name() == expected_value
+  ```
+
 **CRITICAL**: Always run tests after creating them and include actual output in reports (never use placeholders).
 
 ## Phase 4: Final Validation Summary

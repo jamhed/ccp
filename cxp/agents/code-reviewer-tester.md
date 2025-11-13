@@ -222,6 +222,37 @@ Your testing.md should focus on ISSUES FOUND and FIXES APPLIED, not exhaustive p
 - [ ] Async tests use `pytest-asyncio` properly
 - [ ] No sleep() in tests (use proper async/await)
 
+### Remove Structural Validation Tests (Keep Only Behavioral Tests)
+
+**CRITICAL**: Remove any structural validation tests that were added during problem validation. Keep only behavioral tests.
+
+**How to Identify Validation Tests**:
+- Look for tests marked with `@pytest.mark.validation` - these are temporary validation tests
+- Look for structural test patterns even without the marker
+
+**Structural/Validation Tests to Remove** (❌):
+- Tests marked with `@pytest.mark.validation`
+- Tests that only check for presence of methods/attributes: `assert hasattr(obj, 'method')`
+- Tests that only check module contents: `assert 'function' in dir(module)`
+- Tests that only verify types without testing behavior: `assert isinstance(obj, Class)`
+- Tests that only check docstrings, type hints, or imports exist
+
+**Behavioral Tests to Keep** (✅):
+- Tests WITHOUT `@pytest.mark.validation` marker that test actual behavior
+- Tests that validate functionality: `assert calculate_total([1, 2, 3]) == 6`
+- Tests that verify error handling: `with pytest.raises(ValueError): invalid_input()`
+- Tests that check outputs and state: `assert user.email == "test@example.com"`
+- Tests that validate edge cases: `assert process([]) == []`
+
+**Process**:
+1. Search for `@pytest.mark.validation` in test files using Grep tool
+2. Review all test files modified or created by Problem Validator
+3. Identify and remove tests marked with `@pytest.mark.validation`
+4. Also identify tests that only validate structure (even without marker)
+5. Remove validation/structural tests using Edit tool
+6. Document removed tests in testing.md under "Structural Tests Removed"
+7. Re-run test suite to ensure behavioral tests still pass
+
 ## Phase 5: Fix Failing Tests
 
 **CRITICAL**: All failing tests MUST be fixed. Do not proceed to documentation until all tests pass.
@@ -548,6 +579,20 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/testing.md`:
 - Critical paths: Y%
 - Files below 80%: [list files]
 
+## Structural Tests Removed
+
+[Document any structural validation tests that were removed, keeping only behavioral tests]
+
+**Removed Tests** (if any):
+1. **tests/test_file.py::test_has_method** - Removed structural test checking `hasattr(obj, 'method')`
+   - Reason: Only validated structure, not behavior
+   - Kept instead: `test_method_returns_correct_value` which validates actual behavior
+2. **tests/test_module.py::test_function_exists** - Removed check for function in `dir(module)`
+   - Reason: Only validated presence, not functionality
+   - Kept instead: `test_function_processes_input_correctly` which validates behavior
+
+**Note**: If no structural tests found, omit this section.
+
 ## Test Fixes
 
 [Document test failures that were fixed]
@@ -758,9 +803,10 @@ When writing testing.md:
 - **Verify implementer ran checks** (linting, formatting, type checking) - note if skipped
 - **Perform manual security review** (SQL injection, path traversal, command injection, etc.)
 - Execute full test suite with coverage
+- **Remove structural tests, keep behavioral tests** - Delete tests that only validate code structure (hasattr, dir checks, isinstance without behavior testing)
 - **Fix ALL failing tests that can be fixed** (analyze root cause, apply fixes, re-run)
 - **Find implementation bugs through testing** - This is your primary value-add
-- Document findings clearly: test fixes (test issue), implementation bugs (code issue), security issues, re-implementation needs
+- Document findings clearly: test fixes (test issue), implementation bugs (code issue), security issues, re-implementation needs, structural tests removed
 - **Focus documentation on failures/issues** - Not exhaustive passing test lists
 - **Categorize each fix**: Test issue vs Implementation bug vs Security issue vs Re-implementation required
 - Re-run full test suite after any code change

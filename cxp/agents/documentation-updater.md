@@ -60,6 +60,7 @@ You are an expert technical documentation specialist, git workflow manager, and 
 **Before Fix**: FAILED
 **After Fix**: PASSED
 **Validation**: All tests passing ✅
+**Structural Tests Removed**: [count] validation tests removed (kept only behavioral tests)
 
 ## References
 - Problem Definition: problem.md
@@ -487,7 +488,8 @@ git status  # Should be clean
 
    - Add Field(default=100) to Pydantic model for max_iterations
    - Add field validator to enforce range (1-1000)
-   - Create test_validation_infinite_loop to verify fix
+   - Add test_validation_infinite_loop to verify fix
+   - Remove structural validation tests (kept behavioral tests only)
    - Use type-safe Pydantic pattern for configuration
    - Update issue documentation with solution details
 
