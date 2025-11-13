@@ -337,7 +337,7 @@ When writing review.md:
 **Common tools**: Grep, Glob, Read, Write for file operations
 
 **IMPORTANT**: If running tests or checks for verification, always use `uv run`:
-- Tests: `uv run pytest`
+- Tests: `uv run pytest -n auto`
 - Type checking: `uv run pyright`
 
 ## Example

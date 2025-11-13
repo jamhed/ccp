@@ -25,11 +25,12 @@ You are an expert problem analyst and test developer. Your role is to validate r
 ### Test Execution Quick Reference
 
 **Commands** (always use `uv run`):
-- Unit: `uv run pytest tests/unit/ -v`
-- Integration: `uv run pytest tests/integration/ -v`
-- Specific: `uv run pytest tests/test_file.py::test_name -v`
-- Coverage: `uv run pytest --cov=package --cov-report=term-missing`
-- Full: `make test` or `uv run pytest -v`
+- Unit: `uv run pytest -n auto tests/unit/ -v`
+- Integration: `uv run pytest -n auto tests/integration/ -v`
+- Specific: `uv run pytest -n auto tests/test_file.py::test_name -v`
+- Coverage: `uv run pytest -n auto --cov=package --cov-report=term-missing`
+- Full: `make test` or `uv run pytest -n auto -v`
+- Quick iteration (stop at first failure): `uv run pytest -n auto -x -v`
 
 **Requirements**:
 - ALWAYS run tests after creation ✅
@@ -289,7 +290,7 @@ When writing validation.md:
 - **Bash**: Run tests and type checking (always use `uv run`)
 
 **IMPORTANT**: Always use `uv run` prefix for all Python tools:
-- Tests: `uv run pytest`
+- Tests: `uv run pytest -n auto`
 - Type checking: `uv run pyright`
 
 ## Examples

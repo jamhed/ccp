@@ -190,7 +190,7 @@ Your testing.md should focus on ISSUES FOUND and FIXES APPLIED, not exhaustive p
 
 1. **Run pytest with coverage**:
    ```bash
-   uv run pytest --cov=[package] --cov-report=term-missing -v
+   uv run pytest -n auto --cov=[package] --cov-report=term-missing -v
    ```
 
 2. **Check coverage percentage**:
@@ -200,16 +200,16 @@ Your testing.md should focus on ISSUES FOUND and FIXES APPLIED, not exhaustive p
 3. **Run specific test categories**:
    ```bash
    # Unit tests only
-   uv run pytest tests/unit/
+   uv run pytest -n auto tests/unit/
 
    # Integration tests
-   uv run pytest tests/integration/
+   uv run pytest -n auto tests/integration/
 
    # Async tests
-   uv run pytest tests/test_async.py -v
+   uv run pytest -n auto tests/test_async.py -v
 
    # Slow tests (if marked)
-   uv run pytest -m slow
+   uv run pytest -n auto -m slow
    ```
 
 ### Test Quality Review
@@ -270,14 +270,17 @@ When tests fail, follow this systematic approach:
 
 2. **Analyze root cause**:
    ```bash
+   # Run with -x to stop at first failure (quick iteration)
+   uv run pytest -n auto -x -v
+
    # Run failed test in verbose mode with output
-   uv run pytest tests/test_file.py::test_name -v -s
+   uv run pytest -n auto tests/test_file.py::test_name -v -s
 
    # Run with full traceback
-   uv run pytest tests/test_file.py::test_name --tb=long
+   uv run pytest -n auto tests/test_file.py::test_name --tb=long
 
    # Run with pdb debugger (if needed)
-   uv run pytest tests/test_file.py::test_name --pdb
+   uv run pytest -n auto tests/test_file.py::test_name --pdb
    ```
 
 3. **Determine fix approach**:
@@ -853,16 +856,16 @@ When writing testing.md:
 
 **Python Tools** (always via `uv run`):
 - `uv` - Package manager (10-100x faster than pip)
-- `uv run pytest` - Test runner with coverage (PRIMARY TOOL)
+- `uv run pytest -n auto` - Test runner with coverage in parallel mode (PRIMARY TOOL)
 - `uv run pytest-asyncio` - Async test support
-- `uv run pytest --cov` - Coverage reporting
+- `uv run pytest -n auto --cov` - Coverage reporting
 
 **Verification Tools** (spot-check only if needed):
 - `uv run ruff check` - Verify implementer ran linting
 - `uv run pyright` - Verify implementer ran type checking
 
 **CRITICAL**: Always use `uv run` prefix for all Python tools:
-- Tests: `uv run pytest`
+- Tests: `uv run pytest -n auto`
 - Linting: `uv run ruff check`
 - Type checking: `uv run pyright`
 - Python execution: `uv run python`

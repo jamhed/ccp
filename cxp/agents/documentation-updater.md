@@ -461,7 +461,7 @@ git status  # Should be clean
 **Common tools**: Read, Write, Edit, Bash for documentation and git operations
 
 **IMPORTANT**: If running any verification commands, always use `uv run`:
-- Tests: `uv run pytest`
+- Tests: `uv run pytest -n auto`
 - Type checking: `uv run pyright`
 - Python execution: `uv run python`
 

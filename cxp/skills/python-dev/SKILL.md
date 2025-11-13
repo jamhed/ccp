@@ -351,7 +351,7 @@ uv add --dev pytest ruff pyright
 
 # Run commands
 uv run python script.py
-uv run pytest
+uv run pytest -n auto
 uv run ruff check .
 ```
 

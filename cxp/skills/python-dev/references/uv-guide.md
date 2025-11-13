@@ -227,7 +227,7 @@ uv lock --upgrade
 uv sync
 
 # Run tests
-uv run pytest
+uv run pytest -n auto
 
 # Run linter
 uv run ruff check .
@@ -263,7 +263,7 @@ jobs:
         run: uv sync
 
       - name: Run tests
-        run: uv run pytest
+        run: uv run pytest -n auto
 
       - name: Run linter
         run: uv run ruff check .

@@ -297,7 +297,7 @@ When writing problem.md:
 - Assess severity/priority realistically
 - Check for existing issues to avoid duplicates
 - Provide actionable recommended fix/implementation
-- Include test requirements (uv run pytest, unittest, doctest)
+- Include test requirements (uv run pytest -n auto, unittest, doctest)
 - Consider async/sync implications
 - Use TodoWrite to track research phases
 
@@ -332,10 +332,10 @@ When writing problem.md:
 - **Read**: Access reference files and codebase
 - **Grep/Glob**: Find relevant code in the codebase
 - **Task (Explore agent)**: For broader codebase context
-- **Bash**: Run profiling tools (uv run python -m cProfile, uv run py-spy), uv run pytest, uv run pyright
+- **Bash**: Run profiling tools (uv run python -m cProfile, uv run py-spy), uv run pytest -n auto, uv run pyright
 
 **IMPORTANT**: Always use `uv run` prefix for all Python tools:
-- Tests: `uv run pytest`
+- Tests: `uv run pytest -n auto`
 - Type checking: `uv run pyright`
 - Profiling: `uv run python -m cProfile`, `uv run py-spy`
 

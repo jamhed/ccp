@@ -154,18 +154,18 @@ class Config(BaseModel):
 - Install dependencies: `uv sync`
 - Add package: `uv add package-name`
 - Add dev package: `uv add --dev package-name`
-- Run tests: `uv run pytest tests/ -v`
+- Run tests: `uv run pytest -n auto tests/ -v`
 - Run linter: `uv run ruff check .`
 - Run type checker: `uv run pyright`
 
 ### Test Execution
 
 **Commands** (use UV):
-- Unit tests: `uv run pytest tests/unit/ -v`
-- Integration tests: `uv run pytest tests/integration/ -v`
-- Specific test: `uv run pytest tests/test_file.py::test_name -v`
-- Coverage: `uv run pytest --cov=package --cov-report=term-missing`
-- Full suite: `uv run pytest -v`
+- Unit tests: `uv run pytest -n auto tests/unit/ -v`
+- Integration tests: `uv run pytest -n auto tests/integration/ -v`
+- Specific test: `uv run pytest -n auto tests/test_file.py::test_name -v`
+- Coverage: `uv run pytest -n auto --cov=package --cov-report=term-missing`
+- Full suite: `uv run pytest -n auto -v`
 
 **Expected**: Test FAILS before fix → PASSES after fix
 
@@ -372,23 +372,28 @@ uv run pyright package/
 
 1. **Run the specific test** (from problem-validator):
    ```bash
-   uv run pytest tests/test_file.py::test_name -v
+   uv run pytest -n auto tests/test_file.py::test_name -v
    ```
 
    **Expected**: Test should now PASS (was FAILING before fix)
 
 2. **Run full test suite** (regression check):
    ```bash
-   uv run pytest -v
+   uv run pytest -n auto -v
    # OR
    make test
+   ```
+
+   **If tests fail**: Use `-x` flag to stop at first failure for quick iteration:
+   ```bash
+   uv run pytest -n auto -x -v
    ```
 
    **Expected**: All tests should PASS (no regressions)
 
 3. **Check coverage**:
    ```bash
-   uv run pytest --cov=package --cov-report=term-missing
+   uv run pytest -n auto --cov=package --cov-report=term-missing
    ```
 
    **Expected**: Coverage ≥80% for modified code
@@ -399,12 +404,12 @@ uv run pyright package/
 ## Test Execution
 
 ### Specific Test
-**Command**: `uv run pytest tests/test_file.py::test_name -v`
+**Command**: `uv run pytest -n auto tests/test_file.py::test_name -v`
 **Result**: PASSING ✅ (was FAILING before fix)
 **Output**: [actual output]
 
 ### Full Test Suite
-**Command**: `uv run pytest -v`
+**Command**: `uv run pytest -n auto -v`
 **Result**: PASSING ✅
 **Tests Run**: [count]
 **Coverage**: [percentage]
@@ -512,7 +517,7 @@ PASSED ✅
 
 ### Full Test Suite
 
-**Command**: `uv run pytest -v`
+**Command**: `uv run pytest -n auto -v`
 
 **Results**:
 ```
@@ -668,7 +673,7 @@ When writing implementation.md:
 **Common tools**: Read, Write, Edit, Bash, Grep, Glob for file and command operations
 
 **CRITICAL**: Always use `uv run` for all Python tools:
-- Tests: `uv run pytest`
+- Tests: `uv run pytest -n auto`
 - Linting: `uv run ruff check`, `uv run ruff format`
 - Type checking: `uv run pyright`
 - Python execution: `uv run python`
@@ -701,7 +706,7 @@ When writing implementation.md:
 
 4. **Tests**:
    - Specific: `test_create_user_invalid_email` ✅ PASSING (was FAILING)
-   - Full suite: `uv run pytest -v` ✅ PASSING (23/23 tests)
+   - Full suite: `uv run pytest -n auto -v` ✅ PASSING (23/23 tests)
    - Coverage: 92% on user.py
 
 5. **Summary**:
