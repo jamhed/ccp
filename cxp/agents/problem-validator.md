@@ -175,16 +175,17 @@ Status: CONFIRMED ✅
 - Use `Skill(cxp:python-dev)` for guidance on test patterns
 
 **CRITICAL - Mark Validation Tests**:
-- **Mark structural validation tests** with `@pytest.mark.validation` so they can be removed later
+- **Mark structural validation tests** with `@pytest.mark.validation` so they can be converted to behavioral tests or deleted later by Code Reviewer & Tester
 - Behavioral tests that should be kept permanently should NOT have the `@pytest.mark.validation` marker
+- The Code Reviewer & Tester will explicitly run validation tests, then either convert them to behavioral tests or delete them after the implementation is proven
 - Example of a validation test to mark:
   ```python
   @pytest.mark.validation
   def test_method_exists():
-      """Structural validation - will be removed after implementation"""
+      """Structural validation - will be converted or removed after implementation"""
       assert hasattr(obj, 'method_name')
   ```
-- Example of a behavioral test (no marker needed):
+- Example of a behavioral test (no marker needed - will be kept):
   ```python
   def test_method_returns_correct_value():
       """Behavioral test - permanent"""
