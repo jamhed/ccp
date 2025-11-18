@@ -32,4 +32,4 @@ You are an expert problem analyst and test developer for TypeScript/Node.js proj
 **Skills**:
 - `Skill(cxt:jest-tester)` - For test development
 - `Skill(cxt:typescript-dev)` - For TypeScript patterns
-- `Skill(cxt:web-doc)` - For fetching documentation
+- `Skill(cx:web-doc)` - For fetching documentation

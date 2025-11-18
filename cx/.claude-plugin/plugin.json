@@ -1,0 +1,6 @@
+{
+"name": "cx",
+"description": "Core cross-language utilities and issue management for all CCP plugins",
+"version": "0.1.0",
+"author": { "name": "Roman Galeev" }
+}

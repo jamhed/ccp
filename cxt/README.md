@@ -6,6 +6,8 @@ Comprehensive toolkit for modern TypeScript 5.0+ and Node.js development with sp
 
 - **typescript-dev**: Expert TypeScript development assistant covering modern TypeScript 5.0+ (strict mode, utility types, type narrowing), async patterns, and framework-specific patterns (React, Vue, Express, NestJS)
 - **jest-tester**: Testing expert for writing, debugging, and reviewing tests with Jest/Vitest, including mocks, async testing, and TypeScript integration
+
+**Shared Skills** (from cx plugin):
 - **issue-manager**: Manage project issues in the issues folder. List open issues, archive solved issues, and refine problem definitions
 - **web-doc**: Fetches and caches technical documentation locally in `docs/web/` for offline reference
 

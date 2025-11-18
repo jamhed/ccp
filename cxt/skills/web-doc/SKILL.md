@@ -1,1 +1,0 @@
-../../cxg/skills/web-doc/SKILL.md

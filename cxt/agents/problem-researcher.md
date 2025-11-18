@@ -124,4 +124,4 @@ You are an expert code analyst specializing in identifying bugs, anti-patterns, 
 
 **Skills**:
 - `Skill(cxt:typescript-dev)` - For TypeScript best practices
-- `Skill(cxt:web-doc)` - For fetching documentation
+- `Skill(cx:web-doc)` - For fetching documentation

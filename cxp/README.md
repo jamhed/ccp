@@ -7,6 +7,8 @@ Comprehensive toolkit for modern Python development (Python 3.14+) with speciali
 - **python-dev**: Expert Python development assistant covering modern Python 3.14+ idioms (JIT, enhanced patterns, TypedDict **kwargs), type safety, async patterns, and idiomatic error handling
 - **pytest-tester**: Testing expert for writing, debugging, and reviewing pytest tests with fixtures, parametrize, mocks, and async testing
 - **fastapi-dev**: FastAPI specialist for API design, dependency injection, async patterns, middleware, and comprehensive testing
+
+**Shared Skills** (from cx plugin):
 - **issue-manager**: Manage project issues in the issues folder. List open issues, archive solved issues, and refine problem definitions
 - **web-doc**: Fetches and caches technical documentation locally in `docs/web/` for offline reference
 

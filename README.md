@@ -4,6 +4,16 @@ Custom Claude Code plugins for modern software development workflows with AI-pow
 
 ## Available Plugins
 
+### cx - Core Cross-Language Utilities
+
+Core plugin providing shared utilities used across all CCP plugins.
+
+**Shared Skills**:
+- Issue management (list, archive, refine)
+- Documentation fetching and caching
+
+[**→ View cx Documentation**](cx/README.md)
+
 ### cxg - Go & Kubernetes Development
 
 Multi-phase problem-solving workflow for Go 1.23+ and Kubernetes operator development.
@@ -171,15 +181,16 @@ Each phase creates comprehensive documentation:
 # Add marketplace
 /plugin marketplace add jamhed/ccp
 
-# Install Go/Kubernetes plugin
-/plugin install cxg@ccp
+# Install core utilities (optional - automatically available with any plugin)
+/plugin install cx@ccp
 
-# Install Python plugin
-/plugin install cxp@ccp
-
-# Install TypeScript/Node.js plugin
-/plugin install cxt@ccp
+# Install language-specific plugins
+/plugin install cxg@ccp  # Go/Kubernetes
+/plugin install cxp@ccp  # Python
+/plugin install cxt@ccp  # TypeScript/Node.js
 ```
+
+**Note**: The `cx` plugin provides shared skills (issue-manager, web-doc) used by all language-specific plugins.
 
 After installation, check `~/.claude/plugins/marketplace` folder. To update, pull latest changes and restart Claude.
 
@@ -276,6 +287,7 @@ After installation, check `~/.claude/plugins/marketplace` folder. To update, pul
 
 ## Documentation
 
+- [**cx Plugin**](cx/README.md) - Core shared utilities (issue management, documentation)
 - [**cxg Plugin**](cxg/README.md) - Go & Kubernetes development
   - [cxg Agents](cxg/agents/README.md) - Detailed agent documentation
 - [**cxp Plugin**](cxp/README.md) - Python development

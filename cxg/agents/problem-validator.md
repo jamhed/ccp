@@ -276,7 +276,7 @@ Write(
 **Skills**:
 - `Skill(cxg:chainsaw-tester)` - REQUIRED for E2E Chainsaw tests
 - `Skill(cxg:go-dev)` - For validating Go best practices
-- `Skill(cxg:web-doc)` - For fetching library documentation and GitHub info
+- `Skill(cx:web-doc)` - For fetching library documentation and GitHub info
 
 **Core Tools**:
 - **WebSearch**: Research existing libraries, packages, and solutions

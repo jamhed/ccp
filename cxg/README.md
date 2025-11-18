@@ -7,6 +7,8 @@ Comprehensive toolkit for modern Go 1.23+ and Kubernetes operator development wi
 - **go-dev**: Expert Go development assistant covering modern Go 1.23+ idioms (generics, fail-early patterns, cmp.Or defaults), error handling with %w wrapping, and Kubernetes operator patterns
 - **chainsaw-tester**: E2E testing expert for Kubernetes operators using Chainsaw, JP assertions, webhook validation, and mock services
 - **github-cicd**: CI/CD pipeline specialist for GitHub Actions workflows, Docker builds, semantic versioning, and Kubernetes deployments
+
+**Shared Skills** (from cx plugin):
 - **issue-manager**: Manage project issues in the issues folder. List open issues, archive solved issues, and refine problem definitions
 - **web-doc**: Fetches and caches technical documentation locally in `docs/web/` for offline reference
 
