@@ -445,11 +445,11 @@ Use the cxp:pytest-tester skill to help me write tests for the user service.
 Use the cxp:fastapi-dev skill to help me design a REST API for user management.
 ```
 
-## Differences from cx Plugin
+## Differences from cxg Plugin
 
-While `cx` focuses on Go and Kubernetes operator development, `cxp` specializes in:
+While `cxg` focuses on Go and Kubernetes operator development, `cxp` specializes in:
 
-| Feature | cx (Go/K8s) | cxp (Python) |
+| Feature | cxg (Go/K8s) | cxp (Python) |
 |---------|-------------|--------------|
 | **Language** | Go 1.23+ | Python 3.14+ |
 | **Package Manager** | go mod | UV (10-100x faster than pip) |

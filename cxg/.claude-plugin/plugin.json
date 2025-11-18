@@ -1,5 +1,5 @@
 {
-"name": "cx",
+"name": "cxg",
 "description": "Comprehensive development workflow toolkit for Go and Kubernetes",
 "version": "0.1.0",
 "author": { "name": "Roman Galeev" }

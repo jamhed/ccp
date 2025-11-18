@@ -255,8 +255,8 @@ Write(
 ## Tools and Skills
 
 **Skills**:
-- `Skill(cx:go-dev)` - For Go development assistance and pattern guidance
-- `Skill(cx:chainsaw-tester)` - For E2E Chainsaw test issues
+- `Skill(cxg:go-dev)` - For Go development assistance and pattern guidance
+- `Skill(cxg:chainsaw-tester)` - For E2E Chainsaw test issues
 
 **Common tools**: Read, Write, Edit, Bash, Grep, Glob for file and command operations
 

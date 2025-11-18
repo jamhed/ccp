@@ -4,7 +4,7 @@ Custom Claude Code plugins for modern software development workflows.
 
 ## Available Plugins
 
-### cx Plugin - Go & Kubernetes Development
+### cxg Plugin - Go & Kubernetes Development
 
 Comprehensive toolkit for Go 1.23+ and Kubernetes operator development with specialized skills, agents, and commands.
 
@@ -12,7 +12,7 @@ Comprehensive toolkit for Go 1.23+ and Kubernetes operator development with spec
 
 Comprehensive toolkit for Python 3.14+ development with JIT compilation, enhanced pattern matching, and modern async/await. Includes specialized skills, agents, and commands for building high-quality Python applications.
 
-## cx Plugin
+## cxg Plugin
 
 Comprehensive toolkit for Go 1.23+ and Kubernetes operator development with specialized skills, agents, and commands.
 
@@ -26,23 +26,26 @@ Comprehensive toolkit for Go 1.23+ and Kubernetes operator development with spec
 
 ### Agents
 
-Multi-phase problem-solving workflow agents:
+Multi-phase problem-solving workflow agents (located in `cxg/agents/`):
 
+- **Problem Researcher**: Researches Go codebases to identify bugs, performance issues, and feature requirements
 - **Problem Validator**: Validates issues, proposes solution approaches, and develops test cases
 - **Solution Reviewer**: Critically evaluates solutions and selects optimal approach
 - **Solution Implementer**: Implements fixes using modern Go best practices
 - **Code Reviewer & Tester**: Reviews code quality, runs linters and tests
 - **Documentation Updater**: Creates solution documentation and git commits
 
+See [cxg/agents/README.md](cxg/agents/README.md) for detailed agent documentation.
+
 ### Commands
 
-All commands are scoped to the plugin and should be invoked as `/cx:command`.
+All commands are scoped to the plugin and should be invoked as `/cxg:command`.
 
-#### /cx:problem [description]
+#### /cxg:problem [description]
 
 Research and define a new problem using the Problem Researcher agent.
 
-**Usage**: `/cx:problem [brief description of the issue]`
+**Usage**: `/cxg:problem [brief description of the issue]`
 
 **What it does**:
 - Analyzes the codebase to identify the root cause
@@ -50,13 +53,13 @@ Research and define a new problem using the Problem Researcher agent.
 - Creates a structured problem.md file in issues/[issue-name]/
 - Documents context, follow-up actions, and acceptance criteria
 
-**Example**: `/cx:problem telemetry spans exceeding attribute limits`
+**Example**: `/cxg:problem telemetry spans exceeding attribute limits`
 
-#### /cx:refine [issue-name]
+#### /cxg:refine [issue-name]
 
 Refine an existing problem definition using the Problem Researcher agent.
 
-**Usage**: `/cx:refine [issue-name]`
+**Usage**: `/cxg:refine [issue-name]`
 
 **What it does**:
 - Re-analyzes the issue in issues/[issue-name]/problem.md
@@ -64,13 +67,13 @@ Refine an existing problem definition using the Problem Researcher agent.
 - Improves acceptance criteria
 - Ensures problem is well-defined before solving
 
-**Example**: `/cx:refine bug-telemetry-nested-attribute-limit`
+**Example**: `/cxg:refine bug-telemetry-nested-attribute-limit`
 
-#### /cx:solve [issue-name]
+#### /cxg:solve [issue-name]
 
 Orchestrates the complete problem-solving workflow from validation through implementation to documentation.
 
-**Usage**: `/cx:solve [issue-name]`
+**Usage**: `/cxg:solve [issue-name]`
 
 **What it does**:
 Executes all agents in sequence for issues/[issue-name]/problem.md:
@@ -85,13 +88,15 @@ Executes all agents in sequence for issues/[issue-name]/problem.md:
 
 Each agent creates an audit trail file documenting its phase, providing complete traceability from problem to solution.
 
-**Example**: `/cx:solve bug-telemetry-nested-attribute-limit`
+**Example**: `/cxg:solve bug-telemetry-nested-attribute-limit`
+
+See [cxg/README.md](cxg/README.md) for complete documentation.
 
 ### Scripts
 
 Helper scripts for batch operations:
 
-- **scripts/solve_unsolved_issues.sh**: Batch solver that processes all unsolved issues (issues with problem.md but no solution.md) sequentially using the `/cx:solve` workflow
+- **scripts/solve_unsolved_issues.sh**: Batch solver that processes all unsolved issues (issues with problem.md but no solution.md) sequentially using the `/cxg:solve` workflow
 
 ## Issue Management System
 
@@ -198,14 +203,22 @@ Comprehensive toolkit for modern Python 3.11+ development with specialized skill
 
 ### Agents
 
-Multi-phase problem-solving workflow agents for Python projects:
+Multi-phase problem-solving workflow agents (located in `cxp/agents/`):
 
 - **Problem Researcher**: Researches Python codebases to identify bugs, performance issues, and feature requirements
 - **Problem Validator**: Validates issues, proposes solution approaches, and develops test cases
-- **Solution Reviewer**: Critically evaluates solutions and selects optimal approach
+- **Solution Proposer**: Researches existing solutions and proposes 3-4 solution approaches with thorough analysis
+- **Solution Reviewer**: Critically evaluates proposed solutions and selects optimal approach
 - **Solution Implementer**: Implements fixes using modern Python best practices
 - **Code Reviewer & Tester**: Reviews code quality, runs linters, type checkers (pyright), and tests (pytest)
 - **Documentation Updater**: Creates solution documentation and git commits
+
+Standalone code quality agents:
+
+- **Code Quality Reviewer**: Reviews Python code to identify refactoring opportunities, code duplication, and complexity issues
+- **Bug Hunter**: Critically reviews code to identify logic errors, oversights, refactoring remnants, and edge cases
+
+See [cxp/agents/README.md](cxp/agents/README.md) for detailed agent documentation.
 
 ### Commands
 
@@ -270,8 +283,8 @@ See [cxp/README.md](cxp/README.md) for complete documentation.
 # add marketplace
 /plugin marketplace add jamhed/ccp
 
-# install cx plugin (Go/Kubernetes)
-/plugin install cx@ccp
+# install cxg plugin (Go/Kubernetes)
+/plugin install cxg@ccp
 
 # install cxp plugin (Python)
 /plugin install cxp@ccp

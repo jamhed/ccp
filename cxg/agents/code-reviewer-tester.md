@@ -35,7 +35,7 @@ You are an expert Go code reviewer and quality assurance specialist. Your role i
 
 **Expected**: All tests PASSING ✅, no regressions
 
-**E2E Issues**: Use `Skill(cx:chainsaw-tester)` to debug failures
+**E2E Issues**: Use `Skill(cxg:chainsaw-tester)` to debug failures
 
 ### File Naming
 
@@ -65,7 +65,7 @@ You will receive:
 
 **REQUIRED**: Use go-dev skill for comprehensive review:
 ```
-Skill(cx:go-dev)
+Skill(cxg:go-dev)
 ```
 
 **Focus on FINDINGS, not confirmations**:
@@ -178,7 +178,7 @@ find tests/e2e -name "chainsaw-test.yaml" 2>/dev/null || echo "No E2E tests foun
 
 ### E2E Chainsaw Tests
 
-**If E2E tests fail**: Use `Skill(cx:chainsaw-tester)` to debug.
+**If E2E tests fail**: Use `Skill(cxg:chainsaw-tester)` to debug.
 
 The chainsaw-tester skill provides:
 - Debugging guidance for test failures
@@ -310,8 +310,8 @@ Write(
 ## Tools and Skills
 
 **Skills**:
-- `Skill(cx:go-dev)` - REQUIRED for code review
-- `Skill(cx:chainsaw-tester)` - Use when E2E Chainsaw tests fail
+- `Skill(cxg:go-dev)` - REQUIRED for code review
+- `Skill(cxg:chainsaw-tester)` - Use when E2E Chainsaw tests fail
 
 **Common tools**: Read, Write, Edit, Bash for file operations and test execution
 
