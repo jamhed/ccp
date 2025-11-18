@@ -1,0 +1,1 @@
+Task(cxt:Problem Researcher): Refine the existing problem definition for issue {{input}}. Re-analyze the issue in issues/{{input}}/problem.md, update evidence, clarify requirements, improve acceptance criteria, and ensure the problem is well-defined before solving.

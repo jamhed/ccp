@@ -1,0 +1,1 @@
+Task(cxt:Problem Researcher): Research and define a new problem for the TypeScript/Node.js project. Analyze the codebase to identify the root cause, gather evidence with file paths and line numbers, and create a structured problem.md file in issues/[issue-name]/. The user request is: {{input}}

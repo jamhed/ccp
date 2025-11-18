@@ -30,9 +30,22 @@ Multi-phase problem-solving workflow for modern Python 3.11+ development.
 
 [**→ View cxp Documentation**](cxp/README.md)
 
+### cxt - TypeScript & Node.js Development
+
+Multi-phase problem-solving workflow for modern TypeScript 5.0+ and Node.js development.
+
+**Key Features**:
+- Problem identification and research
+- Multi-agent workflow from validation to implementation
+- TypeScript best practices enforcement (strict mode, type narrowing, async patterns)
+- Framework support (React, Vue, Express, NestJS)
+- Testing with Jest/Vitest
+
+[**→ View cxt Documentation**](cxt/README.md)
+
 ## Problem-Solving Workflow
 
-Both plugins share a common multi-phase workflow for systematic problem-solving:
+All plugins share a common multi-phase workflow for systematic problem-solving:
 
 ### 1. Define the Problem
 
@@ -44,6 +57,9 @@ Identify and research issues in your codebase:
 
 # Python projects
 /cxp:problem [description]
+
+# TypeScript projects
+/cxt:problem [description]
 ```
 
 **Output**: Creates `issues/[issue-name]/problem.md` with evidence, context, and acceptance criteria.
@@ -58,6 +74,9 @@ Enhance problem definitions with additional research:
 
 # Python projects
 /cxp:refine [issue-name]
+
+# TypeScript projects
+/cxt:refine [issue-name]
 ```
 
 **Output**: Updates `issues/[issue-name]/problem.md` with deeper analysis.
@@ -72,6 +91,9 @@ Execute the complete multi-phase workflow:
 
 # Python projects
 /cxp:solve [issue-name]
+
+# TypeScript projects
+/cxt:solve [issue-name]
 ```
 
 **Workflow Phases**:
@@ -154,6 +176,9 @@ Each phase creates comprehensive documentation:
 
 # Install Python plugin
 /plugin install cxp@ccp
+
+# Install TypeScript/Node.js plugin
+/plugin install cxt@ccp
 ```
 
 After installation, check `~/.claude/plugins/marketplace` folder. To update, pull latest changes and restart Claude.
@@ -198,6 +223,35 @@ After installation, check `~/.claude/plugins/marketplace` folder. To update, pul
 /cxp:solve bug-missing-none-check
 ```
 
+### TypeScript Project Example
+
+```bash
+# 1. Identify problem
+/cxt:problem unhandled promise rejection in user service
+
+# 2. Solve with full workflow
+/cxt:solve bug-unhandled-promise-rejection
+
+# Result: Issue validated, solution selected, implemented, tested, committed, and archived
+```
+
+## Plugin Comparison
+
+| Feature | cxg (Go/K8s) | cxp (Python) | cxt (TypeScript) |
+|---------|-------------|--------------|------------------|
+| **Language** | Go 1.23+ | Python 3.11+ | TypeScript 5.0+ |
+| **Package Manager** | go mod | UV (10-100x faster than pip) | npm/pnpm/yarn |
+| **Type System** | Generics, interfaces | Type hints, Protocol | Strict mode, utility types |
+| **Async** | Goroutines, channels | async/await, asyncio | async/await, Promises |
+| **Web Frameworks** | Kubernetes operators | FastAPI, Django | Express, NestJS, Next.js |
+| **Frontend** | - | - | React, Vue |
+| **Testing** | go test, Chainsaw E2E | pytest (parallel), pytest-asyncio | Jest, Vitest, Testing Library |
+| **Linting** | golangci-lint | ruff (check + format) | ESLint + Prettier |
+| **Type Checking** | go vet | pyright | tsc --noEmit |
+| **Error Handling** | Error wrapping with %w | Exception chaining with `from` | Try/catch with typed errors |
+| **Data Validation** | Custom validation | Pydantic models | class-validator, zod |
+| **Extra Agents** | - | Code Quality Reviewer, Bug Hunter | - |
+
 ## Key Benefits
 
 ### Systematic Problem-Solving
@@ -208,6 +262,7 @@ After installation, check `~/.claude/plugins/marketplace` folder. To update, pul
 ### Quality Enforcement
 - **Go**: Modern idioms, fail-early patterns, Kubernetes best practices
 - **Python**: Type safety, async patterns, modern Python 3.11+ features
+- **TypeScript**: Strict mode, type narrowing, async/await patterns
 
 ### Autonomous Execution
 - Multi-agent coordination
@@ -217,6 +272,7 @@ After installation, check `~/.claude/plugins/marketplace` folder. To update, pul
 ### Comprehensive Testing
 - **Go**: Unit tests, E2E Chainsaw tests, golangci-lint
 - **Python**: pytest (parallel), pyright type checking, ruff linting
+- **TypeScript**: Jest/Vitest, tsc type checking, ESLint
 
 ## Documentation
 
@@ -224,6 +280,8 @@ After installation, check `~/.claude/plugins/marketplace` folder. To update, pul
   - [cxg Agents](cxg/agents/README.md) - Detailed agent documentation
 - [**cxp Plugin**](cxp/README.md) - Python development
   - [cxp Agents](cxp/agents/README.md) - Detailed agent documentation
+- [**cxt Plugin**](cxt/README.md) - TypeScript & Node.js development
+  - [cxt Agents](cxt/agents/README.md) - Detailed agent documentation
 
 ## Contributing
 

@@ -445,23 +445,6 @@ Use the cxp:pytest-tester skill to help me write tests for the user service.
 Use the cxp:fastapi-dev skill to help me design a REST API for user management.
 ```
 
-## Differences from cxg Plugin
-
-While `cxg` focuses on Go and Kubernetes operator development, `cxp` specializes in:
-
-| Feature | cxg (Go/K8s) | cxp (Python) |
-|---------|-------------|--------------|
-| **Language** | Go 1.23+ | Python 3.14+ |
-| **Package Manager** | go mod | UV (10-100x faster than pip) |
-| **Type System** | Generics, interfaces | Type hints, Protocol, generics |
-| **Async** | Goroutines, channels | async/await, asyncio |
-| **Web Frameworks** | Kubernetes operators | FastAPI, Django, Flask |
-| **Testing** | go test, Chainsaw E2E | pytest, pytest-asyncio |
-| **Linting** | golangci-lint | ruff (check + format) |
-| **Type Checking** | go vet | pyright |
-| **Error Handling** | Error wrapping with %w | Exception chaining with `from` |
-| **Data Validation** | Custom validation | Pydantic models |
-
 ## Contributing
 
 This plugin is part of the Claude Code Plugin Collection (ccp). Contributions welcome at https://github.com/jamhed/ccp

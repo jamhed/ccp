@@ -1,0 +1,1 @@
+../../cxg/skills/issue-manager/SKILL.md
