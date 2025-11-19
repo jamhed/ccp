@@ -1,26 +1,26 @@
-# cxt Plugin - TypeScript & Node.js Development
+# cxt Plugin - TypeScript & Node.js Development (2025)
 
-Comprehensive toolkit for modern TypeScript 5.0+ and Node.js development with specialized skills, agents, and commands for building production-ready applications.
+Comprehensive toolkit for TypeScript 5.7+ and Node.js development in 2025 with ESM-first approach, advanced type safety, Vitest testing, and modern tooling.
 
 ## Skills
 
-- **typescript-dev**: Expert TypeScript development assistant covering modern TypeScript 5.0+ (strict mode, utility types, type narrowing), async patterns, and framework-specific patterns (React, Vue, Express, NestJS)
-- **jest-tester**: Testing expert for writing, debugging, and reviewing tests with Jest/Vitest, including mocks, async testing, and TypeScript integration
+- **typescript-dev**: Expert TypeScript 5.7+ development for 2025 - ESM-first, satisfies operator, template literal types, inferred type predicates, zod validation, pnpm, monorepos (Nx/TurboRepo)
+- **jest-tester**: Vitest testing expert for 2025 - type testing with expectTypeOf, explicit imports, ESM support, UI mode, blazing fast performance
 
 **Shared Skills** (from cx plugin):
 - **issue-manager**: Manage project issues in the issues folder. List open issues, archive solved issues, and refine problem definitions
 - **web-doc**: Fetches and caches technical documentation locally in `docs/web/` for offline reference
 
-## Agents
+## Agents (2025)
 
-Multi-phase problem-solving workflow agents (see [agents/README.md](agents/README.md) for details):
+Multi-phase problem-solving workflow agents using TypeScript 5.7+ and 2025 best practices (see [agents/README.md](agents/README.md) for details):
 
-- **Problem Researcher**: Researches TypeScript/Node.js codebases to identify bugs, performance issues, and feature requirements
-- **Problem Validator**: Validates issues, proposes solution approaches, and develops test cases
-- **Solution Reviewer**: Critically evaluates solutions and selects optimal approach
-- **Solution Implementer**: Implements fixes using modern TypeScript best practices
-- **Code Reviewer & Tester**: Reviews code quality, runs linters, type checking, and tests
-- **Documentation Updater**: Creates solution documentation and git commits
+- **Problem Researcher**: Researches TypeScript 5.7+ codebases - identifies bugs using ESM, type safety, runtime validation standards
+- **Problem Validator**: Validates issues and develops Vitest tests with type testing (expectTypeOf)
+- **Solution Reviewer**: Evaluates solutions using satisfies operator, template literals, zod validation, monorepo patterns
+- **Solution Implementer**: Implements fixes using TypeScript 5.7+, ESM-first, branded types, Result pattern
+- **Code Reviewer & Tester**: Runs Vitest with type tests, ESLint, ensures 2025 best practices
+- **Documentation Updater**: Documents solution with type test results, ESM compliance, zod usage
 
 ## Commands
 
@@ -102,45 +102,68 @@ archive/[issue-name]/
 
 Each agent in the workflow creates an audit trail file documenting its phase, providing complete traceability from problem to solution.
 
-## TypeScript Best Practices Covered
+## TypeScript 5.7+ Best Practices (2025)
 
-### Modern TypeScript (5.0+)
-- **Strict mode**: All strict flags enabled for maximum type safety
-- **Type narrowing**: Type guards, discriminated unions, assertion functions
+### Modern TypeScript (5.7+)
+- **Strict mode**: ALL strict flags enabled (mandatory in 2025)
+- **ESM-first**: `"type": "module"` with TypeScript 5.7 path rewriting (.ts → .js)
+- **satisfies operator**: Game-changer for type validation without widening (use extensively)
+- **Template literal types**: Powerful string-based types (2025 emphasis)
+- **Inferred type predicates** (5.5+): Automatic type narrowing in filter/find
+- **Control flow narrowing** (5.5+): obj[key] narrowing when both constant
+- **Type narrowing**: Type guards, discriminated unions, branded types
 - **Utility types**: Partial, Required, Pick, Omit, Record, etc.
 - **const assertions**: `as const` for immutable literals
-- **satisfies operator**: Type checking without widening
-- **Template literal types**: String validation at type level
 
-### Async Patterns
-- **async/await**: Proper promise handling
-- **Error handling**: Try/catch with typed errors
+### Runtime Validation (2025 Standard)
+- **zod schemas**: All external data validation (API responses, user input, env vars)
+- **Branded types**: Nominal typing for domain values (UUID, Email, etc.)
+- **Result type pattern**: Explicit error handling without exceptions
+- **No unvalidated data**: Never trust external sources
+
+### Async Patterns (2025)
+- **async/await**: Proper promise handling with error chaining (`cause` property)
+- **Error handling**: Custom error classes with `cause` for error chains
 - **Concurrency**: Promise.all, Promise.race, Promise.allSettled
 - **Cancellation**: AbortController for async operations
 - **No unhandled rejections**: Proper error propagation
+- **Cleanup**: Always clean up resources in finally blocks
 
-### Node.js Patterns
-- **ESM modules**: Modern import/export syntax
-- **Environment**: dotenv for configuration
-- **Error handling**: Custom error classes
+### Node.js Patterns (2025)
+- **ESM-first**: Never CommonJS, always import/export
+- **pnpm**: Fastest package manager (2025 standard)
+- **Monorepos**: Nx or TurboRepo for large-scale projects
+- **Node.js compile cache**: 2-3x faster builds (TypeScript 5.7+)
+- **Environment**: zod for env validation
 - **Logging**: Structured logging (pino/winston)
 - **No blocking**: Avoid blocking the event loop
 
-### Code Quality
-- **ESLint**: TypeScript-specific rules (@typescript-eslint)
-- **Prettier**: Consistent formatting
-- **Type checking**: tsc --noEmit for CI/CD
-- **Testing**: Jest or Vitest with ts-jest
-- **Coverage**: Target >80% code coverage
+### Testing (2025 with Vitest)
+- **Vitest**: Industry standard (blazing fast, ESM-native, type testing)
+- **Type testing**: expectTypeOf for testing type behavior
+- **Explicit imports**: Never use globals (import describe, it, expect)
+- **UI mode**: Visual testing experience (pnpm exec vitest --ui)
+- **Type checking**: vitest --typecheck (MUST run)
+- **Coverage**: Target >80% (vitest --coverage)
+- **Type-safe mocks**: Compiler errors on type mismatches
 
-### Anti-Patterns to Avoid
-- `any` type without justification (use `unknown`)
-- Type assertions without validation
-- Unhandled promise rejections
-- Blocking operations in async code
-- Mutating function parameters
-- Circular dependencies
-- Silent error swallowing
+### Code Quality (2025)
+- **ESLint**: @typescript-eslint/strict rules
+- **Prettier**: Consistent formatting
+- **Type checking**: tsc --noEmit
+- **CI/CD**: Run tests + type tests + lint + coverage
+
+### Anti-Patterns to Avoid (2025)
+- ❌ `any` type (use `unknown` and narrow)
+- ❌ CommonJS (use ESM)
+- ❌ Globals in tests (use explicit imports)
+- ❌ Type assertions without validation
+- ❌ Unvalidated external data (use zod)
+- ❌ Unhandled promise rejections
+- ❌ Blocking operations in event loop
+- ❌ Mutating function parameters
+- ❌ Circular dependencies
+- ❌ Silent error swallowing
 
 ## Installation
 
@@ -172,12 +195,18 @@ After installation, check your `~/.claude/plugins/marketplace` folder. To update
 /cxt:solve bug-unhandled-promise-rejection
 ```
 
-**Result**: Executes full workflow:
-- Validates the problem exists
-- Proposes multiple solutions (A: try/catch, B: error middleware, C: promise wrapper)
-- Selects best approach (A: try/catch for explicit error handling)
-- Implements the fix with type-safe error handling
-- Runs tests: type check (tsc), lint (ESLint), unit tests (Jest/Vitest)
+**Result**: Executes full 2025 workflow:
+- Validates the problem exists with Vitest tests
+- Proposes multiple solutions (A: Result type pattern, B: error middleware, C: try/catch with cause)
+- Selects best approach (A: Result type pattern for explicit error handling)
+- Implements the fix using TypeScript 5.7+ with zod validation
+- Runs 2025 tests:
+  - Type tests: `vitest --typecheck` ✅
+  - Type check: `tsc --noEmit` ✅
+  - Lint: `eslint` ✅
+  - Unit tests: `vitest` ✅
+  - Coverage: `vitest --coverage` ✅
+- Verifies ESM-first, zod usage, satisfies operator
 - Creates git commit with documentation
 
 **Files created in archive/bug-unhandled-promise-rejection/**:
@@ -191,16 +220,16 @@ After installation, check your `~/.claude/plugins/marketplace` folder. To update
 ### 3. Archive
 Issue automatically moved to `archive/bug-unhandled-promise-rejection/` with all audit trail files.
 
-## Skill Usage
+## Skill Usage (2025)
 
-### TypeScript Development
+### TypeScript 5.7+ Development
 ```
-Use the cxt:typescript-dev skill to help me review this code for type safety.
+Use the cxt:typescript-dev skill to help me review this code for 2025 best practices (ESM, satisfies operator, zod validation).
 ```
 
-### Testing
+### Vitest Testing
 ```
-Use the cxt:jest-tester skill to help me write tests for the user service.
+Use the cxt:jest-tester skill to help me write Vitest tests with type testing (expectTypeOf) for the user service.
 ```
 
 ## Framework Support

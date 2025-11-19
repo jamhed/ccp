@@ -1,18 +1,25 @@
 ---
 name: jest-tester
-description: Testing expert for modern TypeScript testing with Jest/Vitest, covering type-safe mocks, async patterns, zod validation, branded types, and component testing
+description: Testing expert for TypeScript testing in 2025 - Vitest-first, explicit imports, type testing with expectTypeOf, zod validation, ESM support
 ---
 
-# Jest/Vitest Testing Expert
+# Vitest Testing Expert (2025)
 
-Expert assistant for writing comprehensive, type-safe tests with Jest or Vitest for modern TypeScript projects.
+Expert assistant for writing comprehensive, type-safe tests with Vitest for TypeScript 5.7+ projects in 2025.
 
 ## Core Capabilities
 
-### Test Frameworks
-- **Vitest**: Recommended for modern projects - fast, Vite-native, ESM-first, Jest-compatible API
-- **Jest**: Industry standard, mature ecosystem, extensive plugin support
-- Both have excellent TypeScript support with minimal configuration
+### Test Framework - Vitest (2025 Standard)
+- **Vitest**: Industry standard for 2025 - blazing fast, Vite-native, ESM-first, type testing built-in
+- **Why Vitest in 2025**: Native ESM support, 2-3x faster than Jest, type testing with `expectTypeOf`, better DX
+- **Migration from Jest**: Jest-compatible API makes migration seamless
+- **TypeScript 5.7+ integration**: Excellent support with minimal configuration
+
+### 2025 Testing Principles
+- **Explicit imports**: Never use globals, always import `describe`, `it`, `expect` explicitly
+- **Type testing**: Use `expectTypeOf` for testing types (not just runtime behavior)
+- **ESM-first**: All tests use import/export, no CommonJS
+- **Type-safe mocking**: Mocks must be type-safe, errors on misalignment
 
 ### Testing Patterns
 
@@ -161,33 +168,91 @@ test('type predicate filtering works correctly', () => {
 });
 ```
 
-### Mocking
+### Mocking (2025 Best Practices)
 
-**Functions**:
+**Functions (Explicit Imports)**:
 ```typescript
-const mockFn = jest.fn();
+import { vi } from 'vitest';  // Explicit import - 2025 standard
+
+const mockFn = vi.fn();
 mockFn.mockReturnValue(42);
 mockFn.mockResolvedValue('async result');
 ```
 
-**Modules**:
+**Modules (Type-Safe)**:
 ```typescript
-jest.mock('./api', () => ({
-  fetchUser: jest.fn().mockResolvedValue({ id: 1, name: 'Test' })
+import { vi } from 'vitest';
+import type { User } from './types';
+
+// Type-safe mock - compiler errors if types don't match
+vi.mock('./api', () => ({
+  fetchUser: vi.fn<[], Promise<User>>().mockResolvedValue({
+    id: '1',
+    name: 'Test'
+  })
 }));
 ```
 
 **Timers**:
 ```typescript
-jest.useFakeTimers();
-jest.advanceTimersByTime(1000);
-jest.runAllTimers();
+import { vi } from 'vitest';
+
+vi.useFakeTimers();
+vi.advanceTimersByTime(1000);
+vi.runAllTimers();
+```
+
+### Type Testing (2025 Standard)
+
+**Testing Types with expectTypeOf**:
+```typescript
+import { test, expectTypeOf } from 'vitest';
+
+test('type inference works correctly', () => {
+  const user = { id: '1', name: 'Alice' };
+
+  // Test that TypeScript infers the correct type
+  expectTypeOf(user).toEqualTypeOf<{ id: string; name: string }>();
+  expectTypeOf(user.id).toBeString();
+  expectTypeOf(user.name).toBeString();
+});
+
+test('generic function returns correct type', () => {
+  function identity<T>(value: T): T {
+    return value;
+  }
+
+  const result = identity('hello');
+  expectTypeOf(result).toBeString();
+  expectTypeOf(result).not.toBeNumber();
+});
+
+test('branded types are distinct', () => {
+  type UUID = string & { readonly brand: unique symbol };
+  type Email = string & { readonly brand: unique symbol };
+
+  // These should be incompatible
+  expectTypeOf<UUID>().not.toMatchTypeOf<Email>();
+});
+```
+
+**Type Testing in *.test-d.ts Files**:
+```typescript
+// user.test-d.ts - type tests only
+import { expectTypeOf } from 'vitest';
+import type { User, UserInput } from './user';
+
+// All tests in .test-d.ts files are type tests
+expectTypeOf<User>().toHaveProperty('id');
+expectTypeOf<UserInput>().toMatchTypeOf<Omit<User, 'id'>>();
 ```
 
 ### Async Testing
 
-**Promises**:
+**Promises (Explicit Imports)**:
 ```typescript
+import { test, expect } from 'vitest';  // Explicit imports
+
 test('async operation', async () => {
   const result = await fetchData();
   expect(result).toBe('data');
@@ -360,59 +425,42 @@ test('loading state', async () => {
 - Missing tests for discriminated union branches
 - Not testing async error handling paths
 
-### Common Commands
+### Common Commands (2025)
 
-**Jest**:
+**Vitest (Recommended)**:
 ```bash
 # Run all tests
-npm test
+pnpm test
 
-# Watch mode
-npm test -- --watch
+# Watch mode (default for development)
+pnpm exec vitest
+
+# UI mode (2025 best practice - visual testing)
+pnpm exec vitest --ui
+
+# Type checking (test types)
+pnpm exec vitest --typecheck
 
 # Run specific test file
-npm test -- Button.test.ts
-
-# Update snapshots
-npm test -- -u
+pnpm exec vitest user.test.ts
 
 # Run with coverage
+pnpm test:coverage
+
+# All in one: tests + types + coverage
+pnpm exec vitest --typecheck --coverage
+```
+
+**Jest (Legacy - Not Recommended for New Projects in 2025)**:
+```bash
+# Only use if maintaining existing Jest projects
+npm test -- --watch
 npm test -- --coverage
 ```
 
-**Vitest**:
-```bash
-# Run all tests
-npm test
+## Configuration Examples (2025)
 
-# Watch mode (default)
-vitest
-
-# UI mode
-vitest --ui
-
-# Run specific test
-vitest Button.test.ts
-```
-
-## Configuration Examples
-
-### Jest with TypeScript
-```json
-{
-  "preset": "ts-jest",
-  "testEnvironment": "node",
-  "roots": ["<rootDir>/src"],
-  "testMatch": ["**/__tests__/**/*.ts", "**/?(*.)+(spec|test).ts"],
-  "collectCoverageFrom": [
-    "src/**/*.ts",
-    "!src/**/*.d.ts",
-    "!src/**/*.test.ts"
-  ]
-}
-```
-
-### Vitest (Recommended for Modern Projects)
+### Vitest (2025 Standard)
 ```typescript
 // vitest.config.ts
 import { defineConfig } from 'vitest/config';
@@ -572,11 +620,14 @@ test('extracts property with type safety', () => {
 
 ## When to Use This Skill
 
-Use when:
-- Writing new tests
-- Debugging failing tests
-- Setting up testing infrastructure
-- Reviewing test coverage
-- Implementing mocks and stubs
-- Testing async code
-- Testing React/Vue components
+**2025 Use Cases**:
+- Writing new tests with Vitest and TypeScript 5.7+
+- Type testing with `expectTypeOf` (testing type behavior)
+- Debugging failing tests in watch or UI mode
+- Setting up modern testing infrastructure (ESM, explicit imports)
+- Implementing type-safe mocks and stubs
+- Testing async code with proper error handling
+- Testing React/Vue components with Testing Library
+- Testing zod schemas and runtime validation
+- Testing branded types and discriminated unions
+- Setting up CI/CD with type checking + tests + coverage

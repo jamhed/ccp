@@ -1,15 +1,15 @@
 ---
 name: typescript-dev
-description: Expert TypeScript development assistant covering modern TypeScript 5.5+, type safety, inferred type predicates, async patterns, Node.js best practices, and framework-specific patterns (React, Vue, Express, NestJS, Next.js)
+description: Expert TypeScript development assistant for 2025 - TypeScript 5.7+, ESM-first, type safety, inferred type predicates, satisfies operator, template literals, monorepos, and modern framework patterns
 ---
 
-# TypeScript Development Expert
+# TypeScript Development Expert (2025)
 
-Expert assistant for modern TypeScript 5.5+ development with focus on type safety, inferred type predicates, async patterns, and framework best practices.
+Expert assistant for TypeScript 5.7+ development in 2025 with ESM-first approach, advanced type safety, powerful type inference, and modern framework best practices.
 
 ## Core Capabilities
 
-### Modern TypeScript (5.5-5.7+)
+### TypeScript 5.7+ (2025 Current Version)
 
 **Type System**:
 - **Generics**: Type parameters, constraints, defaults
@@ -20,18 +20,81 @@ Expert assistant for modern TypeScript 5.5+ development with focus on type safet
 - **Control flow narrowing** (5.5+): obj[key] narrowing when obj and key are constant
 
 **Type Safety Features**:
-- **Strict mode**: Enable all strict flags (required for modern projects)
+- **Strict mode**: Enable all strict flags (required for 2025 projects)
 - **Utility types**: Partial, Required, Pick, Omit, Record, Readonly, etc.
 - **Type narrowing**: Type guards, discriminated unions, assertion functions
 - **const assertions**: `as const` for immutable literals and tuple types
-- **satisfies operator** (5.0+): Type checking without widening
-- **unknown over any**: Safer type for unknown values
+- **satisfies operator**: Game-changer for type validation without widening (2025 best practice)
+- **Template literal types**: Powerful feature for dynamic string-based types (2025 emphasis)
+- **unknown over any**: Safer type for unknown values (always prefer in 2025)
 
 **Advanced Patterns**:
 - **Branded types**: Nominal typing in structural system
 - **Builder pattern with types**: Fluent APIs with type safety
 - **Recursive types**: Self-referential type definitions
 - **Variadic tuple types**: Flexible function signatures
+
+### TypeScript 5.6 Features (2024)
+
+**Disallowed Nullish and Truthy Checks**:
+```typescript
+// TypeScript 5.6+ errors on checks that always evaluate the same way
+const value = 'hello';
+if (value) {  // Error: Expression is always truthy
+  console.log(value);
+}
+```
+
+**Iterator Helper Methods**:
+```typescript
+// ECMAScript proposal support
+const numbers = [1, 2, 3, 4, 5];
+const doubled = numbers.values().map(n => n * 2);
+const filtered = numbers.values().filter(n => n % 2 === 0);
+```
+
+**Region-Prioritized Diagnostics**:
+- Faster feedback in editors (143ms vs 3330ms for full file)
+- Better performance for large files
+
+**Build Continues on Errors**:
+- Generates output on best-effort basis
+- Useful for incremental builds
+
+### TypeScript 5.7 Features (2024)
+
+**Path Rewriting**:
+```typescript
+// Compiler option automatically rewrites .ts to .js extensions
+// Input: import { foo } from './module.ts';
+// Output: import { foo } from './module.js';
+// Essential for ESM compatibility in 2025
+```
+
+**Uninitialized Variable Checks**:
+```typescript
+// Enhanced checks catch uninitialized variables in nested functions
+function outer() {
+  let x: string;
+  function inner() {
+    console.log(x);  // Error: Variable used before initialization
+  }
+  inner();
+}
+```
+
+**Computed Property Names as Index Signatures**:
+```typescript
+class MyClass {
+  [Symbol.iterator]() {  // Now treated as index signature
+    // ...
+  }
+}
+```
+
+**Node.js Compile Cache API**:
+- Build times 2-3x faster
+- Automatically leverages Node.js caching
 
 ### TypeScript 5.5+ Key Features
 
@@ -72,15 +135,19 @@ if (typeof obj[key] === 'string') {
 - **AbortController**: Cancellation for async operations
 - **Top-level await**: ESM modules support top-level await
 
-### Node.js Best Practices
+### Node.js Best Practices (2025)
 
-- **ESM modules**: Modern import/export (prefer over CommonJS)
-- **Package management**: npm, pnpm (faster), or yarn with lock files
-- **Runtime validation**: zod, io-ts for validating external data
+- **ESM-first**: 2025 is the year TypeScript fully embraces ESM - always use import/export, never CommonJS
+- **TypeScript 5.7 path rewriting**: Automatically converts .ts imports to .js for ESM compatibility
+- **Package management**: pnpm (recommended in 2025 - fastest), npm, or yarn with lock files
+- **Monorepos**: TypeScript project references with Nx or TurboRepo for large-scale projects (2025 standard)
+- **Node.js compile cache**: Leverage automatic 2-3x faster builds (TypeScript 5.7+)
+- **Runtime validation**: zod (2025 standard), io-ts for validating external data
 - **Environment**: dotenv or similar, never commit secrets
-- **Error handling**: Custom error classes with proper inheritance
+- **Error handling**: Custom error classes with `cause` property for error chaining
 - **Logging**: Structured logging (pino, winston)
 - **Process signals**: Handle SIGTERM/SIGINT gracefully
+- **Type-safe imports**: Always use explicit imports, avoid globals (2025 best practice)
 
 ### Framework Patterns
 
@@ -140,15 +207,17 @@ if (typeof obj[key] === 'string') {
 - Disabling strict mode → Keep all strict flags enabled
 - Mutating function parameters → Use readonly
 
-### Best Practices
+### Best Practices (2025 Standards)
 
 **Type Safety**:
-- Enable ALL strict flags in tsconfig.json
+- Enable ALL strict flags in tsconfig.json (mandatory in 2025)
 - Use `noUncheckedIndexedAccess` for safer array/object access
-- Prefer `unknown` over `any`
+- Prefer `unknown` over `any` (never use `any` without justification)
+- Use `satisfies` operator - game-changer for type validation without widening
+- Leverage template literal types for dynamic string-based types (powerful 2025 feature)
 - Use type guards instead of type assertions
 - Add explicit return types to public APIs
-- Use `satisfies` for validation without widening
+- Rely on TypeScript's improved type inference (significantly more powerful in 2025)
 
 **Code Organization**:
 - Prefer `const` by default, `let` only when needed
@@ -305,14 +374,14 @@ async function processData(data: unknown): Promise<void> {
 
 ## Configuration Templates
 
-### tsconfig.json (Strict Modern Config)
+### tsconfig.json (2025 Strict Config)
 ```json
 {
   "compilerOptions": {
-    // Target & Module
-    "target": "ES2022",
+    // Target & Module (ESM-first for 2025)
+    "target": "ES2024",
     "module": "ESNext",
-    "lib": ["ES2022"],
+    "lib": ["ES2024"],
     "moduleResolution": "bundler",
 
     // Strict Type Checking (ALL enabled)
@@ -389,29 +458,43 @@ async function processData(data: unknown): Promise<void> {
 }
 ```
 
-### package.json Scripts
+### package.json Scripts (2025)
 ```json
 {
+  "type": "module",
   "scripts": {
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "test": "vitest",
+    "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
+    "test:types": "vitest --typecheck",
     "build": "tsc && vite build",
     "dev": "vite"
-  }
+  },
+  "packageManager": "pnpm@9.0.0"
 }
 ```
 
-## Resources
+**2025 Notes**:
+- Always include `"type": "module"` for ESM
+- Use pnpm for faster installs (2025 standard)
+- Include type testing with `--typecheck`
+- Vitest UI mode for better testing experience
+
+## Resources (2025)
 
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/)
+- [TypeScript 5.7 Release Notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-7.html) - Current version
+- [TypeScript 5.6 Release Notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-6.html)
 - [TypeScript 5.5 Release Notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-5.html)
-- [Total TypeScript](https://www.totaltypescript.com/)
+- [Total TypeScript](https://www.totaltypescript.com/) - Matt Pocock's comprehensive course
 - [React TypeScript Cheatsheet](https://react-typescript-cheatsheet.netlify.app/)
-- [Zod Documentation](https://zod.dev/)
+- [Zod Documentation](https://zod.dev/) - 2025 standard for runtime validation
 - [Type Challenges](https://github.com/type-challenges/type-challenges) - Practice advanced TypeScript
+- [Nx](https://nx.dev/) - Monorepo tooling (2025 standard)
+- [TurboRepo](https://turbo.build/) - High-performance monorepo system
 
 ## Key Differences from Other Languages
 
