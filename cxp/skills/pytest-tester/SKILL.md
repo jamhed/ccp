@@ -1,22 +1,25 @@
 ---
 name: pytest-tester
-description: Expert for writing, debugging, and reviewing pytest tests. Covers fixtures, parametrize, mocks, async testing, and test organization best practices.
+description: Expert for pytest testing in 2025 - pytest-asyncio 1.3.0+, AsyncMock, async fixtures, asyncio.gather optimization, uv parallel testing, Python 3.14+ support
 ---
 
-# Pytest Testing Expert
+# Pytest Testing Expert (2025)
 
-Expert skill for writing high-quality pytest tests, debugging test failures, and reviewing test code for Python projects.
+Expert skill for writing high-quality pytest tests in 2025 with pytest-asyncio 1.3.0+ (supports Python 3.10-3.14), async patterns, and modern testing practices.
 
-## Core Capabilities
+## Core Capabilities (2025)
 
-### 1. Writing Pytest Tests
-When writing new tests:
+### 1. Writing Pytest Tests (2025)
+When writing new tests in 2025:
 - Use pytest idioms (assert statements, fixtures, parametrize)
 - Organize tests clearly (test_file.py, test classes, descriptive names)
 - Use fixtures for setup/teardown and dependency injection
+- **Use async fixtures with pytest-asyncio 1.3.0+** (supports Python 3.10-3.14)
 - Apply parametrize for testing multiple scenarios
-- Mock external dependencies properly
-- Test async code with pytest-asyncio
+- **Use AsyncMock for async mocking** (Python 3.8+)
+- **Optimize with asyncio.gather** for concurrent async test setup
+- Test async code with @pytest.mark.asyncio
+- **Run tests in parallel** with `uv run pytest -n auto`
 - Achieve good coverage (>80%)
 
 ### 2. Debugging Test Failures
@@ -213,7 +216,9 @@ async def test_fetch_user_async():
         assert user["name"] == "John"
 ```
 
-### Async Testing
+### Async Testing (2025 with pytest-asyncio 1.3.0+)
+
+**pytest-asyncio 1.3.0** (Nov 10, 2025) - Latest version supporting Python 3.10-3.14
 
 ```python
 # tests/test_async_service.py
@@ -236,6 +241,150 @@ async def test_process_with_timeout():
     """Should timeout long-running operations"""
     with pytest.raises(asyncio.TimeoutError):
         await asyncio.wait_for(process_batch([1, 2, 3]), timeout=0.1)
+```
+
+### Async Fixtures (2025 Best Practice)
+
+**Async fixtures** are the backbone of well-structured async tests:
+
+```python
+# tests/conftest.py
+
+import pytest
+import httpx
+from app.database import AsyncSession, engine
+
+@pytest.fixture
+async def async_db_session():
+    """Async database session for each test"""
+    async with AsyncSession() as session:
+        yield session
+        await session.rollback()
+
+@pytest.fixture
+async def http_client():
+    """Shared async HTTP client"""
+    async with httpx.AsyncClient() as client:
+        yield client
+
+@pytest.fixture
+async def initialized_user(async_db_session):
+    """Create and return a test user"""
+    user = User(name="Test", email="test@example.com")
+    async_db_session.add(user)
+    await async_db_session.commit()
+    return user
+```
+
+### Performance Optimization with asyncio.gather (2025)
+
+**Concurrent preconditions** reduce test setup time dramatically:
+
+```python
+# tests/test_api.py
+
+import pytest
+import asyncio
+
+@pytest.fixture
+async def setup_data(async_db_session):
+    """Setup multiple resources concurrently"""
+    # ❌ BAD: Sequential (6 seconds for 2x 3-second operations)
+    # user = await create_user()
+    # posts = await create_posts()
+
+    # ✅ GOOD: Concurrent with asyncio.gather (3 seconds total)
+    user, posts = await asyncio.gather(
+        create_user(async_db_session),
+        create_posts(async_db_session)
+    )
+    return user, posts
+
+@pytest.mark.asyncio
+async def test_user_with_posts(setup_data):
+    """Test with concurrently prepared data"""
+    user, posts = setup_data
+    assert len(posts) == 10
+    assert posts[0].user_id == user.id
+```
+
+### AsyncMock for Mocking Async Functions (2025)
+
+**Python 3.8+** includes `AsyncMock` for async mocking:
+
+```python
+# tests/test_api_client.py
+
+import pytest
+from unittest.mock import AsyncMock, patch
+
+@pytest.mark.asyncio
+async def test_fetch_user_async():
+    """Should fetch user from API with AsyncMock"""
+    # Create AsyncMock
+    mock_get = AsyncMock(return_value={"id": 1, "name": "John"})
+
+    with patch("httpx.AsyncClient.get", mock_get):
+        from app.clients import fetch_user
+        user = await fetch_user(user_id=1)
+
+        assert user["name"] == "John"
+        mock_get.assert_called_once()
+
+@pytest.mark.asyncio
+async def test_service_with_multiple_async_mocks():
+    """Test with multiple async dependencies"""
+    mock_db = AsyncMock()
+    mock_cache = AsyncMock()
+
+    mock_db.fetch_user.return_value = {"id": 1, "name": "Alice"}
+    mock_cache.get.return_value = None
+
+    from app.services import UserService
+    service = UserService(db=mock_db, cache=mock_cache)
+    user = await service.get_user(user_id=1)
+
+    assert user["name"] == "Alice"
+    mock_db.fetch_user.assert_awaited_once_with(user_id=1)
+    mock_cache.get.assert_awaited_once()
+```
+
+### Avoiding Deadlocks in Async Tests (2025)
+
+**Manage fixture dependencies** carefully to prevent deadlocks:
+
+```python
+# tests/conftest.py
+
+import pytest
+
+# ❌ BAD: Potential deadlock with circular dependencies
+@pytest.fixture
+async def fixture_a(fixture_b):
+    await asyncio.sleep(0.1)
+    return "a"
+
+@pytest.fixture
+async def fixture_b(fixture_a):  # Circular!
+    await asyncio.sleep(0.1)
+    return "b"
+
+# ✅ GOOD: Clear dependency chain, event loop remains unblocked
+@pytest.fixture
+async def database():
+    """Base resource"""
+    async with create_db_pool() as pool:
+        yield pool
+
+@pytest.fixture
+async def user_repository(database):
+    """Depends on database"""
+    return UserRepository(database)
+
+@pytest.fixture
+async def user_service(user_repository):
+    """Depends on repository"""
+    return UserService(user_repository)
 ```
 
 ### Parametrize
@@ -267,7 +416,7 @@ def test_validate_email_invalid(email, error_message):
         validate_email(email)
 ```
 
-## Test Markers and Organization
+## Test Markers and Organization (2025)
 
 Use markers for selective test execution (recommended markers):
 
@@ -275,27 +424,33 @@ Use markers for selective test execution (recommended markers):
 - `@pytest.mark.integration` - Integration tests (fast subset)
 - `@pytest.mark.slow` - Slow tests (> 1s, timeout tests, sequential)
 - `@pytest.mark.fast` - Fast tests (< 1s, parallel)
-- `@pytest.mark.asyncio` - Async tests requiring pytest-asyncio
+- `@pytest.mark.asyncio` - Async tests requiring pytest-asyncio 1.3.0+
 - `@pytest.mark.timeout` - Tests involving timeout behavior
 
 ```bash
-# Run only fast tests
-pytest -m fast -n auto
+# Run only fast tests in parallel with uv (2025 standard)
+uv run pytest -m fast -n auto
 
 # Exclude slow tests
-pytest -m "not slow" -n auto
+uv run pytest -m "not slow" -n auto
 
 # Run timeout tests only
-pytest -m timeout -v
+uv run pytest -m timeout -v
+
+# Run all async tests
+uv run pytest -m asyncio -v
+
+# Run with coverage
+uv run pytest --cov=app --cov-report=term-missing -n auto
 ```
 
 ## Pytest Configuration
 
-### pytest.ini
+### pytest.ini (2025)
 
 ```ini
 [pytest]
-minversion = 7.0
+minversion = 8.0
 testpaths = tests
 python_files = test_*.py
 python_classes = Test*
@@ -313,9 +468,11 @@ markers =
     integration: Integration tests
     slow: Slow tests (run with -m slow, sequential)
     fast: Fast tests (< 1s, parallel)
-    asyncio: Async tests
+    asyncio: Async tests (pytest-asyncio 1.3.0+ required)
     timeout: Tests involving timeout behavior
+# pytest-asyncio 1.3.0+ configuration (supports Python 3.10-3.14)
 asyncio_mode = auto
+asyncio_default_fixture_loop_scope = function
 ```
 
 ### pyproject.toml (alternative)
@@ -341,52 +498,61 @@ markers = [
 asyncio_mode = "auto"
 ```
 
-## Common Pytest Commands
+## Common Pytest Commands (2025)
+
+**ALWAYS use uv for running tests** (10-100x faster dependency resolution):
 
 ```bash
-# Run all tests
-pytest
+# Run all tests (2025 standard with uv)
+uv run pytest
 
 # Run with verbose output
-pytest -v
+uv run pytest -v
+
+# Run in parallel (recommended for 2025)
+uv run pytest -n auto
 
 # Run specific test file
-pytest tests/test_user.py
+uv run pytest tests/test_user.py
 
 # Run specific test function
-pytest tests/test_user.py::test_create_user
+uv run pytest tests/test_user.py::test_create_user
 
 # Run specific test class
-pytest tests/test_user.py::TestUserService
+uv run pytest tests/test_user.py::TestUserService
 
 # Run tests matching pattern
-pytest -k "test_create"
+uv run pytest -k "test_create"
 
 # Run tests with specific marker
-pytest -m integration
-pytest -m "not slow"        # Exclude slow tests
-pytest -m "fast and unit"   # Combine markers
+uv run pytest -m integration
+uv run pytest -m "not slow"        # Exclude slow tests
+uv run pytest -m "fast and unit"   # Combine markers
+uv run pytest -m asyncio           # Run only async tests
 
 # Run last failed tests
-pytest --lf
+uv run pytest --lf
 
 # Run failed tests first
-pytest --ff
+uv run pytest --ff
 
 # Stop on first failure
-pytest -x
+uv run pytest -x
 
 # Show local variables in tracebacks
-pytest -l
+uv run pytest -l
 
 # Enter debugger on failure
-pytest --pdb
+uv run pytest --pdb
 
 # Show print statements
-pytest -s
+uv run pytest -s
 
-# Run with coverage
-pytest --cov=app --cov-report=term-missing
+# Run with coverage (parallel)
+uv run pytest --cov=app --cov-report=term-missing -n auto
+
+# Run async tests with verbose asyncio debugging
+uv run pytest -m asyncio -v -s
 
 # Run only tests that changed
 pytest --testmon

@@ -1,26 +1,29 @@
 ---
 name: python-dev
-description: Expert Python development assistant for writing new code and reviewing existing codebases. Covers modern Python idioms (Python 3.13+), best practices, type safety, async patterns, structured logging, and idiomatic error handling.
+description: Expert Python development assistant for 2025 - Python 3.14+, t-strings, deferred annotations, free-threading, uv package manager, async patterns, type safety, fail-fast principles
 ---
 
-# Python Development Assistant
+# Python Development Assistant (2025)
 
-Expert assistant for Python development, covering both writing new code and reviewing existing codebases with modern Python idioms (Python 3.13+) and best practices.
+Expert assistant for Python development in 2025, covering modern Python 3.14+ features (t-strings, deferred annotations, free-threading), uv package manager, async patterns, and production-ready best practices.
 
 ## Core Capabilities
 
-### 1. Writing New Python Code
-When writing new Python code:
-- **Use modern Python 3.11-3.13 features**:
-  - Python 3.13: TypedDict for **kwargs, improved error messages, improved typing
-  - Python 3.12: type parameter syntax, @override decorator
-  - Python 3.11: ExceptionGroup, Self type, TaskGroup, pattern matching (`match`/`case`)
-- Apply type hints comprehensively (parameters, returns, attributes)
+### 1. Writing New Python Code (2025)
+When writing new Python code in 2025:
+- **Use modern Python 3.14+ features** (current 2025 version):
+  - **Python 3.14** (Oct 2025 - current): t-strings (PEP 750) for templates, deferred annotations evaluation, REPL syntax highlighting, improved free-threading
+  - **Python 3.13** (Oct 2024): TypedDict for **kwargs, improved error messages with color, JIT compiler (experimental), free-threaded mode (experimental), new interactive interpreter
+  - **Python 3.12**: type parameter syntax, @override decorator
+  - **Python 3.11**: ExceptionGroup, Self type, TaskGroup, pattern matching (`match`/`case`)
+- Apply type hints comprehensively with deferred annotations (3.14+)
+- **Use uv package manager** (2025 standard - 10-100x faster than pip)
 - **Implement specific exception handling**: Catch specific exceptions, never broad `Exception` in library code
 - **Apply fail-fast principles**: Validate inputs early, fail loudly, no silent failures
 - **Start simple and iterate**: Build minimal solution first, add complexity only when needed
 - **Use structured logging**: `logger.debug("event key=%s", value)` format with % formatting (NOT f-strings)
-- Apply async/await patterns correctly (no blocking in async functions)
+- Apply async/await patterns correctly (no blocking in async functions, use asyncio.gather for concurrency)
+- **Consider free-threading** for CPU-bound tasks (Python 3.13+, GIL-free experimental mode)
 - **Avoid thin wrappers**: Only create wrappers that add transformation, logging, or coordination value
 - Use dataclasses, pydantic models for data structures
 - Follow PEP 8 and modern Python conventions
@@ -83,19 +86,22 @@ Use this skill when:
    - For async code: review [references/async-patterns.md](references/async-patterns.md)
    - For web APIs: review [references/fastapi-patterns.md](references/fastapi-patterns.md)
 
-3. **Implement code**
+3. **Implement code (2025)**
+   - **Use uv for dependencies**: `uv add package-name` (10-100x faster than pip)
    - **Start simple**: Build minimum viable solution first, iterate based on tests
-   - **Use modern Python 3.11-3.13 features**:
-     - Python 3.13: TypedDict for **kwargs, improved type hints, improved error messages
-     - Python 3.12: type parameter syntax, @override decorator
-     - Python 3.11: ExceptionGroup, Self type, TaskGroup, pattern matching
-   - Add comprehensive type hints with modern syntax
+   - **Use modern Python 3.14+ features** (2025 current):
+     - **Python 3.14**: t-strings for templates, deferred annotations, REPL syntax highlighting, improved free-threading
+     - **Python 3.13**: TypedDict for **kwargs, improved error messages with color, JIT compiler, free-threaded mode, new interactive interpreter
+     - **Python 3.12**: type parameter syntax, @override decorator
+     - **Python 3.11**: ExceptionGroup, Self type, TaskGroup, pattern matching
+   - Add comprehensive type hints with deferred annotations (3.14+)
    - **Catch specific exceptions**: Never catch broad `Exception` in library code, only in allowed modules (CLI, executors, tools, tests)
    - **Apply fail-fast**: Validate inputs at entry, fail loudly with clear exceptions, use exception chaining with `from e`
    - **Avoid thin wrappers**: Only create functions that add transformation, logging, error context, or coordination
    - **Use structured logging**: Format as `logger.debug("event key=%s", value)` with % formatting, lowercase event names
    - **Use strict validation**: Pydantic `strict=True`, no lenient defaults
-   - Use async/await correctly
+   - Use async/await correctly (asyncio.gather for concurrency, avoid deadlocks)
+   - **Consider free-threading** for CPU-bound tasks if using Python 3.13+
    - Add docstrings for public APIs
 
 4. **Review implementation**
@@ -298,29 +304,31 @@ def get_user(user_id: int) -> User:
 - Network/IO operations (retry with exponential backoff)
 - Optional features (log warning and continue)
 
-## Key Principles
+## Key Principles (2025)
 
-1. **Modern Python Features** (3.11-3.13): TypedDict for **kwargs (3.13), improved error messages (3.13), type parameter syntax (3.12), @override decorator (3.12), ExceptionGroup (3.11), Self type (3.11), TaskGroup (3.11), pattern matching (3.11)
-2. **Type Safety**: Comprehensive type hints, use of generics, Protocol, TypeVar, TypedDict for **kwargs
-3. **Exception Handling**: Catch specific exceptions in library code, broad catches only in allowed modules (CLI, executors, tools, tests), always chain with `from e`
-4. **Fail-Fast**: Validate inputs early, fail loudly with clear exceptions, no silent failures, no returning None on errors
-5. **Simplicity First**: Start with minimal solution, add complexity only when needed, easy to test and iterate
-6. **Function Abstraction**: Avoid thin wrappers that just forward calls, only create wrappers that add transformation, logging, error context, or coordination
-7. **Structured Logging**: Format as `logger.debug("event key=%s", value)` with % formatting (NOT f-strings), lowercase event names, INFO for user-visible, DEBUG for implementation
-8. **Async Correctness**: No blocking in async, proper cancellation, task lifecycle
-9. **Code Style**: PEP 8 compliance, clear naming, focused functions
-10. **Testing**: pytest, fixtures, mocks, async testing with pytest-asyncio, **manual CLI smoke testing required**, test immediately after implementation
-11. **Security**: No SQL/command injection, secrets in environment, input validation at entry points
-12. **Performance**: Generators, avoid N+1 queries, profile before optimizing
-13. **Documentation**: Docstrings for public APIs, type hints as documentation
+1. **Modern Python Features** (3.14+): t-strings for templates (3.14), deferred annotations (3.14), free-threading improvements (3.14), TypedDict for **kwargs (3.13), improved error messages with color (3.13), JIT compiler (3.13), type parameter syntax (3.12), @override decorator (3.12), ExceptionGroup (3.11), Self type (3.11), TaskGroup (3.11), pattern matching (3.11)
+2. **Package Management**: uv (2025 standard - 10-100x faster than pip), pipx for tools, no global pip installs
+3. **Type Safety**: Comprehensive type hints with deferred annotations (3.14+), use of generics, Protocol, TypeVar, TypedDict for **kwargs
+4. **Exception Handling**: Catch specific exceptions in library code, broad catches only in allowed modules (CLI, executors, tools, tests), always chain with `from e`
+5. **Fail-Fast**: Validate inputs early, fail loudly with clear exceptions, no silent failures, no returning None on errors
+6. **Simplicity First**: Start with minimal solution, add complexity only when needed, easy to test and iterate
+7. **Function Abstraction**: Avoid thin wrappers that just forward calls, only create wrappers that add transformation, logging, error context, or coordination
+8. **Structured Logging**: Format as `logger.debug("event key=%s", value)` with % formatting (NOT f-strings), lowercase event names, INFO for user-visible, DEBUG for implementation
+9. **Async Correctness**: No blocking in async, asyncio.gather for concurrency, proper cancellation, task lifecycle, avoid deadlocks
+10. **Free-Threading** (3.13+): Consider for CPU-bound tasks, experimental GIL-free mode
+11. **Code Style**: PEP 8 compliance, clear naming, focused functions
+12. **Testing**: pytest with pytest-asyncio 1.3.0+ (supports Python 3.10-3.14), fixtures, AsyncMock, **manual CLI smoke testing required**, test immediately after implementation
+13. **Security**: No SQL/command injection, secrets in environment, input validation at entry points
+14. **Performance**: Generators, avoid N+1 queries, asyncio.gather for concurrent I/O, profile before optimizing
+15. **Documentation**: Docstrings for public APIs, type hints as documentation
 
-## Reference Files
+## Reference Files (2025)
 
-- **modern-python-2025.md**: Modern Python 3.11-3.13 features, type hints, error handling, async/await, best practices
-- **type-safety-patterns.md**: Type hints, generics, Protocol, TypeVar, TypedDict, avoiding Any, type narrowing
-- **async-patterns.md**: Async/await best practices, task management, cancellation, common pitfalls
-- **fastapi-patterns.md**: FastAPI-specific patterns, dependency injection, request validation, error handling
-- **uv-guide.md**: UV package manager usage, project setup, dependency management, workflows
+- **modern-python-2025.md**: Modern Python 3.14+ features (t-strings, deferred annotations, free-threading), Python 3.13 (TypedDict for **kwargs, JIT, free-threaded mode), type hints, error handling, async/await, best practices
+- **type-safety-patterns.md**: Type hints with deferred annotations (3.14+), generics, Protocol, TypeVar, TypedDict, avoiding Any, type narrowing
+- **async-patterns.md**: Async/await best practices, asyncio.gather for concurrency, task management, cancellation, avoiding deadlocks, pytest-asyncio 1.3.0+
+- **fastapi-patterns.md**: FastAPI-specific patterns, dependency injection, request validation, error handling, async routes
+- **uv-guide.md**: uv package manager (2025 standard - 10-100x faster than pip), project setup, dependency management, workflows
 
 Load references as needed based on the task at hand.
 
@@ -335,27 +343,37 @@ This skill incorporates modern Python development best practices:
 - **Test Organization**: Use markers (unit, integration, slow, fast), separate test suites, proper fixtures
 - **Development Workflow**: `make dev` (lint + fast tests), `make ci` (full workflow), manual testing checklist
 
-## Package Management with UV
+## Package Management with uv (2025 Standard)
 
-Use UV for all package management tasks:
+**ALWAYS use uv for package management** - it's 10-100x faster than pip and the 2025 industry standard:
 
 ```bash
-# Project setup
+# Project setup (2025 workflow)
 uv init my-project
 uv venv
 uv sync
 
-# Add dependencies
+# Add dependencies (10-100x faster than pip install)
 uv add fastapi pydantic
-uv add --dev pytest ruff pyright
+uv add --dev pytest pytest-asyncio ruff pyright
 
 # Run commands
 uv run python script.py
-uv run pytest -n auto
+uv run pytest -n auto  # Parallel testing
 uv run ruff check .
+
+# Python 3.14+ specific
+uv python install 3.14  # Install Python 3.14
+uv venv --python 3.14   # Create venv with Python 3.14
 ```
 
-See [references/uv-guide.md](references/uv-guide.md) for complete UV documentation.
+**Why uv in 2025**:
+- 10-100x faster than pip
+- Built in Rust, reliable dependency resolution
+- Unified tool (replaces pip, pip-tools, virtualenv, pyenv)
+- Industry standard for Python development
+
+See [references/uv-guide.md](references/uv-guide.md) for complete uv documentation.
 
 ## Example Usage
 
@@ -393,11 +411,13 @@ See [references/uv-guide.md](references/uv-guide.md) for complete UV documentati
 
 ### Example 3: Refactoring to Modern Python
 
-**User**: "Help me refactor this old Python 3.7 code to modern Python 3.13"
+**User**: "Help me refactor this old Python 3.7 code to modern Python 3.14"
 
 **Assistant**:
 1. Loads modern-python-2025.md
-2. Identifies opportunities:
+2. Identifies 2025 opportunities:
+   - Use t-strings (template strings) for string templating (3.14)
+   - Use deferred annotations for faster module loading (3.14)
    - Replace `Union[X, None]` with `X | None`
    - Use TypedDict for **kwargs (3.13)
    - Use type parameter syntax (3.12)
@@ -405,8 +425,11 @@ See [references/uv-guide.md](references/uv-guide.md) for complete UV documentati
    - Use pattern matching for complex conditionals (3.11)
    - Use ExceptionGroup for multiple errors (3.11)
    - Use Self type for method chaining (3.11)
-   - Add comprehensive type hints with modern syntax
+   - Add comprehensive type hints with deferred annotations
    - Catch specific exceptions, avoid broad `Exception`
    - Use structured logging with % formatting
+   - Use uv for package management
+   - Use async/await with asyncio.gather for concurrency
+   - Consider free-threading for CPU-bound tasks (3.13+)
    - Use dataclasses or Pydantic models
-3. Provides refactored code with explanations
+3. Provides refactored code with explanations and 2025 best practices

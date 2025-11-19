@@ -1,32 +1,32 @@
-# cxp Plugin - Modern Python Development
+# cxp Plugin - Python Development (2025)
 
-Comprehensive toolkit for modern Python development (Python 3.14+) with specialized skills, agents, and commands for building high-quality Python applications. Includes support for JIT compilation, enhanced pattern matching, TypedDict for **kwargs, and improved async/await.
+Comprehensive toolkit for Python 3.14+ development in 2025 with t-strings, deferred annotations, free-threading, uv package manager (10-100x faster), and modern testing with pytest-asyncio 1.3.0+.
 
 ## Skills
 
-- **python-dev**: Expert Python development assistant covering modern Python 3.14+ idioms (JIT, enhanced patterns, TypedDict **kwargs), type safety, async patterns, and idiomatic error handling
-- **pytest-tester**: Testing expert for writing, debugging, and reviewing pytest tests with fixtures, parametrize, mocks, and async testing
-- **fastapi-dev**: FastAPI specialist for API design, dependency injection, async patterns, middleware, and comprehensive testing
+- **python-dev**: Expert Python 3.14+ development for 2025 - t-strings, deferred annotations, free-threading, uv (10-100x faster than pip), JIT compiler, async patterns with asyncio.gather, type safety
+- **pytest-tester**: pytest expert for 2025 - pytest-asyncio 1.3.0+ (supports Python 3.10-3.14), AsyncMock, async fixtures, uv parallel testing (`uv run pytest -n auto`), asyncio.gather optimization
+- **fastapi-dev**: FastAPI specialist for async API design, dependency injection, Pydantic v2, async patterns, middleware, and comprehensive testing
 
 **Shared Skills** (from cx plugin):
 - **issue-manager**: Manage project issues in the issues folder. List open issues, archive solved issues, and refine problem definitions
 - **web-doc**: Fetches and caches technical documentation locally in `docs/web/` for offline reference
 
-## Agents
+## Agents (2025)
 
-Multi-phase problem-solving workflow agents:
+Multi-phase problem-solving workflow agents using Python 3.14+ and 2025 best practices:
 
-- **Problem Researcher**: Researches Python codebases to identify bugs, performance issues, and feature requirements
-- **Problem Validator**: Validates issues, proposes solution approaches, and develops test cases
-- **Solution Reviewer**: Critically evaluates solutions and selects optimal approach
-- **Solution Implementer**: Implements fixes using modern Python best practices
-- **Code Reviewer & Tester**: Reviews code quality, runs linters, type checkers, and tests
-- **Documentation Updater**: Creates solution documentation and git commits
+- **Problem Researcher**: Researches Python 3.14+ codebases - identifies bugs using t-strings, deferred annotations, free-threading, uv, async patterns
+- **Problem Validator**: Validates issues and develops pytest-asyncio 1.3.0+ tests with AsyncMock, async fixtures, uv parallel testing
+- **Solution Reviewer**: Evaluates solutions using t-strings, deferred annotations, free-threading, uv (10-100x faster), asyncio.gather, type safety
+- **Solution Implementer**: Implements fixes using Python 3.14+, t-strings, free-threading, uv, pytest-asyncio 1.3.0+, AsyncMock
+- **Code Reviewer & Tester**: Runs uv parallel testing (`uv run pytest -n auto`), pytest-asyncio 1.3.0+, ensures 2025 best practices
+- **Documentation Updater**: Documents solution with uv pytest results, t-strings, deferred annotations, free-threading, AsyncMock tests
 
 Standalone code quality agents:
 
-- **Code Quality Reviewer**: Reviews Python code as a senior developer to identify refactoring opportunities, code duplication, complexity issues, and modern Python 3.14+ best practice improvements
-- **Bug Hunter**: Critically reviews code to identify logic errors, oversights, refactoring remnants, edge cases, and potential bugs
+- **Code Quality Reviewer**: Reviews Python 3.14+ code for refactoring opportunities, duplication, complexity, 2025 best practice improvements (t-strings, deferred annotations, free-threading, uv, async patterns)
+- **Bug Hunter**: Critically reviews code for logic errors, oversights, edge cases, potential bugs using 2025 standards
 
 ## Commands
 
@@ -244,65 +244,86 @@ archive/[issue-name]/
 
 Each agent in the workflow creates an audit trail file documenting its phase, providing complete traceability from problem to solution.
 
-## Python Best Practices Covered
+## Python 3.14+ Best Practices (2025)
 
-### Package Management
-- **UV** for fast, reliable package management (10-100x faster than pip)
-- Lock file support for reproducible builds
-- Virtual environment management
-- Python version management
-
-### Modern Python (3.11+)
-- Type hints with generics, Protocol, TypeVar
-- Pattern matching with `match`/`case`
+### Modern Python (3.14+)
+- **Python 3.14** (Oct 2025 - current): t-strings (PEP 750) for template literals, deferred annotations evaluation, REPL syntax highlighting, improved free-threading
+- **Python 3.13** (Oct 2024): TypedDict for **kwargs, improved error messages with color, JIT compiler (experimental), free-threaded mode (experimental - GIL-free), new interactive interpreter
+- **Python 3.12**: type parameter syntax `[T]`, @override decorator
+- **Python 3.11**: ExceptionGroup, Self type, TaskGroup for structured concurrency, pattern matching (`match`/`case`)
+- Type hints with deferred annotations (3.14+)
 - Type unions with `|` instead of `Union`
-- ExceptionGroup for multiple errors (3.11+)
-- Self type for returning instances (3.11+)
-- @override decorator (3.12+)
 
-### Type Safety
-- Comprehensive type hints
-- Avoiding `Any` without justification
-- Proper use of Optional, Union, generics
-- Type narrowing and guards
-- Protocol for structural subtyping
+### Package Management (2025 Standard)
+- **uv**: Industry standard (10-100x faster than pip), unified tool replacing pip/pip-tools/virtualenv/pyenv
+- Lock file support for reproducible builds
+- Virtual environment management: `uv venv --python 3.14`
+- Python version management: `uv python install 3.14`
+- Parallel dependency resolution
+- **Never use pip directly** - always use uv
 
-### Async Patterns
-- Proper async/await usage
+### Type Safety (2025)
+- Comprehensive type hints with deferred annotations (3.14+)
+- Avoid `Any` without justification (use Protocol or generics)
+- Proper use of generics, Protocol, TypeVar
+- Type narrowing with type guards
+- TypedDict for **kwargs (3.13+)
+- Modern type parameter syntax `[T]` (3.12+)
+
+### Async Patterns (2025)
+- Proper async/await usage with error chaining (`cause` property)
+- **asyncio.gather for concurrency** - run multiple async operations concurrently
+- **pytest-asyncio 1.3.0+** (Nov 2025) - supports Python 3.10-3.14
+- **AsyncMock** for mocking async functions
+- **Async fixtures** for test setup
+- **Avoid deadlocks** - manage fixture dependencies carefully
 - No blocking calls in async functions
-- Task lifecycle management
-- Proper cancellation handling
-- AsyncIO best practices
+- Task lifecycle management with TaskGroup (3.11+)
+- Proper cancellation handling with AbortController patterns
 
-### Error Handling
+### Free-Threading (2025 - Experimental)
+- **Python 3.13+** free-threaded mode - GIL-free experimental feature
+- Consider for CPU-bound tasks
+- Improved performance in Python 3.14
+- Not production-ready yet, but worth experimenting
+
+### Error Handling (2025)
 - Specific exception types (not bare `except:`)
-- Exception chaining with `from`
+- Exception chaining with `from` and `cause` property
 - Custom exceptions with proper inheritance
+- ExceptionGroup for multiple errors (3.11+)
 - Clear error messages
-- No silent failures
+- Fail-fast principles - no silent failures
 
-### Testing with Pytest
-- Fixtures for setup/teardown
+### Testing with Pytest (2025)
+- **uv for test execution**: `uv run pytest -n auto` (parallel testing)
+- **pytest-asyncio 1.3.0+**: Latest version supporting Python 3.10-3.14
+- **AsyncMock**: For mocking async functions (Python 3.8+)
+- **Async fixtures**: Backbone of well-structured async tests
+- **asyncio.gather**: Concurrent test setup (reduce 6s to 3s)
+- **Avoid deadlocks**: Careful fixture dependency management
 - Parametrize for multiple scenarios
-- Mocking external dependencies
-- Async testing with pytest-asyncio
 - Coverage analysis (>80% target)
+- Test markers: unit, integration, slow, fast, asyncio
 
-### FastAPI Development
-- Pydantic models for validation
+### FastAPI Development (2025)
+- **Pydantic v2**: Faster validation, better error messages
 - Dependency injection
 - Proper async route handlers
 - Error handling with HTTPException
 - Background tasks
 - Middleware and CORS
 - Authentication/authorization
+- Type-safe request/response models
 
-### Code Quality
-- Linting and formatting with ruff
-- Type checking with pyright
-- PEP 8 compliance
+### Code Quality (2025)
+- **Linting and formatting**: ruff (fastest Python linter)
+- **Type checking**: pyright or mypy --strict
+- **PEP 8 compliance**
+- **Modern Python features**: t-strings, deferred annotations, free-threading
 - Clear naming and focused functions
 - Manual security review practices
+- **Always use uv** for dependency management
 
 ## Installation
 
