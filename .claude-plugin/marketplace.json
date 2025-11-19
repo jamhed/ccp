@@ -5,12 +5,22 @@
     {
       "name": "cx",
       "source": "./cx",
+      "description": "Core cross-language utilities and issue management for all CCP plugins"
+    },
+    {
+      "name": "cxg",
+      "source": "./cxg",
       "description": "Development workflow toolkit for Go and Kubernetes"
     },
     {
       "name": "cxp",
       "source": "./cxp",
       "description": "Development workflow toolkit for Python"
+    },
+    {
+      "name": "cxt",
+      "source": "./cxt",
+      "description": "Development workflow toolkit for TypeScript & Node.js"
     }
   ]
 }

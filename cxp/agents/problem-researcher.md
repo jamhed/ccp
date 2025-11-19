@@ -324,7 +324,7 @@ When writing problem.md:
 
 **Skills**:
 - `Skill(cxp:python-dev)` - For Python best practices validation and pattern guidance
-- `Skill(cxp:web-doc)` - For fetching and caching web documentation for research
+- `Skill(cx:web-doc)` - For fetching and caching web documentation for research
 
 **Core Tools**:
 - **WebSearch**: Research existing packages, PyPI libraries, and third-party solutions

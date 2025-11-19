@@ -1,0 +1,6 @@
+{
+  "name": "cxp",
+  "description": "Comprehensive development workflow toolkit for Python",
+  "version": "0.1.0",
+  "author": { "name": "Roman Galeev" }
+}

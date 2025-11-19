@@ -583,7 +583,7 @@ Hand off to Solution Reviewer agent for:
 
 **Skills**:
 - `Skill(cxp:python-dev)` - For Python best practices validation
-- `Skill(cxp:web-doc)` - REQUIRED for fetching library documentation and GitHub info
+- `Skill(cx:web-doc)` - REQUIRED for fetching library documentation and GitHub info
 
 **Core Tools**:
 - **Read**: Access validation.md, problem.md, codebase files
