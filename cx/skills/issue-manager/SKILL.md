@@ -14,7 +14,7 @@ Expert assistant for managing project issues stored in the `issues/` folder. Pro
 List all open (non-archived) issues that have a `problem.md` file:
 
 ```bash
-cxg/skills/issue-manager/scripts/list-open
+cx/skills/issue-manager/scripts/list-open
 ```
 
 **When to use:**
@@ -32,7 +32,7 @@ cxg/skills/issue-manager/scripts/list-open
 List all solved (archived) issues that have been completed:
 
 ```bash
-cxg/skills/issue-manager/scripts/list-solved
+cx/skills/issue-manager/scripts/list-solved
 ```
 
 **When to use:**
@@ -52,12 +52,12 @@ cxg/skills/issue-manager/scripts/list-solved
 Archive a solved issue by moving it from `issues/` to `archive/`:
 
 ```bash
-cxg/skills/issue-manager/scripts/archive <issue-name>
+cx/skills/issue-manager/scripts/archive <issue-name>
 ```
 
 **Example:**
 ```bash
-cxg/skills/issue-manager/scripts/archive agent-crd-embedding-in-tool
+cx/skills/issue-manager/scripts/archive agent-crd-embedding-in-tool
 ```
 
 **When to use:**
@@ -82,12 +82,12 @@ cxg/skills/issue-manager/scripts/archive agent-crd-embedding-in-tool
 Launch the problem researcher agent to refine an issue's problem definition:
 
 ```bash
-cxg/skills/issue-manager/scripts/refine <issue-name>
+cx/skills/issue-manager/scripts/refine <issue-name>
 ```
 
 **Example:**
 ```bash
-cxg/skills/issue-manager/scripts/refine query-message-observer
+cx/skills/issue-manager/scripts/refine query-message-observer
 ```
 
 **When to use:**
@@ -127,24 +127,24 @@ cxg/skills/issue-manager/scripts/refine query-message-observer
 
 1. **List open issues** to see what needs work:
    ```bash
-   cxg/skills/issue-manager/scripts/list-open
+   cx/skills/issue-manager/scripts/list-open
    ```
 
 2. **List solved issues** to see what's been completed:
    ```bash
-   cxg/skills/issue-manager/scripts/list-solved
+   cx/skills/issue-manager/scripts/list-solved
    ```
 
 3. **Refine problem** if definition is unclear:
    ```bash
-   cxg/skills/issue-manager/scripts/refine agent-crd-embedding-in-tool
+   cx/skills/issue-manager/scripts/refine agent-crd-embedding-in-tool
    ```
 
 4. **Work on solution** using the solve workflow
 
 5. **Archive when solved**:
    ```bash
-   cxg/skills/issue-manager/scripts/archive agent-crd-embedding-in-tool
+   cx/skills/issue-manager/scripts/archive agent-crd-embedding-in-tool
    ```
 
 ## Directory Structure
@@ -194,17 +194,17 @@ ISSUES_DIR=bugs ARCHIVE_DIR=resolved cxg/skills/issue-manager/scripts/list-open
 
 **Check what's open before starting work:**
 ```bash
-cxg/skills/issue-manager/scripts/list-open
+cx/skills/issue-manager/scripts/list-open
 ```
 
 **View completed issues for reference:**
 ```bash
-cxg/skills/issue-manager/scripts/list-solved
+cx/skills/issue-manager/scripts/list-solved
 ```
 
 **Archive after solving:**
 ```bash
 # After solution is complete and tested
-cxg/skills/issue-manager/scripts/archive partial-tool-parameter-substitution
+cx/skills/issue-manager/scripts/archive partial-tool-parameter-substitution
 ```
 
