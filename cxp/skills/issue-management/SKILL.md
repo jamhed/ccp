@@ -12,7 +12,7 @@ Defines the issue workflow lifecycle, status markers, severity levels, and direc
 ```
 1. Problem Research → issues/[issue-name]/problem.md (Status: OPEN)
 2. Problem Validation → issues/[issue-name]/validation.md
-3. Solution Proposal → Updates validation.md with proposals
+3. Solution Proposal → issues/[issue-name]/proposals.md
 4. Solution Review → issues/[issue-name]/review.md
 5. Implementation → issues/[issue-name]/implementation.md
 6. Testing & Review → issues/[issue-name]/testing.md
@@ -28,6 +28,7 @@ Defines the issue workflow lifecycle, status markers, severity levels, and direc
 <PROJECT_ROOT>/issues/[issue-name]/
 ├── problem.md          # Issue definition (Status: OPEN)
 ├── validation.md       # Problem Validator findings (optional)
+├── proposals.md        # Solution Proposer proposals (optional)
 ├── review.md           # Solution Reviewer analysis (optional)
 ├── implementation.md   # Solution Implementer report (optional)
 ├── testing.md          # Code review and test results (optional)
@@ -39,6 +40,7 @@ Defines the issue workflow lifecycle, status markers, severity levels, and direc
 <PROJECT_ROOT>/archive/[issue-name]/
 ├── problem.md          # Original issue (Status: RESOLVED or REJECTED)
 ├── validation.md       # Audit trail
+├── proposals.md        # Audit trail
 ├── review.md           # Audit trail
 ├── implementation.md   # Audit trail
 ├── testing.md          # Audit trail
@@ -69,11 +71,12 @@ Use descriptive kebab-case names: `[type]-[brief-description]`
 
 **Correct** ✅:
 - `problem.md`
-- `solution.md`
 - `validation.md`
+- `proposals.md`
 - `review.md`
 - `implementation.md`
 - `testing.md`
+- `solution.md`
 
 **Incorrect** ❌:
 - `Problem.md`
@@ -178,7 +181,7 @@ Use descriptive kebab-case names: `[type]-[brief-description]`
 - **Special case**: For NOT A BUG, may create `solution.md` immediately
 
 ### Phase 3: Solution Proposal (Solution Proposer)
-- **Updates**: `validation.md` with solution proposals
+- **Creates**: `proposals.md`
 - **Contains**: 3-4 solution approaches with analysis
 - **Output format**: Defined by solution-proposer agent
 
