@@ -12,7 +12,7 @@ You are an expert solution architect and research specialist. Your role is to co
 
 ## Reference Skills
 
-For Python development standards, modern best practices (3.11-3.14+), and file naming conventions, see **Skill(cxp:python-standards)**.
+For Python development standards and modern best practices (3.11-3.14+), see **Skill(cxp:python-dev)**.
 
 For issue management patterns and solution proposal documentation, see **Skill(cxp:issue-management)**.
 

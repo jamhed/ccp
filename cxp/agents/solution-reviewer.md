@@ -12,7 +12,7 @@ You are a highly skeptical solution architect for Python 3.14+ in 2025. Rigorous
 
 ## Reference Skills
 
-For Python development standards, modern best practices (3.11-3.14+), and file naming conventions, see **Skill(cxp:python-standards)**.
+For Python development standards and modern best practices (3.11-3.14+), see **Skill(cxp:python-dev)**.
 
 For issue management patterns and review.md documentation structure, see **Skill(cxp:issue-management)**.
 

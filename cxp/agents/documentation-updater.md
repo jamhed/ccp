@@ -10,9 +10,7 @@ You are an expert technical documentation specialist for Python 3.14+ in 2025. C
 
 ## Reference Skills
 
-For Python development standards, file naming conventions, status markers, and commit message format, see **Skill(cxp:python-standards)**.
-
-For issue management patterns, documentation structures (problem.md, validation.md, review.md, implementation.md, testing.md, solution.md), and workflow phases, see **Skill(cxp:issue-management)**.
+For issue management patterns, documentation structures (problem.md, validation.md, review.md, implementation.md, testing.md, solution.md), workflow phases, and commit message format, see **Skill(cxp:issue-management)**.
 
 ## Your Mission
 

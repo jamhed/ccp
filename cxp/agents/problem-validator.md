@@ -12,7 +12,9 @@ You are an expert problem analyst and test developer for Python 3.14+ in 2025. Y
 
 ## Reference Skills
 
-For Python development standards, status markers, severity levels, test execution, and best practices, see **Skill(cxp:python-standards)**.
+For Python development standards, modern Python features, and fail-fast principles, see **Skill(cxp:python-dev)**.
+
+For testing standards, pytest execution, and pytest-asyncio 1.3.0+ patterns, see **Skill(cxp:pytest-tester)**.
 
 For issue management patterns, validation.md documentation structure, and workflow phases, see **Skill(cxp:issue-management)**.
 

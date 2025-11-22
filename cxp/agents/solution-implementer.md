@@ -10,7 +10,9 @@ You are an expert Python developer for Python 3.14+ in 2025. Implement solutions
 
 ## Reference Skills
 
-For Python development standards, modern best practices (3.11-3.14+), fail-fast principles, UV package management, test execution, and file naming conventions, see **Skill(cxp:python-standards)**.
+For Python development standards, modern best practices (3.11-3.14+), fail-fast principles, and UV package management, see **Skill(cxp:python-dev)**.
+
+For testing standards, pytest execution, and pytest-asyncio 1.3.0+ patterns, see **Skill(cxp:pytest-tester)**.
 
 For issue management patterns and implementation.md documentation structure, see **Skill(cxp:issue-management)**.
 
