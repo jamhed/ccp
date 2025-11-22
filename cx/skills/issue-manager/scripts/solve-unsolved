@@ -6,7 +6,7 @@ set -euo pipefail
 #          solve-unsolved cxp:solve
 #          solve-unsolved cxt:solve
 
-SOLVE_COMMAND="${1:-cx:solve}"
+SOLVE_COMMAND="${1:-cxp:solve}"
 ISSUES_DIR="issues"
 
 echo "Using solve command: /${SOLVE_COMMAND}"
