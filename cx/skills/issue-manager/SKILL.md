@@ -77,20 +77,68 @@ scripts/archive agent-crd-embedding-in-tool
 - Issue must exist in the `issues/` directory
 - Issue should be fully solved with a `solution.md` file
 
+### 4. Solve All Unsolved Issues
+
+Automatically solve all unsolved issues (issues with `problem.md` but no `solution.md`):
+
+```bash
+scripts/solve-unsolved [command-name]
+```
+
+**Examples:**
+```bash
+# Use default cx:solve command
+scripts/solve-unsolved
+
+# Use Python-specific solve workflow
+scripts/solve-unsolved cxp:solve
+
+# Use TypeScript-specific solve workflow
+scripts/solve-unsolved cxt:solve
+```
+
+**Parameters:**
+- `command-name` (optional): The solve command to use (default: `cx:solve`)
+  - `cx:solve` - General solve workflow
+  - `cxp:solve` - Python-specific solve workflow
+  - `cxt:solve` - TypeScript-specific solve workflow
+
+**When to use:**
+- Batch processing multiple unsolved issues
+- Automated issue resolution workflow for specific language projects
+- Working through backlog of open issues
+
+**How it works:**
+- Scans the `issues/` directory for unsolved issues
+- Identifies issues with `problem.md` but no `solution.md`
+- Processes each issue using the specified solve command
+- Automatically commits changes after each solution
+- Reports progress as it processes each issue
+
+**Prerequisites:**
+- Issues must exist in the `issues/` directory with `problem.md` files
+- The specified solve slash command must be available
+
+**Output:**
+- Shows which solve command is being used
+- Shows count of unsolved issues found
+- Displays progress for each issue being solved
+- Confirms when all issues are processed
+
 ## When to Use This Skill
 
 **Automatically use when:**
 - User mentions "list issues", "show issues", or "what issues are open"
 - User asks to "list solved", "show archived", or "what issues are solved"
 - User asks to "archive" or "close" an issue
-- User wants to "refine" or "improve" a problem definition
+- User wants to "solve all issues" or "batch solve issues"
 - Working with files in the `issues/` directory
 
 **Explicitly use for:**
 - Getting an overview of open work items
 - Viewing completed/solved issues
 - Managing issue lifecycle (open → solved → archived)
-- Improving problem definitions before implementing solutions
+- Batch processing unsolved issues
 - Cleaning up solved issues from the active list
 
 ## Workflow
@@ -102,19 +150,24 @@ scripts/archive agent-crd-embedding-in-tool
    scripts/list-open
    ```
 
-2. **List solved issues** ready to archive:
+2. **Solve all unsolved issues** (batch mode):
+   ```bash
+   # For general projects
+   scripts/solve-unsolved
+
+   # For Python projects
+   scripts/solve-unsolved cxp:solve
+
+   # For TypeScript projects
+   scripts/solve-unsolved cxt:solve
+   ```
+
+3. **List solved issues** ready to archive:
    ```bash
    scripts/list-solved
    ```
 
-3. **Refine problem** if definition is unclear:
-   ```bash
-   scripts/refine agent-crd-embedding-in-tool
-   ```
-
-4. **Work on solution** using the solve workflow
-
-5. **Archive when solved**:
+4. **Archive when solved**:
    ```bash
    scripts/archive agent-crd-embedding-in-tool
    ```
@@ -146,7 +199,7 @@ archive/
 ## Best Practices
 
 1. **Before archiving:** Ensure the issue has a complete `solution.md` file
-2. **Refine early:** Use refine to clarify problem definitions before implementation
+2. **Batch processing:** Use `solve-unsolved` to efficiently process multiple open issues
 3. **Regular cleanup:** Archive solved issues to keep the issues/ directory focused
 4. **Preserve history:** Archived issues retain all files for future reference
 

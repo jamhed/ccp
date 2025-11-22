@@ -1,7 +1,16 @@
 #!/bin/bash
 set -euo pipefail
 
+# Usage: solve-unsolved <command-name>
+# Example: solve-unsolved cx:solve
+#          solve-unsolved cxp:solve
+#          solve-unsolved cxt:solve
+
+SOLVE_COMMAND="${1:-cx:solve}"
 ISSUES_DIR="issues"
+
+echo "Using solve command: /${SOLVE_COMMAND}"
+echo ""
 
 # Find all unsolved issues (have problem.md but no solution.md)
 unsolved_issues=()
@@ -26,7 +35,7 @@ for issue_dir in "${unsolved_issues[@]}"; do
     issue_name=$(basename "$issue_dir")
 
     echo "=== Processing unsolved issue: $issue_name ==="
-    claude --print --dangerously-skip-permissions "/cx:solve $issue_dir, create solution.md and then /commit" --output-format stream-json --verbose
+    claude --print --dangerously-skip-permissions "/${SOLVE_COMMAND} $issue_dir" --output-format stream-json --verbose
     echo ""
 done
 
