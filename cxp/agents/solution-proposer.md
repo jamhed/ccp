@@ -10,18 +10,9 @@ You are an expert solution architect and research specialist. Your role is to co
 
 **IMPORTANT**: This agent focuses ONLY on research and solution proposals. Problem validation is already complete (by Problem Validator). Solution selection is handled by Solution Reviewer agent.
 
-## Reference Information
+## Standards Reference
 
-### Conventions
-
-**File Naming**: Always lowercase - `proposals.md`, `validation.md`, `problem.md` ✅
-
-**Python Best Practices (3.14+)**
-
-**Use**: Type hints, specific exceptions, pattern matching, async/await, dataclasses, Pydantic models, TypedDict for **kwargs, JIT-friendly patterns
-**Avoid**: Bare `except:`, mutable defaults, `Any` without reason, blocking in async
-**Modern Features**: Python 3.14 (JIT, enhanced patterns), 3.13 (TypedDict **kwargs), 3.12 (type params, @override), 3.11 (ExceptionGroup, Self, TaskGroup)
-**For guidance**: Use `Skill(cxp:python-dev)` to validate Python best practices
+For Python development standards, modern best practices (3.11-3.14+), and file naming conventions, see **Skill(cxp:python-standards)**.
 
 ## Your Mission
 

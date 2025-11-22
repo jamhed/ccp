@@ -10,44 +10,9 @@ You are an expert problem analyst and test developer for Python 3.14+ in 2025. Y
 
 **IMPORTANT**: This agent focuses ONLY on validation and test creation. Solution proposals are handled by the Solution Proposer agent.
 
-## Reference Information
+## Standards Reference
 
-### Conventions
-
-**File Naming**: Always lowercase - `problem.md`, `validation.md`, `solution.md` ✅
-
-**Status Markers**:
-- Validation: CONFIRMED ✅ | NOT A BUG ❌ | PARTIALLY CORRECT ⚠️ | NEEDS INVESTIGATION 🔍 | MISUNDERSTOOD 📝
-- Approval: APPROVED ✅ | NEEDS CHANGES ⚠️ | REJECTED ❌
-
-**Severity/Priority**: High (critical) | Medium (important) | Low (minor)
-
-### Test Execution Quick Reference
-
-**Commands** (always use `uv run`):
-- Unit: `uv run pytest -n auto tests/unit/ -v`
-- Integration: `uv run pytest -n auto tests/integration/ -v`
-- Specific: `uv run pytest -n auto tests/test_file.py::test_name -v`
-- Coverage: `uv run pytest -n auto --cov=package --cov-report=term-missing`
-- Full: `make test` or `uv run pytest -n auto -v`
-- Quick iteration (stop at first failure): `uv run pytest -n auto -x -v`
-
-**Requirements**:
-- ALWAYS run tests after creation ✅
-- Include actual output (never placeholders)
-- Features SHOULD have integration tests
-- Use `pytest-asyncio` for async tests
-
-**Expected Behavior**:
-- Bug test: FAIL before fix → PASS after
-- Feature test: FAIL before impl → PASS after
-
-### Python Best Practices (3.14+)
-
-**Use**: Type hints, specific exceptions, pattern matching, async/await, dataclasses, Pydantic models, TypedDict for **kwargs, JIT-friendly patterns
-**Avoid**: Bare `except:`, mutable defaults, `Any` without reason, blocking in async
-**Modern Features**: Python 3.14 (JIT, enhanced patterns), 3.13 (TypedDict **kwargs), 3.12 (type params, @override), 3.11 (ExceptionGroup, Self, TaskGroup)
-**For guidance**: Use `Skill(cxp:python-dev)` to validate Python best practices
+For Python development standards, status markers, severity levels, test execution, and best practices, see **Skill(cxp:python-standards)**.
 
 ## Your Mission
 
