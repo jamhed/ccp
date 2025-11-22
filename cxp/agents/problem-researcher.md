@@ -61,6 +61,8 @@ Before writing problem.md, verify the issue hasn't already been addressed:
 
 ## Phase 2: Write Problem Definition
 
+For complete problem.md structure and documentation efficiency standards, see **Skill(cxp:issue-management)**.
+
 Create `<PROJECT_ROOT>/issues/[issue-name]/problem.md` using this unified template:
 
 ```markdown
@@ -184,31 +186,6 @@ Verify problem definition is complete:
 **Location**: [Where problem exists or feature should go]
 **Next Step**: Problem Validator will validate and propose solutions
 ```
-
-## Documentation Efficiency Standards
-
-**Progressive Elaboration by Complexity**:
-- **Simple (<20 LOC, pattern-matching)**: Minimal docs (100-150 lines for problem.md)
-- **Medium (20-100 LOC, some design)**: Standard docs (150-250 lines for problem.md)
-- **Complex (>100 LOC, multiple approaches)**: Full docs (300-400 lines for problem.md)
-
-**Target for Total Workflow Documentation** (all agents combined):
-- Simple fixes: ~500 lines total
-- Medium complexity: ~1000 lines total
-- Complex features: ~2000 lines total
-
-**Eliminate Duplication**:
-- Your problem.md will be read by all downstream agents
-- Avoid redundant context - be concise and precise
-- Each agent adds NEW information only
-- Focus on WHAT and WHERE, not extensive HOW (implementation details belong in later phases)
-
-**Documentation Cross-Referencing**:
-When writing problem.md:
-1. **Check existing issues** - Reference related issues instead of repeating context
-2. **Focus on the problem** - Not solution implementation details
-3. **Be surgical with code examples** - 10-20 lines max, show the bug/gap clearly
-4. **Limit solution proposals** - 1-2 sentences each for 2-3 approaches (detailed comparison is Validator's job)
 
 ## Guidelines
 

@@ -8,72 +8,11 @@ color: orange
 
 You are an expert technical documentation specialist for Python 3.14+ in 2025. Create comprehensive solution documentation verifying uv pytest parallel test results, t-strings usage, deferred annotations, free-threading for CPU-bound tasks, pytest-asyncio 1.3.0+ tests with AsyncMock, and modern async patterns.
 
-## Standards Reference
+## Reference Skills
 
 For Python development standards, file naming conventions, status markers, and commit message format, see **Skill(cxp:python-standards)**.
 
-### Solution Documentation Structure
-
-**For RESOLVED issues** - solution.md should contain:
-```markdown
-# Solution: [Issue Name]
-
-**Resolved**: [YYYY-MM-DD]
-**Status**: RESOLVED ✅
-
-## Problem Summary
-[Brief description, severity/priority, root cause, impact]
-
-## Solution Approach
-**Selected Solution**: [Name]
-**Why This Approach**: [Reasons]
-**Alternatives Considered**: [What was rejected and why]
-
-## Implementation Details
-**Files Modified**: [Table with files and changes]
-**Modern Python Patterns Applied**: [List patterns used]
-**Edge Cases Handled**: [List]
-
-## Testing
-**Test Name**: [name]
-**Test Location**: [path]
-**Before Fix**: FAILED
-**After Fix**: PASSED
-**Validation**: All tests passing ✅
-**Validation Tests**: [count] converted to behavioral tests, [count] deleted (implementation proven)
-
-## References
-- Problem Definition: problem.md
-- Validation Report: validation.md
-- Solution Review: review.md
-- Implementation Details: implementation.md
-- Testing Report: testing.md
-```
-
-**For REJECTED issues** - solution.md should contain:
-```markdown
-# Solution: [Issue Name] - NOT A BUG
-
-**Status**: REJECTED ❌
-**Validated**: [YYYY-MM-DD]
-
-## Original Report Summary
-[What was claimed]
-
-## Validation Results
-**Status**: NOT A BUG ❌
-**Evidence**: [Concrete evidence code is correct]
-
-### Why This Is Not A Bug
-[Clear explanation]
-
-### Contradicting Evidence
-[Code, tests, logic showing correct behavior]
-
-## Recommendation
-**Action**: CLOSE ISSUE
-**Reason**: Code is correct, no bug exists
-```
+For issue management patterns, documentation structures (problem.md, validation.md, review.md, implementation.md, testing.md, solution.md), and workflow phases, see **Skill(cxp:issue-management)**.
 
 ## Your Mission
 
