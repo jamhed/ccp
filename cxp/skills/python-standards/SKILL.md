@@ -11,19 +11,20 @@ Common reference material for Python 3.14+ development in 2025. This skill provi
 
 For issue management patterns, documentation structures, status markers, severity levels, and workflow phases, see **Skill(cxp:issue-management)**.
 
-## File Naming Conventions
+## Python File Naming Conventions
 
-**CRITICAL**: Always use lowercase filenames.
+**Python Modules and Packages**:
+- ✅ Use `snake_case` for module names: `user_service.py`, `data_processor.py`
+- ✅ Use `snake_case` for package names: `utils/`, `models/`
+- ❌ Avoid PascalCase for modules: `UserService.py` (incorrect)
 
-**Correct** ✅:
-- Python files: `user_service.py`, `test_auth.py`
-- Documentation: `README.md`, `CONTRIBUTING.md`
-- Issue files: `problem.md`, `solution.md` (see issue-management skill)
+**Test Files**:
+- ✅ Prefix with `test_`: `test_auth.py`, `test_user_service.py`
+- ✅ Use `snake_case`: `test_api_endpoints.py`
 
-**Incorrect** ❌:
-- `UserService.py` (use snake_case, not PascalCase for modules)
-- `Problem.md` (use lowercase)
-- `SOLUTION.MD` (use lowercase)
+**Constants Files**:
+- ✅ Lowercase: `constants.py`, `config.py`
+- ❌ Not uppercase: `CONSTANTS.py` (incorrect)
 
 ## Modern Python Best Practices (3.14+)
 
@@ -369,7 +370,7 @@ Use conventional commit format:
 
 Agents and users should reference this skill when they need:
 
-- File naming conventions (Python code and general files)
+- Python file naming conventions (modules, packages, tests)
 - Modern Python best practices (3.11-3.14+)
 - Fail-fast vs defensive programming patterns
 - UV package management commands
@@ -380,8 +381,9 @@ Agents and users should reference this skill when they need:
 - Error handling patterns
 - Security best practices
 - Performance optimization patterns
+- Commit message format
 
-**Note**: For issue management patterns, status markers, severity levels, and documentation structures, see **Skill(cxp:issue-management)**.
+**Note**: For issue management patterns, file naming for issue documentation, status markers, severity levels, and documentation structures, see **Skill(cxp:issue-management)**.
 
 ## Usage
 
