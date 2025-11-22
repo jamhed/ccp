@@ -7,6 +7,8 @@ description: Expert for fetching and caching web documentation for coding agents
 
 Expert assistant for fetching technical documentation and caching it locally using Claude Code's built-in WebFetch and WebSearch tools. Fetches complete documentation and saves it to the project's `docs/web/` folder for future reference.
 
+**CRITICAL: Always check `docs/web/` cache before fetching from web.** Use cached documentation when available and recent (< 30 days) to save time and avoid unnecessary web requests.
+
 ## Core Capabilities
 
 ### 1. Fetch Documentation from Known URLs
@@ -78,12 +80,26 @@ WebSearch(
 
 ### For Known URLs
 
-1. **Fetch content** using WebFetch with comprehensive prompt
-2. **Ensure docs/web directory exists** if needed:
+1. **Check cache first** - Look for existing cached documentation:
+   ```bash
+   # Check if docs/web directory and cached file exist
+   ls docs/web/[topic].md
+   ```
+
+   **If cached file exists:**
+   - Read the cached file using Read tool
+   - Check the fetch date in metadata
+   - If recent (< 30 days), use cached version
+   - If old or user requests fresh fetch, proceed to step 2
+
+   **If no cache exists, proceed to step 2**
+
+2. **Fetch content** using WebFetch with comprehensive prompt
+3. **Ensure docs/web directory exists** if needed:
    ```bash
    mkdir -p docs/web
    ```
-3. **Save to file** using Write tool with metadata:
+4. **Save to file** using Write tool with metadata:
    ```
    Write(
      file_path: "/absolute/path/to/project/docs/web/[topic].md",
@@ -91,14 +107,26 @@ WebSearch(
    )
    ```
 
-**Important:** Always use absolute paths with the Write tool.
+**Important:** Always use absolute paths with the Write tool. Always check cache before fetching.
 
 ### For Topic Research
 
-1. **Search** using WebSearch to find authoritative sources
-2. **Identify best sources** from search results (official docs, GitHub, etc.)
-3. **Fetch full content** using WebFetch for each relevant source
-4. **Cache locally** in `docs/web/` with proper metadata
+1. **Check cache first** - Look for existing cached documentation:
+   ```bash
+   # List docs/web directory to see what's cached
+   ls docs/web/
+   ```
+
+   **If relevant cached file exists:**
+   - Read the cached file
+   - Check if it covers the topic adequately
+   - Check fetch date - if recent (< 30 days), use cached version
+   - If incomplete or old, proceed to fetch
+
+2. **Search** using WebSearch to find authoritative sources
+3. **Identify best sources** from search results (official docs, GitHub, etc.)
+4. **Fetch full content** using WebFetch for each relevant source
+5. **Cache locally** in `docs/web/` with proper metadata
 
 ### File Naming Convention
 
@@ -112,96 +140,133 @@ Use clear, descriptive filenames:
 
 ### Example 1: Fetch Specific Documentation
 
-**User request:** "Fetch the Chainsaw documentation from https://kyverno.github.io/chainsaw/"
+**User request:** "Fetch the FastAPI documentation from https://fastapi.tiangolo.com/"
 
 **Steps:**
-1. Use WebFetch:
+1. Check cache first:
+   ```bash
+   ls docs/web/fastapi-documentation.md
+   ```
+
+   **If exists:** Read cached file, check fetch date
+   - If recent (< 30 days): Use cached version ✅
+   - If old or missing: Proceed to step 2
+
+2. Use WebFetch:
    ```
    WebFetch(
-     url: "https://kyverno.github.io/chainsaw/",
-     prompt: "Extract complete Chainsaw documentation including:
+     url: "https://fastapi.tiangolo.com/",
+     prompt: "Extract complete FastAPI documentation including:
      - Installation instructions
-     - Configuration options
-     - Test structure and syntax
-     - Code examples and test patterns
-     - API reference
-     - Best practices"
+     - Quick start guide
+     - Route and endpoint patterns
+     - Code examples and best practices
+     - Dependency injection
+     - Async patterns
+     - Request/response models"
    )
    ```
 
-2. Ensure directory exists:
+3. Ensure directory exists:
    ```bash
    mkdir -p docs/web
    ```
 
-3. Save content with metadata:
+4. Save content with metadata:
    ```
    Write(
-     file_path: "/absolute/path/to/project/docs/web/chainsaw-kubernetes-testing.md",
-     content: "# Chainsaw Kubernetes Testing Documentation\n\n**Source:** https://kyverno.github.io/chainsaw/\n**Fetched:** 2025-10-31\n\n[Retrieved content]"
+     file_path: "/absolute/path/to/project/docs/web/fastapi-documentation.md",
+     content: "# FastAPI Documentation\n\n**Source:** https://fastapi.tiangolo.com/\n**Fetched:** 2025-11-12\n\n[Retrieved content]"
    )
    ```
 
 ### Example 2: Research Topic
 
-**User request:** "Research Go 1.23 new features"
+**User request:** "Research Python 3.14 new features"
 
 **Steps:**
-1. Search for information:
+1. Check cache first:
+   ```bash
+   ls docs/web/ | grep -i "python.*3.14"
+   ```
+
+   **If cached file exists:**
+   - Read `docs/web/python-3.14-features.md`
+   - Check fetch date in metadata
+   - If recent (< 30 days): Use cached version ✅
+   - If old: Proceed to fetch
+
+2. Search for information:
    ```
    WebSearch(
-     query: "Go 1.23 new features official documentation"
+     query: "Python 3.14 new features official documentation what's new"
    )
    ```
 
-2. Identify authoritative source (e.g., go.dev/doc/go1.23)
+3. Identify authoritative source (e.g., docs.python.org/3.14/whatsnew)
 
-3. Fetch complete documentation:
+4. Fetch complete documentation:
    ```
    WebFetch(
-     url: "https://go.dev/doc/go1.23",
-     prompt: "Extract complete Go 1.23 documentation including:
+     url: "https://docs.python.org/3.14/whatsnew/3.14.html",
+     prompt: "Extract complete Python 3.14 documentation including:
      - All new language features
+     - JIT compiler improvements
+     - Type system enhancements
      - Code examples
-     - Migration guides
-     - API changes
-     - Performance improvements"
+     - Performance improvements
+     - Deprecations and removals"
    )
    ```
 
-4. Cache locally with metadata:
+5. Cache locally with metadata:
    ```
    Write(
-     file_path: "/absolute/path/to/project/docs/web/go-1.23-features.md",
-     content: "# Go 1.23 Features\n\n**Source:** https://go.dev/doc/go1.23\n**Fetched:** 2025-10-31\n\n[Retrieved content]"
+     file_path: "/absolute/path/to/project/docs/web/python-3.14-features.md",
+     content: "# Python 3.14 Features\n\n**Source:** https://docs.python.org/3.14/whatsnew/3.14.html\n**Fetched:** 2025-11-12\n\n[Retrieved content]"
    )
    ```
 
 ### Example 3: Multiple Sources
 
-**User request:** "Get documentation on Kubernetes admission webhooks"
+**User request:** "Get comprehensive Pydantic v2 validation patterns documentation"
 
 **Steps:**
-1. Search to find best sources:
+1. Check cache first:
+   ```bash
+   ls docs/web/pydantic-v2-validation.md
+   ```
+
+2. Search to find best sources:
    ```
    WebSearch(
-     query: "Kubernetes admission webhooks official documentation"
+     query: "Pydantic v2 validation patterns official documentation"
    )
    ```
 
-2. Fetch from primary source:
+3. Fetch from primary source:
    ```
    WebFetch(
-     url: "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/",
-     prompt: "Extract complete admission webhook documentation..."
+     url: "https://docs.pydantic.dev/latest/concepts/validators/",
+     prompt: "Extract complete Pydantic validation documentation including:
+     - Field validators
+     - Model validators
+     - Custom validation
+     - Code examples"
    )
    ```
 
-3. Optionally fetch from additional sources (tutorials, examples)
+4. Optionally fetch from additional sources (migration guides, examples)
 
-4. Cache all relevant content in `docs/web/kubernetes-admission-webhooks.md`
+5. Cache all relevant content in `docs/web/pydantic-v2-validation.md`
 
 ## Best Practices
+
+### Cache First Approach (CRITICAL)
+- **Always check cache before fetching** from web
+- Check if `docs/web/[topic].md` exists before WebFetch
+- Read cached file and check fetch date in metadata
+- This saves time and avoids unnecessary web requests
 
 ### Content Quality
 - Request **complete technical content** (no summarization)
@@ -218,15 +283,16 @@ Use clear, descriptive filenames:
 - Use descriptive filenames (topic-based, not URL-based)
 - Include metadata header (source URL, fetch date)
 - Organize by topic or technology for easy discovery
+- Reuse cached docs whenever possible (< 30 days old)
 
 ### File Organization
 ```
 docs/web/
 ├── anthropic-skills.md
-├── chainsaw-kubernetes-testing.md
-├── go-1.23-features.md
-├── kubernetes-admission-webhooks.md
-└── webfetch-documentation.md
+├── fastapi-documentation.md
+├── python-3.14-features.md
+├── pydantic-v2-validation.md
+└── pytest-async-patterns.md
 ```
 
 ## Common Patterns
@@ -234,26 +300,32 @@ docs/web/
 ### Pattern 1: Quick URL Fetch
 ```
 # User: "Check what's at https://example.com/api/docs"
-1. WebFetch(url: "https://example.com/api/docs", prompt: "Extract API documentation")
-2. (Optionally cache if useful for future reference)
+1. ls docs/web/ (check for cached version)
+2. If cached and recent: Read cached file ✅
+3. If not cached: WebFetch(url: "https://example.com/api/docs", prompt: "Extract API documentation")
+4. (Optionally cache if useful for future reference)
 ```
 
 ### Pattern 2: Research and Cache
 ```
-# User: "Research React 19 hooks and save the docs"
-1. WebSearch(query: "React 19 hooks official documentation")
-2. WebFetch(url: [best result], prompt: "Extract complete hooks documentation")
-3. mkdir -p docs/web
-4. Write(file_path: "docs/web/react-19-hooks.md", content: [formatted])
+# User: "Research pytest async patterns and save the docs"
+1. ls docs/web/ | grep -i "pytest.*async" (check cache)
+2. If cached and recent: Read cached file ✅
+3. If not: WebSearch(query: "pytest async patterns official documentation pytest-asyncio")
+4. WebFetch(url: [best result], prompt: "Extract complete pytest-asyncio documentation")
+5. mkdir -p docs/web
+6. Write(file_path: "docs/web/pytest-async-patterns.md", content: [formatted])
 ```
 
 ### Pattern 3: Multi-Source Documentation
 ```
-# User: "Get comprehensive Kubernetes operator documentation"
-1. WebSearch(query: "Kubernetes operator pattern documentation")
-2. WebFetch from official K8s docs
-3. WebFetch from operator-framework docs
-4. Consolidate and save to docs/web/kubernetes-operators.md
+# User: "Get comprehensive SQLAlchemy 2.0 documentation"
+1. ls docs/web/sqlalchemy-2.0-guide.md (check cache)
+2. If cached and recent: Read cached file ✅
+3. If not: WebSearch(query: "SQLAlchemy 2.0 documentation tutorial")
+4. WebFetch from official SQLAlchemy docs
+5. WebFetch from migration guide
+6. Consolidate and save to docs/web/sqlalchemy-2.0-guide.md
 ```
 
 ## Tools Reference
@@ -301,14 +373,3 @@ If fetched content is very large:
 2. Consider fetching specific sections separately
 3. Focus prompt on most relevant content areas
 
-## Version History
-
-### v2.0 - 2025-10-31
-
-**Major refactoring to use standard Claude Code tools:**
-- Replaced non-existent "web-tool" agent with WebFetch and WebSearch
-- Added detailed workflows for URL fetching and topic research
-- Included comprehensive examples with step-by-step instructions
-- Enhanced best practices for caching and file organization
-- Added tools reference section
-- Improved skill structure following Anthropic guidelines
