@@ -1,132 +1,29 @@
 ---
 name: python-standards
-description: Python 3.14+ development standards (2025) - common reference for file naming, status markers, modern patterns, fail-fast principles, uv package management, test execution
+description: Python 3.14+ development standards (2025) - modern patterns, fail-fast principles, uv package management, test execution, type safety, async/await
 ---
 
 # Python Standards Reference (2025)
 
 Common reference material for Python 3.14+ development in 2025. This skill provides standardized conventions, best practices, and patterns used across all cxp agents and workflows.
 
+## Related Skills
+
+For issue management patterns, documentation structures, status markers, severity levels, and workflow phases, see **Skill(cxp:issue-management)**.
+
 ## File Naming Conventions
 
-**CRITICAL**: Always use lowercase filenames for all issue-related files.
+**CRITICAL**: Always use lowercase filenames.
 
 **Correct** ✅:
-- `problem.md`
-- `solution.md`
-- `validation.md`
-- `review.md`
-- `implementation.md`
-- `testing.md`
+- Python files: `user_service.py`, `test_auth.py`
+- Documentation: `README.md`, `CONTRIBUTING.md`
+- Issue files: `problem.md`, `solution.md` (see issue-management skill)
 
 **Incorrect** ❌:
-- `Problem.md`
-- `PROBLEM.md`
-- `Solution.MD`
-
-## Directory Structure
-
-All issue-related files reside in:
-
-```
-<PROJECT_ROOT>/issues/[issue-name]/
-├── problem.md          # Issue definition
-├── validation.md       # Problem Validator findings
-├── review.md           # Solution Reviewer analysis
-├── implementation.md   # Solution Implementer report
-├── testing.md          # Code review and test results
-└── solution.md         # Final documentation
-
-<PROJECT_ROOT>/archive/[issue-name]/
-└── [all files above after resolution]
-```
-
-## Status Markers
-
-### Issue Status
-- **OPEN** - Active issue being worked on
-- **RESOLVED** - Issue solved and verified
-- **REJECTED** - Determined to be NOT A BUG
-
-### Issue Type
-- **BUG 🐛** - Defect or error in code
-- **FEATURE ✨** - New functionality
-- **PERFORMANCE ⚡** - Performance optimization
-- **REFACTOR 🔧** - Code improvement without behavior change
-
-### Validation Status
-- **CONFIRMED ✅** - Issue validated and confirmed
-- **NOT A BUG ❌** - Issue determined to be incorrect
-- **PARTIALLY CORRECT ⚠️** - Some aspects valid, others not
-- **NEEDS INVESTIGATION 🔍** - Requires more research
-- **MISUNDERSTOOD 📝** - Issue based on misunderstanding
-
-### Approval Status
-- **APPROVED ✅** - Solution approach approved
-- **NEEDS CHANGES ⚠️** - Requires modifications
-- **REJECTED ❌** - Solution not acceptable
-
-## Severity Levels (Evidence-Based)
-
-**CRITICAL**: All severity claims require concrete evidence.
-
-### Critical
-**Evidence Required**: Crashes (stack traces), data corruption, security vulnerability (CVE)
-
-**Examples**:
-- Unhandled exception causing service crash
-- SQL injection vulnerability
-- Authentication bypass
-- Data loss or corruption
-
-### High
-**Evidence Required**: Functional failure (failing tests), memory leak (profiling data), deadlock (thread dumps)
-
-**Examples**:
-- API endpoint returning 500 errors
-- Infinite loop or resource exhaustion
-- Memory leak with profiling evidence
-- Broken core feature
-
-### Medium
-**Evidence Required**: Performance degradation (benchmarks), missing validation, type safety issues
-
-**Examples**:
-- N+1 queries with profiling data
-- Missing error handling
-- Lack of type hints on public APIs
-- Inconsistent patterns
-
-### Low
-**Evidence Required**: Minor issues without functional impact
-
-**Examples**:
-- Code style inconsistencies
-- Minor optimization opportunities
-- Cosmetic issues
-- Variable naming improvements
-
-**Evidence Requirements**:
-- ❌ **Never claim "memory leak"** without memory_profiler/tracemalloc output showing actual memory growth
-- ❌ **Never claim "performance issue"** without cProfile/py-spy benchmarks with concrete numbers
-- ❌ **Never claim "High/Critical severity"** without reproducing the bug with actual error output
-- ✅ **Include actual profiling data** - Attach cProfile output, memory graphs, or benchmark results
-- ✅ **Use concrete metrics** - "3-5 second delay" not "slow", "250MB leak" not "memory issue"
-
-**Example**:
-```markdown
-❌ Bad: "This causes a memory leak affecting production (High severity)"
-✅ Good: "memory_profiler shows 250MB growth per 1000 iterations (attached profile.png). Extrapolated: 2.5GB/day in production (High severity)"
-
-❌ Bad: "Performance bottleneck in query handler (Critical)"
-✅ Good: "cProfile shows 4.8s p95 latency, 99% time in db.execute() (N+1 queries). Target: <100ms (High severity)"
-```
-
-## Priority Levels (Features)
-
-- **High** - Core functionality, blocking other work, user-facing impact
-- **Medium** - Important improvements, developer experience, performance enhancements
-- **Low** - Nice-to-have, optimizations, convenience features
+- `UserService.py` (use snake_case, not PascalCase for modules)
+- `Problem.md` (use lowercase)
+- `SOLUTION.MD` (use lowercase)
 
 ## Modern Python Best Practices (3.14+)
 
@@ -472,9 +369,7 @@ Use conventional commit format:
 
 Agents and users should reference this skill when they need:
 
-- File naming conventions
-- Status marker definitions
-- Severity/priority level guidance
+- File naming conventions (Python code and general files)
 - Modern Python best practices (3.11-3.14+)
 - Fail-fast vs defensive programming patterns
 - UV package management commands
@@ -482,6 +377,11 @@ Agents and users should reference this skill when they need:
 - Async/await patterns
 - Type safety standards
 - Code quality standards
+- Error handling patterns
+- Security best practices
+- Performance optimization patterns
+
+**Note**: For issue management patterns, status markers, severity levels, and documentation structures, see **Skill(cxp:issue-management)**.
 
 ## Usage
 
