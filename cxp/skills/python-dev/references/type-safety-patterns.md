@@ -314,6 +314,114 @@ save_all([User()])  # ✅
 save_all([Document()])  # ❌ Type error: Document not Saveable
 ```
 
+### 8. Use Abstract Types for Arguments
+
+```python
+from collections.abc import Sequence, Mapping, Iterable
+
+# ❌ WRONG: Require specific concrete types
+def process_items(items: list[int]) -> int:
+    """Only accepts list - rejects tuple, range, etc."""
+    return sum(items)
+
+def merge_configs(config1: dict[str, int], config2: dict[str, int]) -> dict[str, int]:
+    """Only accepts dict - rejects OrderedDict, etc."""
+    return {**config1, **config2}
+
+# ✅ CORRECT: Accept abstract types (more flexible)
+def process_items(items: Sequence[int]) -> int:
+    """Accept any sequence: list, tuple, range, etc."""
+    if not items:
+        raise ValueError("Items cannot be empty")
+    return sum(items)
+
+# Works with any sequence type:
+process_items([1, 2, 3])        # ✅ list
+process_items((1, 2, 3))        # ✅ tuple
+process_items(range(1, 4))      # ✅ range
+
+def merge_configs(
+    config1: Mapping[str, int],
+    config2: Mapping[str, int]
+) -> dict[str, int]:
+    """
+    Accept any mapping type as input.
+    Return concrete dict for implementation.
+
+    Raises:
+        ValueError: If either config is empty
+    """
+    if not config1 or not config2:
+        raise ValueError("Both configs must be non-empty")
+    return {**config1, **config2}
+
+# Common abstract types from collections.abc:
+# - Sequence: list, tuple, range, str
+# - Mapping: dict, OrderedDict, ChainMap
+# - Iterable: Any iterable including generators
+# - Set: set, frozenset
+
+# ✅ Use Iterable for large data (memory efficient)
+def process_large_dataset(data: Iterable[int]) -> int:
+    """Accept any iterable - including generators."""
+    total = 0
+    for value in data:
+        if value < 0:
+            raise ValueError(f"Negative value not allowed: {value}")
+        total += value
+    return total
+
+# Works with generators (memory efficient):
+process_large_dataset(x**2 for x in range(1000000))  # ✅
+```
+
+**Why abstract types**: Official [Python typing best practices](https://typing.python.org/en/latest/reference/best_practices.html) recommend: "Arguments: Favor abstract types and protocols. Return Types: Prefer concrete types."
+
+### 9. Use `object` for Any Value, Not `Any`
+
+```python
+from typing import Any
+
+# ❌ WRONG: Using Any disables type checking
+def log_value(value: Any) -> None:
+    """Any disables all type checking."""
+    print(value)
+
+def format_output(data: Any) -> str:
+    """Any hides type errors."""
+    return str(data)
+
+# ✅ CORRECT: Use object when accepting any value
+def log_value(value: object) -> None:
+    """Accept any value, type checking still works."""
+    print(value)  # str() accepts object
+
+def format_output(data: object) -> str:
+    """Convert any value to string."""
+    return str(data)  # Type-safe
+
+# ✅ Use Any ONLY when type system cannot express it
+def deserialize_json(json_str: str) -> Any:
+    """
+    JSON can be any structure - Any is appropriate.
+
+    Raises:
+        ValueError: Invalid JSON syntax
+    """
+    try:
+        return json.loads(json_str)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON: {e}") from e
+
+# ✅ Use object for callbacks that ignore return value
+def execute_callbacks(callbacks: list[Callable[[int], object]]) -> None:
+    """Callback return values ignored - use object, not Any."""
+    for callback in callbacks:
+        callback(42)  # Return value ignored
+```
+
+**Why object over Any**: Official docs say: "Reserve `Any` for situations where a type cannot be expressed appropriately with the current type system. Prefer `object` when a function accepts any value."
+
 ## Catching Bugs with Fail-Fast + Types
 
 ### Bug: Silent None Handling
@@ -569,6 +677,64 @@ except asyncio.TimeoutError:
     raise
 ```
 
+### Pydantic Strict Mode for Validation
+
+```python
+from pydantic import BaseModel, Field, ValidationError
+
+# ❌ WRONG: Pydantic coerces types by default
+class UserCreate(BaseModel):
+    """Default Pydantic coerces types - hides bugs."""
+    email: str
+    age: int
+
+# Silent type coercion hides bugs:
+user = UserCreate(email="user@example.com", age="25")  # String "25" coerced to int!
+print(user.age)  # 25 (int) - looks correct but input was wrong type
+
+# ✅ CORRECT: Strict mode prevents coercion
+class UserCreateStrict(BaseModel):
+    """Strict validation - no type coercion, fail fast."""
+    email: str = Field(..., strict=True)
+    age: int = Field(..., strict=True, ge=0, le=150)
+
+# Fails fast on invalid types:
+try:
+    user = UserCreateStrict(email="user@example.com", age="25")  # String age
+except ValidationError as e:
+    # Raises immediately: age must be int, not str
+    print(e)  # Input should be a valid integer [type=int_type, ...]
+
+# ✅ Works only with correct types
+user = UserCreateStrict(email="user@example.com", age=25)  # ✅ Correct
+
+# ✅ Validates constraints immediately
+try:
+    user = UserCreateStrict(email="user@example.com", age=200)  # Out of range
+except ValidationError as e:
+    # Raises: age must be <= 150
+    print(e)
+
+# ✅ Enable strict mode globally
+class StrictBase(BaseModel):
+    """Base class with strict validation."""
+    model_config = {"strict": True}
+
+class User(StrictBase):
+    """Inherits strict validation."""
+    email: str = Field(..., pattern=r".+@.+\..+")
+    age: int = Field(..., ge=0, le=150)
+    name: str = Field(..., min_length=1, max_length=100)
+
+# All fields validated strictly - no coercion:
+try:
+    User(email="invalid", age=30, name="Alice")  # Invalid email
+except ValidationError as e:
+    print(e)  # String should match pattern '.+@.+\..+'
+```
+
+**Why strict mode**: Default Pydantic coerces `"123"` to `123`, `"true"` to `True`. Strict mode fails fast on type mismatches, catching bugs at validation time instead of hiding them.
+
 ## Type Checker Configuration for Fail-Fast
 
 **pyproject.toml** (strict settings):
@@ -579,6 +745,7 @@ strict = true
 warn_return_any = true
 warn_unused_ignores = true
 warn_unreachable = true
+warn_no_return = true
 disallow_untyped_defs = true
 disallow_any_generics = true
 no_implicit_optional = true
