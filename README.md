@@ -2,6 +2,20 @@
 
 Custom Claude Code plugins for modern software development workflows with AI-powered problem-solving agents.
 
+## Problem-Solving Approach
+
+All plugins follow a systematic 7-phase workflow:
+
+1. **Problem Research** → `issues/[name]/problem.md`
+2. **Problem Validation** → `issues/[name]/validation.md` (failing tests that prove the problem)
+3. **Solution Proposals** → `issues/[name]/proposals.md` (3-4 solution approaches)
+4. **Solution Review** → `issues/[name]/review.md` (pros/cons analysis, recommendation)
+5. **Implementation** → `issues/[name]/implementation.md` (code changes)
+6. **Testing & Review** → `issues/[name]/testing.md` (test results, code review)
+7. **Documentation** → `archive/[name]/solution.md` (final summary + git commit)
+
+This approach ensures systematic problem-solving with complete audit trails, TDD validation, and autonomous multi-agent coordination from issue identification to resolution.
+
 ## Available Plugins
 
 ### cx - Core Cross-Language Utilities
