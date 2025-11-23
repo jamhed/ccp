@@ -11,10 +11,15 @@ All plugins follow a systematic 7-phase workflow:
 3. **Solution Proposals** → `issues/[name]/proposals.md` (3-4 solution approaches)
 4. **Solution Review** → `issues/[name]/review.md` (pros/cons analysis, recommendation)
 5. **Implementation** → `issues/[name]/implementation.md` (code changes)
-6. **Testing & Review** → `issues/[name]/testing.md` (test results, code review)
-7. **Documentation** → `archive/[name]/solution.md` (final summary + git commit)
+6. **Testing & Review** → `issues/[name]/testing.md` (test results, code review, refactoring opportunities)
+7. **Documentation & Commit** → `issues/[name]/solution.md` (final summary + git commit)
 
-This approach ensures systematic problem-solving with complete audit trails, TDD validation, and autonomous multi-agent coordination from issue identification to resolution.
+**Follow-up Actions** (after phase 7):
+- **Archive Issue** → Move all files from `issues/[name]/` to `archive/[name]/`
+- **Review with External Tools** → Use Codex/OpenCode for additional code review and follow-up suggestions
+- **Process Follow-ups** → Create new issues for refactoring opportunities identified in `testing.md`
+
+This approach ensures systematic problem-solving with complete audit trails, TDD validation, autonomous multi-agent coordination, and continuous improvement through follow-up actions.
 
 ### Helper Agents (Python)
 
@@ -159,10 +164,15 @@ Execute the complete multi-phase workflow:
 2. **Solution Proposer** - Proposes multiple solution approaches → `proposals.md`
 3. **Solution Reviewer** - Evaluates and selects best approach → `review.md`
 4. **Solution Implementer** - Implements fix with best practices → `implementation.md`
-5. **Code Reviewer & Tester** - Reviews code, runs tests → `testing.md`
-6. **Documentation Updater** - Creates summary and git commit → `solution.md`
+5. **Code Reviewer & Tester** - Reviews code, runs tests, identifies refactoring opportunities → `testing.md`
+6. **Documentation Updater** - Creates summary, git commit, follow-up issues → `solution.md`
 
-**Output**: Complete audit trail in `archive/[issue-name]/` with all phase documentation.
+**Output**: Complete audit trail in `issues/[issue-name]/` ready for archival and follow-up processing.
+
+**Post-Workflow Actions**:
+- Archive issue: Move `issues/[issue-name]/` → `archive/[issue-name]/`
+- Process follow-ups: Review `testing.md` for refactoring opportunities and create new issues
+- External review: Use Codex/OpenCode for additional code analysis and suggestions
 
 ### 4. Code Quality (Python only)
 

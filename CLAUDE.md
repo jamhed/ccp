@@ -35,11 +35,16 @@ All plugins follow a multi-phase workflow:
 
 1. **Problem Research** → `issues/[issue-name]/problem.md`
 2. **Problem Validation** → `issues/[issue-name]/validation.md`
-3. **Solution Proposal** → Proposals in `validation.md`
+3. **Solution Proposal** → `issues/[issue-name]/proposals.md`
 4. **Solution Review** → `issues/[issue-name]/review.md`
 5. **Implementation** → `issues/[issue-name]/implementation.md`
 6. **Testing & Review** → `issues/[issue-name]/testing.md`
-7. **Documentation** → `archive/[issue-name]/solution.md` + git commit
+7. **Documentation** → `issues/[issue-name]/solution.md` + git commit
+
+**Follow-up Actions** (manual or automated):
+- **Archive Issue** → Move `issues/[issue-name]/` to `archive/[issue-name]/`
+- **Process Follow-ups** → Create new issues from refactoring opportunities in `testing.md`
+- **External Review** → Use Codex/OpenCode for additional code review
 
 ### Language-Specific Workflows
 
