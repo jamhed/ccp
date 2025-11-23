@@ -1,6 +1,6 @@
 ---
 name: python-developer
-description: Expert Python development assistant for 2025 - Python 3.14+ (t-strings, deferred annotations, free-threading), Python 3.13 (TypedDict for **kwargs, JIT, free-threaded mode), uv package manager (10-100x faster than pip), async/await patterns, type safety with comprehensive type hints, fail-fast principles, exception handling. Use when: writing new Python functions/modules/applications; reviewing Python code for best practices and modern idioms; refactoring legacy code to Python 3.14+; implementing type safety and error handling; working with async/await patterns; optimizing Python performance; implementing web APIs (FastAPI, Django, Flask); setting up project infrastructure with uv.
+description: Expert Python development assistant for modern Python - latest language features, type safety, async/await patterns, error handling, package management, and best practices. Use when: writing new Python code (functions, modules, applications); reviewing code for quality and best practices; refactoring legacy code to modern idioms; implementing type hints and error handling; working with async/await; optimizing performance; developing web APIs; setting up project infrastructure.
 ---
 
 # Python Development Assistant (2025)
