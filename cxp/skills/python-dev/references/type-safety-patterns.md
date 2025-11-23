@@ -741,19 +741,22 @@ except ValidationError as e:
 ```toml
 [tool.mypy]
 python_version = "3.14"
-strict = true
-warn_return_any = true
-warn_unused_ignores = true
-warn_unreachable = true
-warn_no_return = true
-disallow_untyped_defs = true
-disallow_any_generics = true
-no_implicit_optional = true
-strict_optional = true
-warn_redundant_casts = true
+strict = true  # Enables most strict checks
 
-# Fail on missing imports
-ignore_missing_imports = false
+# Additional fail-fast checks beyond strict mode
+warn_return_any = true  # Warn when returning Any
+warn_unused_ignores = true  # Warn about unused type: ignore
+warn_unreachable = true  # Catch unreachable code
+warn_no_return = true  # Catch missing return statements
+warn_redundant_casts = true  # Warn about unnecessary casts
+ignore_missing_imports = false  # Fail on missing type stubs
+
+# Note: strict=true already enables:
+# - disallow_untyped_defs (all functions need types)
+# - disallow_any_generics (no bare List, Dict, etc.)
+# - no_implicit_optional (x: str = None is error)
+# - strict_optional (strict None checking)
+# - check_untyped_defs, disallow_untyped_calls, etc.
 ```
 
 **pyrightconfig.json** (strict settings):
@@ -761,13 +764,38 @@ ignore_missing_imports = false
 {
   "typeCheckingMode": "strict",
   "pythonVersion": "3.14",
-  "reportMissingTypeStubs": true,
+
+  "reportMissingTypeStubs": "error",
   "reportUnknownParameterType": "error",
   "reportUnknownArgumentType": "error",
   "reportUnknownMemberType": "error",
-  "reportOptionalMemberAccess": "error"
+  "reportUnknownVariableType": "error",
+
+  "reportOptionalMemberAccess": "error",
+  "reportOptionalSubscript": "error",
+  "reportOptionalCall": "error",
+
+  "reportUnreachable": "error",
+  "reportUnnecessaryCast": "error",
+  "reportUnnecessaryTypeIgnoreComment": "error",
+  "reportImplicitStringConcatenation": "error",
+
+  "reportMissingTypeArgument": "error",
+  "reportInvalidTypeVarUse": "error",
+  "reportUntypedFunctionDecorator": "error",
+  "reportUntypedClassDecorator": "error"
 }
 ```
+
+**Aligned checks** (both type checkers enforce):
+- ✅ All functions must have type hints
+- ✅ Fail on missing type stubs/imports
+- ✅ Warn about unreachable code
+- ✅ Warn about unnecessary casts
+- ✅ Warn about unused type ignore comments
+- ✅ Strict None/Optional checking
+- ✅ No bare generics (List vs list[T])
+- ✅ Catch missing return statements
 
 ## Fail-Fast Checklist for Code Review
 
