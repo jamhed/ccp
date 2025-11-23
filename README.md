@@ -16,6 +16,40 @@ All plugins follow a systematic 7-phase workflow:
 
 This approach ensures systematic problem-solving with complete audit trails, TDD validation, and autonomous multi-agent coordination from issue identification to resolution.
 
+### Helper Agents (Python)
+
+The Python plugin (cxp) includes additional agents for proactive code quality improvement:
+
+- **Bug Hunter** (`/cxp:audit`) - Comprehensive bug audit that scans code for logic errors, edge cases, overlooked issues, and potential bugs. Creates problem.md files for each issue found.
+- **Code Quality Reviewer** (`/cxp:review`) - Proactive code quality review identifying refactoring opportunities, code duplication, complexity issues, and areas for improvement. Creates problem.md files for refactoring tasks.
+
+These agents help maintain code quality by identifying issues before they become problems, generating actionable problem definitions ready for the `/cxp:solve` workflow.
+
+### Skills Architecture
+
+Skills are reusable knowledge modules shared among agents:
+
+**Global Skills** (cx plugin):
+- `cx:issue-manager` - Issue lifecycle management (list, archive, solve-unsolved)
+- `cx:web-doc` - Web documentation fetching and caching
+
+**Python Skills** (cxp plugin):
+- `cxp:python-developer` - Modern Python development patterns and best practices
+- `cxp:python-tester` - Testing strategies, frameworks, and async testing patterns
+- `cxp:fastapi-dev` - FastAPI development expertise
+- `cxp:issue-management` - Python-specific issue workflow patterns
+
+**TypeScript Skills** (cxt plugin):
+- `cxt:typescript-dev` - TypeScript development patterns and type system expertise
+- `cxt:jest-tester` - Jest testing framework and patterns
+
+**Go Skills** (cxg plugin):
+- `cxg:go-dev` - Go development patterns and best practices
+- `cxg:chainsaw-tester` - Chainsaw E2E testing for Kubernetes
+- `cxg:github-cicd` - GitHub Actions CI/CD workflows
+
+Skills are referenced by agents to access specialized knowledge without duplication, ensuring consistency across the multi-agent workflow.
+
 ## Available Plugins
 
 ### cx - Core Cross-Language Utilities
