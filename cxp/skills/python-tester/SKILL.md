@@ -1,6 +1,6 @@
 ---
 name: python-tester
-description: Expert for Python testing - unit/integration/E2E test design, pytest/unittest/hypothesis/doctest frameworks, mocking patterns, async testing with pytest-asyncio, TDD/BDD workflows, coverage improvement, manual CLI testing. Use when: designing test strategies and choosing test types/frameworks; writing unit/integration/E2E/property-based/regression tests; implementing fixtures, mocks, parametrization, async testing patterns; debugging test failures and analyzing root causes; reviewing test quality (coverage, clarity, maintainability, isolation); setting up test infrastructure (configuration, CI/CD integration, parallel execution); performing manual/smoke/exploratory testing; practicing TDD/BDD workflows.
+description: Expert for Python testing - test design and strategy, testing frameworks, mocking patterns, async testing, TDD/BDD workflows, coverage analysis, manual testing. Use when: designing test strategies and choosing test types/frameworks; writing unit/integration/E2E/property-based/regression tests; implementing fixtures, mocks, parametrization, async patterns; debugging test failures and analyzing root causes; reviewing test quality (coverage, clarity, maintainability, isolation); setting up test infrastructure (CI/CD integration, parallel execution); performing manual/smoke/exploratory testing; practicing TDD/BDD workflows.
 ---
 
 # Python Testing Expert (2025)
