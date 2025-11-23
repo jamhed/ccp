@@ -107,11 +107,12 @@ Execute the complete multi-phase workflow:
 ```
 
 **Workflow Phases**:
-1. **Problem Validator** - Validates issue, proposes multiple solutions → `validation.md`
-2. **Solution Reviewer** - Evaluates and selects best approach → `review.md`
-3. **Solution Implementer** - Implements fix with best practices → `implementation.md`
-4. **Code Reviewer & Tester** - Reviews code, runs tests → `testing.md`
-5. **Documentation Updater** - Creates summary and git commit → `solution.md`
+1. **Problem Validator** - Validates issue with tests → `validation.md`
+2. **Solution Proposer** - Proposes multiple solution approaches → `proposals.md`
+3. **Solution Reviewer** - Evaluates and selects best approach → `review.md`
+4. **Solution Implementer** - Implements fix with best practices → `implementation.md`
+5. **Code Reviewer & Tester** - Reviews code, runs tests → `testing.md`
+6. **Documentation Updater** - Creates summary and git commit → `solution.md`
 
 **Output**: Complete audit trail in `archive/[issue-name]/` with all phase documentation.
 
@@ -131,7 +132,7 @@ Additional Python-specific workflows:
 
 ## Issue Management System
 
-Both plugins use a unified issue tracking system:
+All plugins use a unified issue tracking system:
 
 ### Directory Structure
 
@@ -146,6 +147,7 @@ issues/[issue-name]/
 issues/[issue-name]/
 ├── problem.md          # Original issue
 ├── validation.md       # Problem Validator output
+├── proposals.md        # Solution Proposer output
 ├── review.md           # Solution Reviewer output
 ├── implementation.md   # Solution Implementer output
 └── testing.md          # Code Reviewer & Tester output
@@ -156,6 +158,7 @@ issues/[issue-name]/
 archive/[issue-name]/
 ├── problem.md          # Original issue (Status: RESOLVED)
 ├── validation.md       # Audit trail
+├── proposals.md        # Audit trail
 ├── review.md           # Audit trail
 ├── implementation.md   # Audit trail
 ├── testing.md          # Audit trail
@@ -168,9 +171,10 @@ Each phase creates comprehensive documentation:
 
 | File | Purpose | Contains |
 |------|---------|----------|
-| **problem.md** | Issue definition | Context, evidence, acceptance criteria |
-| **validation.md** | Problem validation | Issue confirmation, proposed solutions (A/B/C), pros/cons |
-| **review.md** | Solution selection | Complexity/risk analysis, recommendation, justification |
+| **problem.md** | Issue definition | Context, evidence, acceptance criteria (from research/refine) |
+| **validation.md** | Problem validation | Failing tests that prove the problem exists (TDD) |
+| **proposals.md** | Solution proposals | 3-4 solution approaches with detailed descriptions |
+| **review.md** | Solution selection | Pros/cons analysis, complexity/risk evaluation, recommendation |
 | **implementation.md** | Code changes | Files modified, design patterns, edge cases |
 | **testing.md** | Quality assurance | Test results, linting, code review findings |
 | **solution.md** | Final summary | Problem, solution, changes, commit info |
