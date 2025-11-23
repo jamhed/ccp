@@ -1,78 +1,154 @@
-# Modern Python 2025 - Best Practices Guide
+# Modern Python Development (2025)
 
-Comprehensive guide to modern Python development using Python 3.14+ features, idioms, and best practices.
+Practical guide to developing Python applications using modern features from Python 3.10+ through 3.14+.
 
-## Python Version Features
+## Core Modern Features to Use
 
-### Python 3.10 (Released Oct 2021)
+### Type Hints - Use Everywhere
 
-**Pattern Matching (Structural)**:
 ```python
-# Match statements for complex conditionals
-def process_command(command: dict) -> str:
-    match command:
-        case {"action": "create", "resource": resource, "name": name}:
-            return f"Creating {resource}: {name}"
-        case {"action": "delete", "resource": resource}:
-            return f"Deleting {resource}"
-        case {"action": "list"}:
-            return "Listing all resources"
+# Modern union syntax (3.10+)
+def process(value: int | str | None) -> dict[str, str | int]:
+    """Always use type hints for better IDE support and type checking."""
+    return {"value": value, "type": type(value).__name__}
+
+# Generic types with new syntax (3.12+)
+def first[T](items: list[T]) -> T | None:
+    """Type parameters for generic functions."""
+    return items[0] if items else None
+
+# TypedDict for **kwargs (3.13+)
+from typing import TypedDict, Unpack
+
+class UserKwargs(TypedDict):
+    name: str
+    age: int
+    email: str | None
+
+def create_user(**kwargs: Unpack[UserKwargs]) -> dict[str, str | int]:
+    """Typed keyword arguments for better validation."""
+    return {"name": kwargs["name"], "age": kwargs["age"]}
+```
+
+### Pattern Matching - For Complex Conditionals
+
+```python
+def handle_response(response: dict) -> str:
+    """Use pattern matching instead of long if/elif chains."""
+    match response:
+        case {"status": 200, "data": data}:
+            return f"Success: {data}"
+        case {"status": 404}:
+            return "Not found"
+        case {"status": code, "error": msg} if code >= 500:
+            return f"Server error {code}: {msg}"
+        case {"status": code}:
+            return f"Status: {code}"
         case _:
-            return "Unknown command"
+            return "Unknown response"
 
-# Pattern matching with guards
-def classify_point(point: tuple[int, int]) -> str:
-    match point:
-        case (0, 0):
-            return "Origin"
-        case (0, y):
-            return f"Y-axis at {y}"
-        case (x, 0):
-            return f"X-axis at {x}"
-        case (x, y) if x == y:
-            return f"Diagonal at {x}"
-        case (x, y):
-            return f"Point at ({x}, {y})"
+# Pattern matching with dict unpacking
+def process_event(event: dict) -> str:
+    match event:
+        case {"type": "user", "action": "create", **data}:
+            return f"Creating user: {data}"
+        case {"type": "order", "amount": amount} if amount > 1000:
+            return "Large order"
+        case _:
+            return "Unknown event"
 ```
 
-**Union Types with `|`**:
+### Dataclasses - For Data Models
+
 ```python
-# New union syntax (preferred over Union)
-from typing import Optional
+from dataclasses import dataclass, field
+from typing import ClassVar
 
-# Old way (still works)
-from typing import Union
-def old_way(value: Union[int, str]) -> Union[int, None]:
-    pass
+@dataclass(slots=True)  # Memory efficient (use slots=True)
+class User:
+    """Always use dataclasses for data structures."""
+    user_id: int
+    name: str
+    email: str
+    is_active: bool = True
+    tags: list[str] = field(default_factory=list)  # Never use mutable defaults
 
-# New way (Python 3.10+)
-def new_way(value: int | str) -> int | None:
-    pass
+    # Class variables
+    MAX_NAME_LENGTH: ClassVar[int] = 100
 
-# Optional is now syntactic sugar
-def process(value: str | None = None) -> None:  # Same as Optional[str]
-    pass
+    def __post_init__(self) -> None:
+        """Validation after initialization."""
+        if len(self.name) > self.MAX_NAME_LENGTH:
+            raise ValueError(f"Name too long: {len(self.name)}")
+
+# Frozen dataclass for immutable data
+@dataclass(frozen=True, slots=True)
+class Point:
+    x: int
+    y: int
 ```
 
-**TypeAlias**:
+### Async/Await - For I/O Operations
+
 ```python
-from typing import TypeAlias
+import asyncio
 
-# Explicit type aliases
-UserId: TypeAlias = int
-UserName: TypeAlias = str
-UserDict: TypeAlias = dict[str, str | int]
+# Basic async function
+async def fetch_data(url: str) -> dict[str, str]:
+    """Use async for I/O operations."""
+    await asyncio.sleep(1)  # Simulate I/O
+    return {"url": url, "status": "ok"}
 
-def get_user(user_id: UserId) -> UserDict:
-    return {"id": user_id, "name": "John"}
+# Concurrent execution with TaskGroup (3.11+)
+async def fetch_all(urls: list[str]) -> list[dict[str, str]]:
+    """Run multiple async operations concurrently."""
+    async with asyncio.TaskGroup() as tg:
+        tasks = [tg.create_task(fetch_data(url)) for url in urls]
+    return [t.result() for t in tasks]
+
+# Async context managers
+class AsyncDatabase:
+    async def __aenter__(self) -> 'AsyncDatabase':
+        await self.connect()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        await self.disconnect()
+
+async def use_db() -> None:
+    async with AsyncDatabase() as db:
+        await db.query("SELECT * FROM users")
+
+# Async generators
+async def stream_results(query: str) -> AsyncIterator[dict[str, str]]:
+    """Yield results asynchronously."""
+    for i in range(10):
+        await asyncio.sleep(0.1)
+        yield {"result": i}
+
+async def process_stream() -> None:
+    async for result in stream_results("SELECT ..."):
+        print(result)
 ```
 
-### Python 3.11 (Released Oct 2022)
+### Error Handling - Specific and Explicit
 
-**Exception Groups**:
 ```python
-# Handle multiple exceptions
+# Specific exceptions (never use bare except)
+def process_user_data(data: dict[str, str]) -> dict[str, str]:
+    """Always use specific exception types."""
+    try:
+        user_id = int(data["id"])
+        email = data["email"]
+        return {"id": user_id, "email": email}
+    except KeyError as e:
+        raise ValueError(f"Missing required field: {e}") from e
+    except ValueError as e:
+        raise ValueError(f"Invalid user ID: {e}") from e
+
+# Exception groups for multiple errors (3.11+)
 def process_batch(items: list[str]) -> None:
+    """Group multiple exceptions together."""
     errors = []
     for item in items:
         try:
@@ -81,424 +157,96 @@ def process_batch(items: list[str]) -> None:
             errors.append(e)
 
     if errors:
-        raise ExceptionGroup("Batch processing failed", errors)
+        raise ExceptionGroup("Batch failed", errors)
 
-# Catch exception groups
+# Catching exception groups
 try:
     process_batch(items)
-except* ValueError as eg:
+except* ValueError as eg:  # Catch specific exceptions from group
     for exc in eg.exceptions:
-        print(f"ValueError: {exc}")
-except* KeyError as eg:
-    for exc in eg.exceptions:
-        print(f"KeyError: {exc}")
+        log_error(exc)
+
+# Custom exceptions with context
+class AppError(Exception):
+    """Base application exception."""
+    def __init__(self, message: str, code: str | None = None) -> None:
+        super().__init__(message)
+        self.code = code
+
+class NotFoundError(AppError):
+    """Resource not found."""
+    def __init__(self, resource: str, resource_id: int) -> None:
+        super().__init__(
+            f"{resource} with id {resource_id} not found",
+            code="NOT_FOUND"
+        )
 ```
 
-**Self Type**:
+### Context Managers - For Resource Management
+
 ```python
-from typing import Self
+from contextlib import contextmanager
+from pathlib import Path
 
-class Builder:
-    def __init__(self) -> None:
-        self.data: dict[str, str] = {}
+# Always use context managers for resources
+def read_file(path: Path) -> str:
+    """Automatic resource cleanup."""
+    with path.open() as f:
+        return f.read()
 
-    def add(self, key: str, value: str) -> Self:  # Returns same type
-        self.data[key] = value
-        return self
+# Custom context manager
+@contextmanager
+def timer(name: str):
+    """Measure execution time."""
+    import time
+    start = time.time()
+    try:
+        yield
+    finally:
+        elapsed = time.time() - start
+        print(f"{name}: {elapsed:.2f}s")
 
-    def build(self) -> dict[str, str]:
-        return self.data
-
-# Works correctly with inheritance
-class ExtendedBuilder(Builder):
-    def add_multiple(self, **kwargs: str) -> Self:  # Returns ExtendedBuilder
-        self.data.update(kwargs)
-        return self
-
-builder = ExtendedBuilder().add("a", "1").add_multiple(b="2", c="3")
+with timer("Operation"):
+    expensive_operation()
 ```
 
-**Task and TaskGroup**:
-```python
-import asyncio
+## Development Patterns
 
-async def process_urls(urls: list[str]) -> list[str]:
-    async with asyncio.TaskGroup() as tg:
-        tasks = [tg.create_task(fetch_url(url)) for url in urls]
-
-    # All tasks completed or exception raised
-    return [task.result() for task in tasks]
-```
-
-**Better Error Messages**:
-```python
-# Python 3.11 shows exact location of errors
-result = calculate_total(
-    price=100,
-    quantity=5,
-    discount=0.1
-          # ^ Syntax error here clearly marked
-)
-```
-
-### Python 3.12 (Released Oct 2023)
-
-**Type Parameter Syntax**:
-```python
-# Old way
-from typing import TypeVar, Generic
-
-T = TypeVar('T')
-
-class OldStack(Generic[T]):
-    def push(self, item: T) -> None: ...
-
-# New way (3.12+)
-class Stack[T]:
-    def push(self, item: T) -> None: ...
-
-def first[T](items: list[T]) -> T | None:
-    return items[0] if items else None
-```
-
-**@override Decorator**:
-```python
-from typing import override
-
-class Base:
-    def method(self) -> str:
-        return "base"
-
-class Derived(Base):
-    @override  # Type checker ensures this actually overrides
-    def method(self) -> str:
-        return "derived"
-
-    @override
-    def typo_method(self) -> str:  # Error: doesn't override anything
-        return "oops"
-```
-
-**f-string Improvements**:
-```python
-# Can now include quotes and backslashes
-name = "World"
-print(f"Hello, {name!r}")  # Hello, 'World'
-print(f"Path: {os.path.join('a', 'b')}")  # Works now
-
-# Multiline expressions
-result = f"""
-Total: {
-    sum(
-        item.price * item.quantity
-        for item in items
-    )
-}
-"""
-```
-
-### Python 3.13 (Released Oct 2024)
-
-**Improved REPL and Error Messages**:
-```python
-# Enhanced interactive interpreter with:
-# - Multiline editing
-# - Color syntax highlighting
-# - Better error messages with more context
-
-# Example error message improvement:
-def calculate(x, y):
-    return x / y
-
-calculate(10, 0)
-# ZeroDivisionError: division by zero
-#   return x / y
-#          ~~^~~  ← Shows exact location more precisely
-```
-
-**Per-Interpreter GIL (Experimental)**:
-```python
-# Free-threaded Python (experimental --disable-gil)
-# Better support for true parallelism in multi-threaded code
-import threading
-
-def cpu_intensive_task(data):
-    return sum(i ** 2 for i in data)
-
-# With per-interpreter GIL, true parallelism possible
-threads = [
-    threading.Thread(target=cpu_intensive_task, args=(range(1000000),))
-    for _ in range(4)
-]
-```
-
-**TypedDict for **kwargs (PEP 692)**:
-```python
-from typing import TypedDict, Unpack
-
-class PersonKwargs(TypedDict):
-    name: str
-    age: int
-    email: str | None
-
-def create_person(**kwargs: Unpack[PersonKwargs]) -> dict[str, str | int]:
-    """Create person with typed kwargs."""
-    return {
-        "name": kwargs["name"],
-        "age": kwargs["age"],
-        "email": kwargs.get("email", ""),
-    }
-
-# Type checker validates kwargs
-create_person(name="Alice", age=30, email="alice@example.com")  # ✅
-create_person(name="Bob", age="30")  # ❌ Type error: age must be int
-```
-
-**Better Error Messages for Type Hints**:
-```python
-# Python 3.13 provides clearer errors when type hints are incorrect
-def process(items: list[int]) -> int:
-    return sum(items)
-
-process(["1", "2"])  # Clearer error message about type mismatch
-```
-
-**Improved Performance**:
-```python
-# 5-10% faster than 3.12 in many benchmarks
-# Optimizations in:
-# - Dictionary operations
-# - Exception handling
-# - Function calls
-# - Pattern matching
-```
-
-**Docstring in Comprehensions**:
-```python
-# Can now add docstrings to comprehensions (limited use case)
-result = [
-    # Docstring for comprehension (rare usage)
-    x * 2
-    for x in range(10)
-    if x % 2 == 0
-]
-```
-
-### Python 3.14 (Released Oct 2025)
-
-**JIT Compiler (Experimental)**:
-```python
-# Experimental Just-In-Time compiler for performance
-# 10-20% performance improvement in many workloads
-# Enable with --jit flag or PYTHON_JIT=1 environment variable
-
-# No code changes needed - automatic optimization
-def fibonacci(n: int) -> int:
-    if n <= 1:
-        return n
-    return fibonacci(n - 1) + fibonacci(n - 2)
-
-# JIT compiles hot code paths automatically
-result = fibonacci(35)  # Significantly faster with JIT
-```
-
-**Improved Pattern Matching**:
-```python
-# Enhanced pattern matching with more capabilities
-def process_event(event: dict) -> str:
-    match event:
-        # Pattern matching with dict unpacking
-        case {"type": "user", "action": "create", **data}:
-            return f"Creating user with data: {data}"
-
-        # Guard with more complex expressions
-        case {"type": "order", "amount": amount} if amount > 1000:
-            return "Large order processing"
-
-        # Nested pattern matching improvements
-        case {"type": "nested", "data": {"key": value}}:
-            return f"Nested value: {value}"
-
-        case _:
-            return "Unknown event"
-```
-
-**Enhanced Type System**:
-```python
-from typing import TypeVar, ParamSpec, Concatenate
-
-# Better support for higher-order functions
-P = ParamSpec('P')
-R = TypeVar('R')
-
-def retry[**P, R](func: Callable[P, R]) -> Callable[P, R]:
-    """Generic retry decorator with full type preservation."""
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        for attempt in range(3):
-            try:
-                return func(*args, **kwargs)
-            except Exception as e:
-                if attempt == 2:
-                    raise
-        raise RuntimeError("Unreachable")
-    return wrapper
-
-# Type checker fully understands the decorated function signature
-@retry
-def fetch_data(url: str, timeout: int = 30) -> dict[str, str]:
-    """Fetch data with automatic retry."""
-    return {"data": "result"}
-```
-
-**Improved Async/Await**:
-```python
-import asyncio
-
-# Better async context manager support
-async def process_with_timeout[T](coro: Awaitable[T], timeout: float) -> T:
-    """Generic async timeout with full type safety."""
-    async with asyncio.timeout(timeout):  # More ergonomic timeout API
-        return await coro
-
-# Enhanced TaskGroup with better cancellation
-async def fetch_all(urls: list[str]) -> list[str]:
-    async with asyncio.TaskGroup() as tg:
-        tasks = [tg.create_task(fetch_url(url)) for url in urls]
-    # Better error handling and cancellation propagation
-    return [t.result() for t in tasks]
-```
-
-**String Template Improvements**:
-```python
-# Better string templating with improved f-string features
-name = "Alice"
-age = 30
-
-# More flexible multiline f-strings
-message = f"""
-User Profile:
-  Name: {name}
-  Age: {age}
-  Status: {
-      "Adult" if age >= 18 else "Minor"
-  }
-  Categories: {
-      ", ".join([
-          "Premium" if age > 25 else "Standard",
-          "Verified"
-      ])
-  }
-"""
-```
-
-**Performance Optimizations**:
-```python
-# Overall 15-25% faster than 3.13 for typical workloads
-# Major improvements in:
-# - Function calls (faster calling convention)
-# - Dictionary and list operations
-# - String operations
-# - Type checking overhead reduced
-# - JIT compiler for hot paths
-
-# Automatic optimization - no code changes needed
-def process_large_dataset(data: list[int]) -> int:
-    """Processes large dataset with improved performance."""
-    return sum(x * 2 for x in data if x % 2 == 0)
-
-# Runs significantly faster in Python 3.14
-result = process_large_dataset(range(10_000_000))
-```
-
-**Better Debugging Support**:
-```python
-# Improved debugging features
-# - Better traceback information
-# - More precise line number reporting
-# - Enhanced PDB debugger
-
-def complex_function(data: list[dict[str, int]]) -> int:
-    result = 0
-    for item in data:
-        result += item["value"]  # Precise error location if KeyError
-    return result
-
-# Errors show exact character position and better context
-```
-
-**Memory Optimizations**:
-```python
-# Reduced memory overhead for common patterns
-# - Smaller object sizes
-# - Better memory layout for dataclasses
-# - Optimized string interning
-
-from dataclasses import dataclass
-
-@dataclass(slots=True)  # Even more efficient in 3.14
-class Point:
-    x: int
-    y: int
-
-# Uses less memory per instance compared to 3.13
-points = [Point(i, i*2) for i in range(1_000_000)]
-```
-
-## Type Hints Best Practices
-
-### Comprehensive Type Coverage
+### Protocol for Interfaces
 
 ```python
-from typing import Protocol, TypeVar, Generic, Callable
-from collections.abc import Sequence, Mapping, Iterable
+from typing import Protocol
 
-# Function signatures
-def process_user(
-    user_id: int,
-    name: str,
-    email: str | None = None,
-    tags: list[str] | None = None,
-) -> dict[str, str | int]:
-    """Process user with complete type hints."""
-    result: dict[str, str | int] = {"id": user_id, "name": name}
-    if email:
-        result["email"] = email
-    return result
+class Drawable(Protocol):
+    """Define interfaces without inheritance."""
+    def draw(self) -> str: ...
+    def move(self, x: int, y: int) -> None: ...
 
-# Class with type hints
-class User:
-    def __init__(
-        self,
-        user_id: int,
-        name: str,
-        email: str | None = None,
-    ) -> None:
-        self.user_id: int = user_id
-        self.name: str = name
-        self.email: str | None = email
+class Circle:
+    """Implicitly implements Drawable."""
+    def draw(self) -> str:
+        return "Drawing circle"
 
-    def to_dict(self) -> dict[str, str | int]:
-        data: dict[str, str | int] = {
-            "id": self.user_id,
-            "name": self.name,
-        }
-        if self.email:
-            data["email"] = self.email
-        return data
+    def move(self, x: int, y: int) -> None:
+        self.x, self.y = x, y
+
+def render(obj: Drawable) -> str:
+    """Works with any Drawable."""
+    return obj.draw()
+
+# Type checker validates Circle is Drawable
+render(Circle())  # ✅
 ```
 
 ### Generic Types
 
 ```python
-from typing import TypeVar, Generic, Protocol
+from typing import TypeVar, Generic
 
 T = TypeVar('T')
-K = TypeVar('K')
-V = TypeVar('V')
 
-class Stack(Generic[T]):
-    """Generic stack implementation."""
-
+class Stack[T]:  # Modern generic syntax (3.12+)
+    """Type-safe container."""
     def __init__(self) -> None:
         self._items: list[T] = []
 
@@ -511,342 +259,85 @@ class Stack(Generic[T]):
     def peek(self) -> T | None:
         return self._items[-1] if self._items else None
 
-# Usage
+# Usage with type hints
 int_stack: Stack[int] = Stack()
-int_stack.push(1)
-int_stack.push(2)
-
-str_stack: Stack[str] = Stack()
-str_stack.push("hello")
+int_stack.push(42)
 ```
 
-### Protocol (Structural Subtyping)
+### @override Decorator
 
 ```python
-from typing import Protocol
+from typing import override
 
-class Drawable(Protocol):
-    """Protocol for drawable objects."""
+class Base:
+    def method(self) -> str:
+        return "base"
 
-    def draw(self) -> str: ...
-    def move(self, x: int, y: int) -> None: ...
+class Derived(Base):
+    @override  # Type checker ensures this actually overrides
+    def method(self) -> str:
+        return "derived"
 
-class Circle:
-    """Implements Drawable implicitly."""
-
-    def draw(self) -> str:
-        return "Drawing circle"
-
-    def move(self, x: int, y: int) -> None:
-        print(f"Moving circle to ({x}, {y})")
-
-def render(obj: Drawable) -> str:
-    """Works with any Drawable."""
-    return obj.draw()
-
-circle = Circle()
-render(circle)  # Type checks correctly
+    # @override
+    # def typo_method(self) -> str:  # ❌ Error: doesn't override anything
+    #     return "oops"
 ```
 
-### Callable Types
+### Self Type for Method Chaining
 
 ```python
-from typing import Callable
+from typing import Self
 
-# Simple callable
-Validator = Callable[[str], bool]
+class Builder:
+    """Fluent interface with Self type."""
+    def __init__(self) -> None:
+        self.data: dict[str, str] = {}
 
-def validate_email(email: str) -> bool:
-    return "@" in email
-
-def process_input(value: str, validator: Validator) -> str | None:
-    return value if validator(value) else None
-
-# Complex callable with multiple parameters
-TransformFunc = Callable[[int, str], dict[str, int | str]]
-
-def transform(n: int, s: str) -> dict[str, int | str]:
-    return {"number": n, "text": s}
-```
-
-## Dataclasses and Pydantic
-
-### Dataclasses
-
-```python
-from dataclasses import dataclass, field
-from typing import ClassVar
-
-@dataclass
-class User:
-    """User data model."""
-
-    user_id: int
-    name: str
-    email: str
-    is_active: bool = True
-    tags: list[str] = field(default_factory=list)
-
-    # Class variable
-    MAX_NAME_LENGTH: ClassVar[int] = 100
-
-    def __post_init__(self) -> None:
-        """Validate after initialization."""
-        if len(self.name) > self.MAX_NAME_LENGTH:
-            raise ValueError(f"Name too long: {len(self.name)}")
-
-# Frozen dataclass (immutable)
-@dataclass(frozen=True)
-class Point:
-    x: int
-    y: int
-
-# Dataclass with slots (memory efficient)
-@dataclass(slots=True)
-class Coordinate:
-    lat: float
-    lon: float
-```
-
-### Pydantic Models
-
-```python
-from pydantic import BaseModel, Field, EmailStr, validator
-from datetime import datetime
-
-class UserCreate(BaseModel):
-    """User creation model with validation."""
-
-    name: str = Field(..., min_length=1, max_length=100)
-    email: EmailStr
-    age: int = Field(..., ge=0, le=150)
-    tags: list[str] = Field(default_factory=list)
-
-    @validator('name')
-    def name_must_not_be_empty(cls, v: str) -> str:
-        if not v.strip():
-            raise ValueError('Name cannot be empty')
-        return v.strip()
-
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "name": "John Doe",
-                "email": "john@example.com",
-                "age": 30,
-                "tags": ["admin", "user"],
-            }
-        }
-
-class UserResponse(BaseModel):
-    """User response model."""
-
-    id: int
-    name: str
-    email: str
-    created_at: datetime
-
-    class Config:
-        from_attributes = True  # Pydantic v2 (was orm_mode in v1)
-```
-
-## Async/Await Patterns
-
-### Basic Async
-
-```python
-import asyncio
-from typing import List
-
-async def fetch_data(url: str) -> dict[str, str]:
-    """Fetch data asynchronously."""
-    await asyncio.sleep(1)  # Simulate I/O
-    return {"url": url, "status": "ok"}
-
-async def fetch_multiple(urls: list[str]) -> list[dict[str, str]]:
-    """Fetch multiple URLs concurrently."""
-    tasks = [fetch_data(url) for url in urls]
-    return await asyncio.gather(*tasks)
-
-# Run async code
-async def main() -> None:
-    urls = ["http://example.com", "http://example.org"]
-    results = await fetch_multiple(urls)
-    print(results)
-
-asyncio.run(main())
-```
-
-### Async Context Managers
-
-```python
-from typing import AsyncIterator
-import asyncio
-
-class AsyncResource:
-    """Async context manager for resources."""
-
-    async def __aenter__(self) -> 'AsyncResource':
-        print("Acquiring resource")
-        await asyncio.sleep(0.1)
+    def add(self, key: str, value: str) -> Self:
+        """Returns same type, even in subclasses."""
+        self.data[key] = value
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
-        print("Releasing resource")
-        await asyncio.sleep(0.1)
+    def build(self) -> dict[str, str]:
+        return self.data
 
-async def use_resource() -> None:
-    async with AsyncResource() as resource:
-        print("Using resource")
-```
+# Works correctly with inheritance
+class ExtendedBuilder(Builder):
+    def add_multiple(self, **kwargs: str) -> Self:
+        self.data.update(kwargs)
+        return self
 
-### Async Generators
-
-```python
-from typing import AsyncIterator
-
-async def generate_numbers(n: int) -> AsyncIterator[int]:
-    """Async generator."""
-    for i in range(n):
-        await asyncio.sleep(0.1)
-        yield i
-
-async def consume_numbers() -> None:
-    async for num in generate_numbers(5):
-        print(num)
-```
-
-## Error Handling
-
-### Specific Exceptions
-
-```python
-# Don't: Bare except
-try:
-    result = risky_operation()
-except:  # Too broad!
-    handle_error()
-
-# Do: Specific exceptions
-try:
-    result = risky_operation()
-except ValueError as e:
-    handle_value_error(e)
-except KeyError as e:
-    handle_key_error(e)
-except Exception as e:
-    # Log unexpected errors
-    logger.error(f"Unexpected error: {e}", exc_info=True)
-    raise
-```
-
-### Exception Chaining
-
-```python
-class ValidationError(Exception):
-    """Custom validation error."""
-    pass
-
-def validate_user(data: dict[str, str]) -> None:
-    try:
-        email = data["email"]
-        if "@" not in email:
-            raise ValueError("Invalid email format")
-    except KeyError as e:
-        # Chain exceptions to preserve context
-        raise ValidationError(f"Missing required field: {e}") from e
-    except ValueError as e:
-        # Re-raise with more context
-        raise ValidationError(f"Invalid user data: {e}") from e
-```
-
-### Custom Exceptions
-
-```python
-class AppError(Exception):
-    """Base exception for application."""
-
-    def __init__(self, message: str, code: str | None = None) -> None:
-        super().__init__(message)
-        self.code = code
-
-class NotFoundError(AppError):
-    """Resource not found."""
-
-    def __init__(self, resource: str, resource_id: int) -> None:
-        super().__init__(
-            f"{resource} with id {resource_id} not found",
-            code="NOT_FOUND"
-        )
-        self.resource = resource
-        self.resource_id = resource_id
-
-# Usage
-def get_user(user_id: int) -> dict[str, str]:
-    user = db.query(user_id)
-    if not user:
-        raise NotFoundError("User", user_id)
-    return user
+# Type hints work correctly through inheritance
+result = ExtendedBuilder().add("a", "1").add_multiple(b="2")
 ```
 
 ## Best Practices
 
-### Avoid Mutable Defaults
+### Use Pathlib Over os.path
 
 ```python
-# Don't: Mutable default argument
-def add_item(item: str, items: list[str] = []) -> list[str]:  # Bug!
-    items.append(item)
-    return items
+from pathlib import Path
 
-# Do: Use None and create new list
-def add_item(item: str, items: list[str] | None = None) -> list[str]:
-    if items is None:
-        items = []
-    items.append(item)
-    return items
+# Modern path handling
+path = Path("data") / "users" / "file.txt"
+
+if path.exists():
+    content = path.read_text()
+
+path.mkdir(parents=True, exist_ok=True)
+path.write_text("data")
+
+# Path properties
+path.parent    # Parent directory
+path.stem      # Filename without extension
+path.suffix    # Extension (.txt)
+path.name      # Full filename
 ```
 
-### Use Context Managers
+### Comprehensions Over Loops
 
 ```python
-# Don't: Manual resource management
-file = open("data.txt")
-try:
-    data = file.read()
-finally:
-    file.close()
-
-# Do: Use context manager
-with open("data.txt") as file:
-    data = file.read()
-
-# Custom context manager
-from contextlib import contextmanager
-
-@contextmanager
-def timer(name: str):
-    start = time.time()
-    try:
-        yield
-    finally:
-        elapsed = time.time() - start
-        print(f"{name} took {elapsed:.2f}s")
-
-with timer("Operation"):
-    perform_operation()
-```
-
-### List/Dict Comprehensions
-
-```python
-# Instead of loops
-numbers = []
-for i in range(10):
-    if i % 2 == 0:
-        numbers.append(i * 2)
-
-# Use comprehension
+# List comprehension
 numbers = [i * 2 for i in range(10) if i % 2 == 0]
 
 # Dict comprehension
@@ -855,49 +346,8 @@ squares = {x: x**2 for x in range(5)}
 # Set comprehension
 unique_lengths = {len(word) for word in words}
 
-# Generator expression (memory efficient)
-sum_squares = sum(x**2 for x in range(1000000))
-```
-
-### Pathlib Over os.path
-
-```python
-from pathlib import Path
-
-# Don't: os.path
-import os
-path = os.path.join("data", "users", "file.txt")
-if os.path.exists(path):
-    with open(path) as f:
-        data = f.read()
-
-# Do: pathlib
-path = Path("data") / "users" / "file.txt"
-if path.exists():
-    data = path.read_text()
-
-# Path operations
-path.parent  # Parent directory
-path.stem    # Filename without extension
-path.suffix  # File extension
-path.mkdir(parents=True, exist_ok=True)  # Create directory
-```
-
-### Enumerate Instead of Range
-
-```python
-# Don't
-items = ["a", "b", "c"]
-for i in range(len(items)):
-    print(i, items[i])
-
-# Do
-for i, item in enumerate(items):
-    print(i, item)
-
-# With start index
-for i, item in enumerate(items, start=1):
-    print(f"Item {i}: {item}")
+# Generator expression (memory efficient for large data)
+sum_squares = sum(x**2 for x in range(1_000_000))
 ```
 
 ### F-strings for Formatting
@@ -906,129 +356,264 @@ for i, item in enumerate(items, start=1):
 name = "Alice"
 age = 30
 
-# Don't: Old style
-message = "Hello, %s. You are %d years old." % (name, age)
-message = "Hello, {}. You are {} years old.".format(name, age)
-
-# Do: F-strings
+# Modern string formatting
 message = f"Hello, {name}. You are {age} years old."
 
-# With expressions
+# Expressions in f-strings
 message = f"Next year: {age + 1}"
 
-# With formatting
+# Formatting
 pi = 3.14159
-formatted = f"Pi is approximately {pi:.2f}"
+formatted = f"Pi: {pi:.2f}"
 
-# Debug format (Python 3.8+)
+# Debug format (3.8+)
 print(f"{name=}, {age=}")  # name='Alice', age=30
+
+# Multiline with expressions (3.12+)
+result = f"""
+User: {name}
+Status: {"Adult" if age >= 18 else "Minor"}
+Categories: {", ".join(categories)}
+"""
 ```
 
-## Performance Tips
-
-### Use Generators for Large Data
+### Walrus Operator for Assignment in Expressions
 
 ```python
-# Don't: Load everything in memory
-def get_all_users() -> list[dict[str, str]]:
-    return [user for user in db.query_all()]  # Memory intensive
-
-# Do: Use generator
-def get_all_users() -> Iterator[dict[str, str]]:
-    for user in db.query_all():
-        yield user
-
-# Process without loading all in memory
-for user in get_all_users():
-    process_user(user)
-```
-
-### Use `__slots__` for Many Instances
-
-```python
-# Regular class (uses dict for attributes)
-class RegularPoint:
-    def __init__(self, x: int, y: int) -> None:
-        self.x = x
-        self.y = y
-
-# Optimized class (uses slots)
-class OptimizedPoint:
-    __slots__ = ('x', 'y')
-
-    def __init__(self, x: int, y: int) -> None:
-        self.x = x
-        self.y = y
-
-# 40-50% memory savings for millions of instances
-```
-
-### Cache Expensive Operations
-
-```python
-from functools import lru_cache, cache
-
-@lru_cache(maxsize=128)
-def fibonacci(n: int) -> int:
-    if n < 2:
-        return n
-    return fibonacci(n - 1) + fibonacci(n - 2)
-
-@cache  # Python 3.9+, unbounded cache
-def expensive_operation(param: str) -> dict[str, str]:
-    # Expensive computation
-    return result
-```
-
-## Modern Python Idioms
-
-### Walrus Operator (3.8+)
-
-```python
-# Without walrus
-data = fetch_data()
-if data:
-    process(data)
-
-# With walrus (assign and check)
-if data := fetch_data():
+# Assign and use in one expression (3.8+)
+if (data := fetch_data()) is not None:
     process(data)
 
 # In comprehensions
-results = [result for item in items if (result := process(item)) is not None]
+results = [
+    result
+    for item in items
+    if (result := process(item)) is not None
+]
+
+# In while loops
+while (line := file.readline()) != "":
+    process(line)
+```
+
+### Enumerate Instead of Range
+
+```python
+items = ["a", "b", "c"]
+
+# Don't use range(len(...))
+for i in range(len(items)):
+    print(i, items[i])
+
+# Use enumerate
+for i, item in enumerate(items):
+    print(i, item)
+
+# With custom start
+for i, item in enumerate(items, start=1):
+    print(f"Item {i}: {item}")
 ```
 
 ### Positional-Only and Keyword-Only Parameters
 
 ```python
 def function(
-    pos_only, /,          # Positional-only
+    pos_only, /,          # Positional-only (before /)
     pos_or_kw,            # Positional or keyword
     *,                    # Keyword-only separator
-    kw_only               # Keyword-only
+    kw_only               # Keyword-only (after *)
 ) -> None:
+    """Clear parameter semantics."""
     pass
 
 # Usage
-function(1, 2, kw_only=3)           # OK
-function(1, pos_or_kw=2, kw_only=3) # OK
-function(pos_only=1, ...)           # Error: pos_only is positional-only
-function(1, 2, 3)                   # Error: kw_only is keyword-only
+function(1, 2, kw_only=3)           # ✅
+function(1, pos_or_kw=2, kw_only=3) # ✅
+function(pos_only=1, ...)           # ❌ Error
+function(1, 2, 3)                   # ❌ Error
 ```
 
-### Type Guards (3.10+)
+## Performance
+
+### Generators for Large Data
 
 ```python
-from typing import TypeGuard
+from typing import Iterator
 
-def is_string_list(val: list[object]) -> TypeGuard[list[str]]:
-    """Type guard for list of strings."""
-    return all(isinstance(item, str) for item in val)
+# Don't load everything in memory
+def get_users() -> Iterator[dict[str, str]]:
+    """Stream results instead of loading all."""
+    for user in db.query_all():
+        yield user
 
-def process(items: list[object]) -> None:
-    if is_string_list(items):
-        # Type checker knows items is list[str] here
-        print(items[0].upper())
+# Process without loading all in memory
+for user in get_users():
+    process(user)
 ```
 
-This guide covers modern Python development practices for Python 3.14+ with emphasis on type safety, async patterns, performance optimizations, and idiomatic code. Use Python 3.13+ features like TypedDict for **kwargs and improved error messages, and Python 3.14+ features like the JIT compiler, enhanced pattern matching, and improved async/await support.
+### __slots__ for Memory Efficiency
+
+```python
+class Point:
+    """Regular class uses dict for attributes."""
+    def __init__(self, x: int, y: int) -> None:
+        self.x = x
+        self.y = y
+
+class OptimizedPoint:
+    """Slots save 40-50% memory for many instances."""
+    __slots__ = ('x', 'y')
+
+    def __init__(self, x: int, y: int) -> None:
+        self.x = x
+        self.y = y
+
+# Or use dataclass with slots
+@dataclass(slots=True)
+class FastPoint:
+    x: int
+    y: int
+```
+
+### Caching Expensive Operations
+
+```python
+from functools import lru_cache, cache
+
+@lru_cache(maxsize=128)  # Bounded cache
+def fibonacci(n: int) -> int:
+    if n < 2:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+@cache  # Unbounded cache (3.9+)
+def expensive_computation(param: str) -> dict[str, str]:
+    # Expensive operation
+    return result
+```
+
+## Python 3.14+ Specific Features
+
+### JIT Compiler (Experimental)
+
+```python
+# Enable with: python --jit or PYTHON_JIT=1
+# 10-20% performance improvement for many workloads
+# No code changes needed - automatic optimization
+
+def compute_intensive(data: list[int]) -> int:
+    """JIT compiles hot paths automatically."""
+    return sum(x * 2 for x in data if x % 2 == 0)
+
+# Runs significantly faster with JIT enabled
+result = compute_intensive(range(10_000_000))
+```
+
+### Enhanced Pattern Matching
+
+```python
+# Dict unpacking in patterns
+def process(event: dict) -> str:
+    match event:
+        case {"type": "user", "action": "create", **data}:
+            return f"Creating user: {data}"
+        case {"type": "order", "items": items} if len(items) > 10:
+            return "Bulk order"
+        case _:
+            return "Other"
+```
+
+### Improved Async Support
+
+```python
+# Better async timeout API
+async def fetch_with_timeout[T](coro: Awaitable[T], timeout: float) -> T:
+    """Generic timeout with full type safety."""
+    async with asyncio.timeout(timeout):
+        return await coro
+
+# Enhanced error handling in TaskGroup
+async def fetch_multiple(urls: list[str]) -> list[str]:
+    async with asyncio.TaskGroup() as tg:
+        tasks = [tg.create_task(fetch(url)) for url in urls]
+    # Better cancellation propagation
+    return [t.result() for t in tasks]
+```
+
+## Development Workflow
+
+### Type Checking
+
+```bash
+# Always use type checker in development
+pyright .        # Fast, strict type checker
+mypy .           # Alternative type checker
+```
+
+### Linting and Formatting
+
+```bash
+# Use ruff for fast linting and formatting
+ruff check .     # Lint code
+ruff format .    # Format code
+```
+
+### Testing
+
+```python
+import pytest
+from typing import AsyncIterator
+
+# Type-hinted tests
+def test_user_creation() -> None:
+    """Test with type hints."""
+    user = create_user(name="Alice", age=30)
+    assert user["name"] == "Alice"
+
+# Async tests
+@pytest.mark.asyncio
+async def test_async_operation() -> None:
+    """Async test with pytest-asyncio."""
+    result = await fetch_data("http://example.com")
+    assert result["status"] == "ok"
+
+# Fixtures with type hints
+@pytest.fixture
+def user_data() -> dict[str, str | int]:
+    return {"name": "Alice", "age": 30}
+```
+
+## Summary of Essential Modern Features
+
+**Always Use**:
+- Type hints everywhere (functions, classes, variables)
+- Dataclasses with `slots=True` for data models
+- Pattern matching for complex conditionals
+- Async/await for I/O operations
+- Context managers for resource management
+- Pathlib for file operations
+- F-strings for string formatting
+- Comprehensions over loops
+
+**Python 3.10+**:
+- Union types with `|` instead of `Union`
+- Pattern matching with `match/case`
+
+**Python 3.11+**:
+- Exception groups with `except*`
+- `Self` type for method chaining
+- `TaskGroup` for async operations
+
+**Python 3.12+**:
+- Type parameter syntax `[T]` for generics
+- `@override` decorator for explicit overrides
+
+**Python 3.13+**:
+- `TypedDict` with `Unpack` for `**kwargs`
+
+**Python 3.14+**:
+- JIT compiler for performance (experimental)
+- Enhanced pattern matching
+- Improved async/await support
+
+Focus on writing clean, type-safe, idiomatic Python code using these modern features for better performance, maintainability, and developer experience.
