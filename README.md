@@ -42,7 +42,6 @@ Skills are reusable knowledge modules shared among agents:
 - `cxp:python-developer` - Modern Python development patterns and best practices
 - `cxp:python-tester` - Testing strategies, frameworks, and async testing patterns
 - `cxp:fastapi-dev` - FastAPI development expertise
-- `cxp:issue-management` - Python-specific issue workflow patterns
 
 **TypeScript Skills** (cxt plugin):
 - `cxt:typescript-dev` - TypeScript development patterns and type system expertise
@@ -88,7 +87,7 @@ Multi-phase problem-solving workflow for modern Python 3.11+ development.
 - Problem identification and research
 - Multi-agent workflow from validation to implementation
 - Python best practices enforcement (type hints, async/await, pattern matching)
-- FastAPI patterns (Pydantic, dependency injection, async routes)
+- Web framework support (FastAPI with dedicated expertise, Django/Flask/etc. with general Python patterns)
 - Code quality review and bug hunting agents
 
 [**→ View cxp Documentation**](cxp/README.md)
@@ -316,7 +315,7 @@ After installation, check `~/.claude/plugins/marketplace` folder. To update, pul
 | **Package Manager** | go mod | UV (10-100x faster than pip) | npm/pnpm/yarn |
 | **Type System** | Generics, interfaces | Type hints, Protocol | Strict mode, utility types |
 | **Async** | Goroutines, channels | async/await, asyncio | async/await, Promises |
-| **Web Frameworks** | Kubernetes operators | FastAPI, Django | Express, NestJS, Next.js |
+| **Web Frameworks** | Kubernetes operators | FastAPI (dedicated), Django/Flask | Express, NestJS, Next.js |
 | **Frontend** | - | - | React, Vue |
 | **Testing** | go test, Chainsaw E2E | pytest (parallel), pytest-asyncio | Jest, Vitest, Testing Library |
 | **Linting** | golangci-lint | ruff (check + format) | ESLint + Prettier |

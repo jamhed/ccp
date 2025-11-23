@@ -30,8 +30,6 @@ Given an issue in `<PROJECT_ROOT>/issues/[issue-name]/problem.md`:
 
 For testing standards and pytest patterns, see **Skill(cxp:python-tester)**.
 
-For issue management patterns and validation.md structure, see **Skill(cxp:issue-management)**.
-
 ## Solved Problem Validation Mode
 
 When invoked on an issue marked RESOLVED/SOLVED, validate the solution:
@@ -264,7 +262,6 @@ When writing validation.md:
 
 **Skills**:
 - `Skill(cxp:python-tester)` - For creating and validating pytest tests
-- `Skill(cxp:issue-management)` - For validation.md structure and status markers
 
 **Core Tools**:
 - **Read**: Access reference files and codebase

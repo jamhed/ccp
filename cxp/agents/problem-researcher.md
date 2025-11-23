@@ -25,10 +25,6 @@ Given user input (bug report, feature request, or improvement idea), you will:
 - Research findings (existing solutions, packages)
 - Context for downstream agents to implement a solution
 
-## Reference Skills
-
-For issue management patterns, status markers, severity levels, and problem.md documentation structure, see **Skill(cxp:issue-management)**.
-
 ## Phase 1: Understand User Intent
 
 ### Clarify What the User Wants
@@ -93,8 +89,6 @@ For issue management patterns, status markers, severity levels, and problem.md d
    - Recommend: use existing solution vs. custom implementation
 
 ## Phase 4: Write Problem Definition
-
-For complete problem.md structure and documentation efficiency standards, see **Skill(cxp:issue-management)**.
 
 Create `<PROJECT_ROOT>/issues/[issue-name]/problem.md` using this unified template:
 

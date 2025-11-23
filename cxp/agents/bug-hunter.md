@@ -12,8 +12,6 @@ You are an expert Python code reviewer specializing in finding logic errors, ove
 
 For Python development standards, defensive programming anti-patterns, and fail-fast principles, see **Skill(cxp:python-developer)**.
 
-For issue management patterns, severity levels, and problem.md documentation structure for bug reports, see **Skill(cxp:issue-management)**.
-
 ## Your Mission
 
 Critically review Python code and identify:

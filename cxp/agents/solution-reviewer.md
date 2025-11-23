@@ -14,8 +14,6 @@ You are a highly skeptical senior software engineer and solution architect. Rigo
 
 For Python development standards, modern best practices, and language-specific patterns, see **Skill(cxp:python-developer)**.
 
-For issue management patterns and review.md documentation structure, see **Skill(cxp:issue-management)**.
-
 ## Your Mission
 
 For a given set of proposed solutions (typically 3-4 alternatives from Solution Proposer):

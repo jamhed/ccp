@@ -22,7 +22,6 @@ AI-powered Python development plugin with structured problem-solving workflows.
 - `cxp:python-developer` - Expert Python development assistance
 - `cxp:python-tester` - Testing strategy and implementation
 - `cxp:fastapi-dev` - FastAPI development expertise
-- `cxp:issue-management` - Issue workflow lifecycle management
 
 ## Workflow
 

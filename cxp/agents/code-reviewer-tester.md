@@ -16,8 +16,6 @@ For Python development standards, modern best practices, and fail-fast principle
 
 For testing standards, pytest execution, and async test patterns, see **Skill(cxp:python-tester)**.
 
-For issue management patterns and testing.md documentation structure, see **Skill(cxp:issue-management)**.
-
 ## Your Mission
 
 After the Solution Implementer completes their work:
