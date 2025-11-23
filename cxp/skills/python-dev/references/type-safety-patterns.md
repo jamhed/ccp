@@ -1,788 +1,576 @@
-# Type Safety Patterns in Python
+# Safe Development with Python Types
 
-Comprehensive guide to writing type-safe Python code using mypy and pyright with modern type hints, including Python 3.13+ and 3.14+ features.
+Practical guide to catching bugs early and writing safer Python code using type hints and type checkers (mypy/pyright).
 
-## Python 3.13+ Type System Improvements
+## Why Type Safety Matters
 
-### TypedDict for **kwargs (PEP 692, Python 3.13+)
+Type hints help catch bugs before runtime:
 
 ```python
-from typing import TypedDict, Unpack
+# Without types - bug discovered at runtime
+def get_user_age(user):
+    return user["age"] * 2  # Oops, multiplying age by 2
 
-# Define typed kwargs structure
-class PersonKwargs(TypedDict):
+age = get_user_age({"name": "Alice"})  # KeyError at runtime!
+
+# With types - bug caught by type checker
+def get_user_age(user: dict[str, int]) -> int:
+    return user["age"] * 2  # Type checker: "age" key might not exist
+
+# Better - explicit structure
+from typing import TypedDict
+
+class User(TypedDict):
     name: str
     age: int
-    email: str
-    city: str | None  # Optional field
 
-def create_person(**kwargs: Unpack[PersonKwargs]) -> dict[str, str | int]:
-    """Function with typed **kwargs."""
+def get_user_age(user: User) -> int:
+    return user["age"]  # Type-safe: "age" is guaranteed to exist
+
+# Type checker catches this before you run code
+get_user_age({"name": "Alice"})  # ❌ Error: Missing "age" key
+```
+
+## Essential Type Safety Patterns
+
+### 1. Handle None Explicitly
+
+```python
+# Unsafe - crashes if user not found
+def get_user_name(user_id: int) -> str:
+    user = find_user(user_id)  # Returns User | None
+    return user["name"]  # ❌ Type error: might be None
+
+# Safe - handle None case
+def get_user_name(user_id: int) -> str:
+    user = find_user(user_id)
+    if user is None:
+        return "Unknown"
+    return user["name"]  # ✅ Type narrowed to User
+
+# Or use default
+def get_user_name_alt(user_id: int) -> str:
+    user = find_user(user_id)
+    return user["name"] if user else "Unknown"
+```
+
+### 2. Type Narrow with isinstance()
+
+```python
+# Unsafe - assumes type without checking
+def process_value(value: int | str | None) -> str:
+    return value.upper()  # ❌ Error: int has no upper(), None crashes
+
+# Safe - check type before using
+def process_value(value: int | str | None) -> str:
+    if value is None:
+        return "empty"
+
+    if isinstance(value, int):
+        return f"number: {value}"
+
+    # Type checker knows value is str here
+    return f"text: {value.upper()}"
+```
+
+### 3. Use TypedDict for Dictionaries
+
+```python
+from typing import TypedDict, NotRequired
+
+# Unsafe - no structure validation
+def create_user(data: dict) -> dict:  # What keys? What types?
     return {
-        "name": kwargs["name"],
-        "age": kwargs["age"],
-        "email": kwargs["email"],
-        "city": kwargs.get("city", "Unknown"),
+        "id": data["user_id"],  # Might be "id" not "user_id"
+        "email": data["email"].lower(),  # Might not be string
     }
 
-# Type checker validates kwargs at call site
-create_person(name="Alice", age=30, email="alice@example.com", city="NYC")  # ✅
-create_person(name="Bob", age="30", email="bob@example.com")  # ❌ Type error: age must be int
-create_person(name="Charlie")  # ❌ Type error: missing required kwargs
+# Safe - explicit structure
+class UserInput(TypedDict):
+    user_id: int
+    email: str
+    phone: NotRequired[str]  # Optional field
 
-# Partial kwargs with Required/NotRequired
-from typing import Required, NotRequired
-
-class PartialKwargs(TypedDict):
-    name: Required[str]  # Required
-    age: Required[int]   # Required
-    email: NotRequired[str]  # Optional
-    city: NotRequired[str]   # Optional
-
-def create_user(**kwargs: Unpack[PartialKwargs]) -> dict[str, str | int]:
-    """Only name and age are required."""
-    result = {
-        "name": kwargs["name"],
-        "age": kwargs["age"],
-    }
-    if "email" in kwargs:
-        result["email"] = kwargs["email"]
-    return result
-
-# Works with defaults
-create_user(name="Alice", age=30)  # ✅ email and city optional
-```
-
-### Enhanced Type Parameter Syntax (Python 3.12+, Improved in 3.14)
-
-```python
-# Old way (still works)
-from typing import TypeVar, Generic
-
-T = TypeVar('T')
-
-class Stack(Generic[T]):
-    def push(self, item: T) -> None: ...
-
-# New way (Python 3.12+)
-class Stack[T]:
-    """Generic stack with new syntax."""
-    def __init__(self) -> None:
-        self._items: list[T] = []
-
-    def push(self, item: T) -> None:
-        self._items.append(item)
-
-    def pop(self) -> T:
-        return self._items.pop()
-
-# Generic functions with new syntax
-def first[T](items: list[T]) -> T | None:
-    """Get first item with type safety."""
-    return items[0] if items else None
-
-def map_values[K, V, R](d: dict[K, V], func: Callable[[V], R]) -> dict[K, R]:
-    """Map dictionary values with full type safety."""
-    return {k: func(v) for k, v in d.items()}
-
-# Multiple type parameters
-def merge[K, V1, V2](
-    d1: dict[K, V1],
-    d2: dict[K, V2]
-) -> dict[K, V1 | V2]:
-    """Merge two dicts with different value types."""
-    return {**d1, **d2}
-```
-
-## Type Hint Fundamentals
-
-### Basic Types
-
-```python
-from typing import Any
-
-# Built-in types
-name: str = "Alice"
-age: int = 30
-price: float = 19.99
-is_active: bool = True
-
-# Collections
-numbers: list[int] = [1, 2, 3]
-names: tuple[str, str] = ("Alice", "Bob")
-scores: dict[str, int] = {"Alice": 95, "Bob": 87}
-unique_ids: set[int] = {1, 2, 3}
-
-# Multiple types (Union)
-id_value: int | str = "user_123"  # Python 3.10+
-count: int | None = None          # Optional[int]
-
-# Any (avoid when possible)
-data: Any = {"anything": "goes"}  # No type checking
-```
-
-### Function Signatures
-
-```python
-def greet(name: str, age: int) -> str:
-    """Complete function signature."""
-    return f"Hello {name}, age {age}"
-
-def process(
-    value: int,
-    multiplier: float = 1.0,
-    *args: str,
-    debug: bool = False,
-    **kwargs: int,
-) -> dict[str, int | float]:
-    """Function with various parameter types."""
-    result = value * multiplier
-    return {"result": result, "args_count": len(args), **kwargs}
-
-# No return value
-def log_message(message: str) -> None:
-    print(message)
-
-# Never returns (always raises)
-def fail(message: str) -> Never:  # Python 3.11+
-    raise RuntimeError(message)
-```
-
-## Advanced Type Hints
-
-### Generic Types
-
-```python
-from typing import TypeVar, Generic
-
-T = TypeVar('T')
-K = TypeVar('K')
-V = TypeVar('V')
-
-class Container(Generic[T]):
-    """Generic container."""
-
-    def __init__(self, value: T) -> None:
-        self.value: T = value
-
-    def get(self) -> T:
-        return self.value
-
-    def set(self, value: T) -> None:
-        self.value = value
-
-# Usage
-int_container: Container[int] = Container(42)
-str_container: Container[str] = Container("hello")
-
-# Generic function
-def first[T](items: list[T]) -> T | None:  # Python 3.12+
-    return items[0] if items else None
-
-# Or with TypeVar (older syntax)
-def first_old(items: list[T]) -> T | None:
-    return items[0] if items else None
-```
-
-### Bounded TypeVars
-
-```python
-from typing import TypeVar
-
-# Bound to specific type
-class Animal:
-    def speak(self) -> str:
-        return "..."
-
-class Dog(Animal):
-    def speak(self) -> str:
-        return "Woof!"
-
-AnimalType = TypeVar('AnimalType', bound=Animal)
-
-def make_speak(animal: AnimalType) -> str:
-    return animal.speak()  # Type checker knows .speak() exists
-
-# Constrained to specific types
-NumberType = TypeVar('NumberType', int, float)
-
-def add(a: NumberType, b: NumberType) -> NumberType:
-    return a + b  # Works with int or float only
-```
-
-### Protocol (Structural Typing)
-
-```python
-from typing import Protocol, runtime_checkable
-
-class Closable(Protocol):
-    """Protocol for closable objects."""
-
-    def close(self) -> None: ...
-
-class Drawable(Protocol):
-    """Protocol for drawable objects."""
-
-    def draw(self) -> str: ...
-    def move(self, x: int, y: int) -> None: ...
-
-# Any class implementing these methods automatically conforms
-class Window:
-    def close(self) -> None:
-        print("Closing window")
-
-class Circle:
-    def draw(self) -> str:
-        return "Drawing circle"
-
-    def move(self, x: int, y: int) -> None:
-        print(f"Moving to ({x}, {y})")
-
-def close_resource(resource: Closable) -> None:
-    resource.close()
-
-def render(obj: Drawable) -> str:
-    return obj.draw()
-
-# Runtime checkable protocol
-@runtime_checkable
-class Sized(Protocol):
-    def __len__(self) -> int: ...
-
-def process_sized(obj: object) -> int:
-    if isinstance(obj, Sized):  # Runtime check
-        return len(obj)
-    return 0
-```
-
-### TypedDict
-
-```python
-from typing import TypedDict, Required, NotRequired
-
-# Basic TypedDict
-class UserDict(TypedDict):
-    name: str
-    age: int
+class UserOutput(TypedDict):
+    id: int
     email: str
 
-# Optional fields (Python 3.11+)
-class ConfigDict(TypedDict):
-    host: str
-    port: int
-    ssl: NotRequired[bool]  # Optional
-    timeout: NotRequired[int]  # Optional
+def create_user(data: UserInput) -> UserOutput:
+    return {
+        "id": data["user_id"],
+        "email": data["email"].lower(),
+    }
 
-# Or using total=False
-class PartialDict(TypedDict, total=False):
-    optional_field1: str
-    optional_field2: int
-
-# Mixed required/optional (Python 3.11+)
-class MixedDict(TypedDict):
-    required_field: Required[str]
-    optional_field: NotRequired[int]
-
-# Usage
-user: UserDict = {
-    "name": "Alice",
-    "age": 30,
-    "email": "alice@example.com",
-}
-
-config: ConfigDict = {
-    "host": "localhost",
-    "port": 8080,
-    # ssl is optional
-}
+# Type checker validates at call site
+create_user({"user_id": 1, "email": "user@example.com"})  # ✅
+create_user({"id": 1, "email": "user@example.com"})  # ❌ Wrong key
+create_user({"user_id": "1", "email": "user@example.com"})  # ❌ Wrong type
 ```
 
-### Literal Types
+### 4. Never Return None on Errors
+
+```python
+# Unsafe - errors hidden by None
+def parse_config(path: str) -> dict[str, str] | None:
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except Exception:
+        return None  # ❌ Lost error information
+
+# Safe - raise exceptions for errors
+def parse_config(path: str) -> dict[str, str]:
+    """Parse config file. Raises FileNotFoundError or JSONDecodeError."""
+    with open(path) as f:
+        return json.load(f)  # Let exceptions propagate
+
+# Caller handles errors explicitly
+try:
+    config = parse_config("config.json")
+except FileNotFoundError:
+    config = get_default_config()
+except json.JSONDecodeError as e:
+    raise ValueError(f"Invalid config: {e}") from e
+```
+
+### 5. Use Literal for Fixed Values
 
 ```python
 from typing import Literal
 
-# Specific allowed values
-Mode = Literal["read", "write", "append"]
+# Unsafe - accepts any string
+def set_log_level(level: str) -> None:
+    if level not in ("DEBUG", "INFO", "ERROR"):  # Runtime check
+        raise ValueError(f"Invalid level: {level}")
 
-def open_file(path: str, mode: Mode) -> None:
-    print(f"Opening {path} in {mode} mode")
+# Safe - type checker enforces valid values
+LogLevel = Literal["DEBUG", "INFO", "ERROR"]
 
-open_file("data.txt", "read")    # OK
-open_file("data.txt", "delete")  # Error: invalid literal
+def set_log_level(level: LogLevel) -> None:
+    # No runtime check needed - type checker ensures correctness
+    print(f"Setting level: {level}")
 
-# Multiple literals
-Status = Literal["pending", "running", "completed", "failed"]
-LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
-
-def log(message: str, level: LogLevel = "INFO") -> None:
-    print(f"[{level}] {message}")
+set_log_level("DEBUG")    # ✅
+set_log_level("INVALID")  # ❌ Type error at development time
 ```
 
-### Final
+### 6. Protocol for Interface Safety
 
 ```python
-from typing import Final, final
-
-# Final variable (cannot be reassigned)
-MAX_CONNECTIONS: Final[int] = 100
-
-# Final method (cannot be overridden)
-class Base:
-    @final
-    def critical_method(self) -> str:
-        return "Must not be overridden"
-
-class Derived(Base):
-    def critical_method(self) -> str:  # Error: Cannot override final method
-        return "Override attempt"
-
-# Final class (cannot be subclassed)
-@final
-class ImmutableConfig:
-    def __init__(self, value: str) -> None:
-        self.value: Final[str] = value
-
-class Extended(ImmutableConfig):  # Error: Cannot subclass final class
-    pass
-```
-
-## Type Narrowing
-
-### isinstance() Checks
-
-```python
-def process_value(value: int | str | None) -> str:
-    if value is None:
-        # Type narrowed to None
-        return "empty"
-
-    if isinstance(value, int):
-        # Type narrowed to int
-        return f"number: {value * 2}"
-
-    # Type narrowed to str (only remaining option)
-    return f"text: {value.upper()}"
-```
-
-### Type Guards
-
-```python
-from typing import TypeGuard
-
-def is_string_list(val: list[object]) -> TypeGuard[list[str]]:
-    """Type guard checking if list contains only strings."""
-    return all(isinstance(item, str) for item in val)
-
-def process_items(items: list[object]) -> None:
-    if is_string_list(items):
-        # Type checker knows items is list[str]
-        for item in items:
-            print(item.upper())  # OK: str method
-
-# More complex type guard
-def is_dict_with_id(val: object) -> TypeGuard[dict[str, int]]:
-    return (
-        isinstance(val, dict) and
-        "id" in val and
-        isinstance(val["id"], int)
-    )
-```
-
-### assert_type (Python 3.11+)
-
-```python
-from typing import assert_type
-
-def process(value: int | str) -> None:
-    if isinstance(value, int):
-        # Verify type narrowing works
-        assert_type(value, int)  # Passes
-        # assert_type(value, str)  # Error: Type is int, not str
-
-    assert_type(value, str)  # After if, type must be str
-```
-
-## Avoiding `Any`
-
-### Use Specific Types
-
-```python
-# Don't: Too permissive
-def process_data(data: Any) -> Any:
-    return data["result"]
-
-# Do: Specific types
-def process_data(data: dict[str, int]) -> int:
-    return data["result"]
-
-# If truly dynamic, use TypedDict
-class ResultDict(TypedDict):
-    result: int
-    status: str
-
-def process_data_typed(data: ResultDict) -> int:
-    return data["result"]
-```
-
-### Use Generics
-
-```python
-from typing import TypeVar
-
-T = TypeVar('T')
-
-# Don't: Using Any
-def first_item_any(items: list[Any]) -> Any:
-    return items[0] if items else None
-
-# Do: Using generic
-def first_item(items: list[T]) -> T | None:
-    return items[0] if items else None
-
-# Type is preserved
-nums = [1, 2, 3]
-first = first_item(nums)  # Type inferred as int | None
-```
-
-### Use Protocol for Duck Typing
-
-```python
-from typing import Protocol, Any
-
-# Don't: Accept anything
-def process_any(obj: Any) -> str:
-    return obj.to_string()  # Hope it has to_string()
-
-# Do: Define protocol
-class Stringable(Protocol):
-    def to_string(self) -> str: ...
-
-def process_stringable(obj: Stringable) -> str:
-    return obj.to_string()  # Type-safe
-```
-
-## Common Patterns
-
-### Optional Values
-
-```python
-from typing import Optional
-
-# Old style
-def find_user_old(user_id: int) -> Optional[dict[str, str]]:
-    # ...
-    return None
-
-# New style (Python 3.10+)
-def find_user(user_id: int) -> dict[str, str] | None:
-    user = db.query(user_id)
-    return user if user else None
-
-# Handling optional values
-def process_user(user_id: int) -> str:
-    user = find_user(user_id)
-
-    if user is None:
-        return "User not found"
-
-    # Type narrowed to dict[str, str]
-    return user["name"]
-```
-
-### Callable Types
-
-```python
-from typing import Callable
-from collections.abc import Callable as ABCCallable  # Python 3.9+
-
-# Simple callable
-Handler = Callable[[str], None]
-
-def register_handler(handler: Handler) -> None:
-    handler("test")
-
-# Multiple parameters
-Transformer = Callable[[int, str], dict[str, int]]
-
-# Generic callable
-T = TypeVar('T')
-R = TypeVar('R')
-
-Mapper = Callable[[T], R]
-
-def map_items(items: list[T], mapper: Mapper[T, R]) -> list[R]:
-    return [mapper(item) for item in items]
-```
-
-### Sequence and Mapping
-
-```python
-from collections.abc import Sequence, Mapping, Iterable, Iterator
-
-# Accept any sequence (list, tuple, etc.)
-def process_sequence(items: Sequence[int]) -> int:
-    return sum(items)
-
-process_sequence([1, 2, 3])      # OK: list
-process_sequence((1, 2, 3))      # OK: tuple
-process_sequence(range(1, 4))    # OK: range
-
-# Accept any mapping (dict, OrderedDict, etc.)
-def process_mapping(data: Mapping[str, int]) -> int:
-    return sum(data.values())
-
-# Iterable for large data
-def process_large_data(items: Iterable[int]) -> int:
-    total = 0
-    for item in items:
-        total += item
-    return total
-```
-
-### Overload
-
-```python
-from typing import overload
-
-@overload
-def process(value: int) -> int: ...
-
-@overload
-def process(value: str) -> str: ...
-
-def process(value: int | str) -> int | str:
-    """Process different types differently."""
-    if isinstance(value, int):
-        return value * 2
-    return value.upper()
-
-# Type checker knows return type based on input
-result1: int = process(5)         # OK
-result2: str = process("hello")   # OK
-result3: str = process(5)         # Error: result is int, not str
-```
-
-## Dataclass Type Hints
-
-```python
-from dataclasses import dataclass, field
-from typing import ClassVar
-
-@dataclass
-class User:
-    """User with complete type hints."""
-
-    user_id: int
-    name: str
-    email: str
-    is_active: bool = True
-    tags: list[str] = field(default_factory=list)
-    metadata: dict[str, str] = field(default_factory=dict)
-
-    # Class variable (not instance variable)
-    MAX_NAME_LENGTH: ClassVar[int] = 100
-
-    def to_dict(self) -> dict[str, str | int | bool | list[str]]:
-        return {
-            "user_id": self.user_id,
-            "name": self.name,
-            "email": self.email,
-            "is_active": self.is_active,
-            "tags": self.tags,
-        }
-
-@dataclass(frozen=True)
-class Point:
-    """Immutable point."""
-    x: int
-    y: int
-
-    def distance_from_origin(self) -> float:
-        return (self.x**2 + self.y**2)**0.5
-```
-
-## Mypy Configuration
-
-### pyproject.toml
-
-```toml
-[tool.mypy]
-python_version = "3.14"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_any_generics = true
-disallow_subclassing_any = true
-disallow_untyped_calls = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_no_return = true
-warn_unreachable = true
-strict_equality = true
-strict = true
-
-[[tool.mypy.overrides]]
-module = "tests.*"
-disallow_untyped_defs = false
-
-[[tool.mypy.overrides]]
-module = "third_party.*"
-ignore_missing_imports = true
-```
-
-### mypy.ini
-
-```ini
-[mypy]
-python_version = 3.14
-warn_return_any = True
-warn_unused_configs = True
-disallow_untyped_defs = True
-disallow_any_generics = True
-disallow_subclassing_any = True
-disallow_untyped_calls = True
-disallow_incomplete_defs = True
-check_untyped_defs = True
-disallow_untyped_decorators = True
-no_implicit_optional = True
-warn_redundant_casts = True
-warn_unused_ignores = True
-warn_no_return = True
-warn_unreachable = True
-strict_equality = True
-
-[mypy-tests.*]
-disallow_untyped_defs = False
-
-[mypy-third_party.*]
-ignore_missing_imports = True
-```
-
-## Pyright Configuration
-
-### pyrightconfig.json
-
-```json
-{
-  "include": ["src"],
-  "exclude": [
-    "**/node_modules",
-    "**/__pycache__",
-    "**/.venv"
-  ],
-  "typeCheckingMode": "strict",
-  "reportMissingTypeStubs": false,
-  "reportUnknownMemberType": false,
-  "pythonVersion": "3.14",
-  "pythonPlatform": "Linux"
-}
-```
-
-## Common Type Checking Errors
-
-### Error: Incompatible return type
-
-```python
-# Error
-def get_name() -> str:
-    user = find_user()
-    return user["name"]  # Error: might be None
-
-# Fix with type narrowing
-def get_name() -> str:
-    user = find_user()
-    if user is None:
-        return "Unknown"
-    return user["name"]
-
-# Or with explicit default
-def get_name() -> str:
-    user = find_user()
-    return user["name"] if user else "Unknown"
-```
-
-### Error: Argument type mismatch
-
-```python
-# Error
-def process(value: int) -> str:
-    return str(value)
-
-result: int = process("hello")  # Error: str is not int
-
-# Fix
-result: str = process(123)  # OK
-```
-
-### Error: Missing type annotation
-
-```python
-# Error
-def calculate(x, y):  # Error: Missing type annotations
-    return x + y
-
-# Fix
-def calculate(x: int, y: int) -> int:
-    return x + y
-```
-
-## Best Practices
-
-### 1. Always Add Type Hints
-
-```python
-# Every function should have type hints
-def process(data: dict[str, int]) -> list[str]:
-    return [str(v) for v in data.values()]
-```
-
-### 2. Use Specific Collection Types
-
-```python
-# Don't: Too generic
-def process(items: list) -> list:
-    pass
-
-# Do: Specific types
-def process(items: list[int]) -> list[str]:
-    return [str(item) for item in items]
-```
-
-### 3. Avoid Any When Possible
-
-```python
-# Only use Any when truly necessary
-from typing import Any
-
-def deserialize_json(data: str) -> Any:  # OK: JSON can be anything
-    return json.loads(data)
-```
-
-### 4. Use Protocols for Flexibility
-
-```python
-# Instead of requiring specific class
 from typing import Protocol
 
+# Unsafe - accepts anything, hopes it has .save()
+def save_all(items: list) -> None:
+    for item in items:
+        item.save()  # ❌ What if item has no save()?
+
+# Safe - define required interface
 class Saveable(Protocol):
     def save(self) -> None: ...
 
 def save_all(items: list[Saveable]) -> None:
     for item in items:
-        item.save()
+        item.save()  # ✅ Type checker ensures save() exists
+
+# Any class with save() method works
+class User:
+    def save(self) -> None:
+        print("Saving user")
+
+class Document:
+    def save(self) -> None:
+        print("Saving document")
+
+save_all([User(), Document()])  # ✅ Both have save()
 ```
 
-### 5. Run Type Checkers in CI
+### 7. Generic Functions for Type Preservation
+
+```python
+from typing import TypeVar
+
+T = TypeVar('T')
+
+# Unsafe - loses type information
+def get_first_unsafe(items: list) -> object | None:
+    return items[0] if items else None
+
+result = get_first_unsafe([1, 2, 3])  # Type: object | None
+# result + 5  # ❌ Can't add int to object
+
+# Safe - preserves type
+def get_first(items: list[T]) -> T | None:
+    return items[0] if items else None
+
+result = get_first([1, 2, 3])  # Type: int | None
+if result is not None:
+    value = result + 5  # ✅ Type checker knows it's int
+```
+
+## Catching Common Bugs with Types
+
+### Bug: Forgetting to Check None
+
+```python
+# Bug: crashes if user not found
+def get_email(user_id: int) -> str:
+    user = db.get_user(user_id)  # Returns User | None
+    return user.email  # ❌ AttributeError if None
+
+# Fixed: type checker forces None check
+def get_email(user_id: int) -> str:
+    user = db.get_user(user_id)
+    if user is None:
+        raise ValueError(f"User {user_id} not found")
+    return user.email  # ✅ Type narrowed to User
+```
+
+### Bug: Mixing Incompatible Types
+
+```python
+# Bug: accidentally passing wrong type
+def calculate_discount(price: float, percent: float) -> float:
+    return price * (1 - percent)
+
+discount = calculate_discount(100, "10%")  # ❌ Type error: str is not float
+# Would crash at runtime with: TypeError: can't multiply sequence
+
+# Fixed: type checker prevents this at development time
+discount = calculate_discount(100, 0.10)  # ✅ Correct types
+```
+
+### Bug: Wrong Dictionary Keys
+
+```python
+# Bug: typo in key name
+user_data = {"name": "Alice", "age": 30}
+email = user_data["email"]  # ❌ KeyError at runtime
+
+# Fixed with TypedDict
+from typing import TypedDict
+
+class UserData(TypedDict):
+    name: str
+    age: int
+
+user: UserData = {"name": "Alice", "age": 30}
+email = user["email"]  # ❌ Type error: "email" not in UserData
+```
+
+### Bug: Forgetting Return Value
+
+```python
+# Bug: forgot to return in some paths
+def get_status(active: bool) -> str:
+    if active:
+        return "active"
+    # ❌ Type error: Missing return statement
+    # Would return None at runtime
+
+# Fixed: type checker catches missing return
+def get_status(active: bool) -> str:
+    if active:
+        return "active"
+    return "inactive"  # ✅ All paths return str
+```
+
+### Bug: Mutating Shared State
+
+```python
+# Bug: mutable default argument
+def add_tag(tag: str, tags: list[str] = []) -> list[str]:  # ❌ Dangerous!
+    tags.append(tag)
+    return tags
+
+# Shared state bug:
+tags1 = add_tag("python")  # ["python"]
+tags2 = add_tag("go")      # ["python", "go"] - Oops!
+
+# Fixed: type checker warns about mutable defaults (with strict settings)
+def add_tag(tag: str, tags: list[str] | None = None) -> list[str]:
+    if tags is None:
+        tags = []
+    tags.append(tag)
+    return tags
+
+tags1 = add_tag("python")  # ["python"]
+tags2 = add_tag("go")      # ["go"] - Correct
+```
+
+## Advanced Safety Patterns
+
+### Type-Safe Error Handling
+
+```python
+# Define specific error types
+class UserError(Exception):
+    """User-related errors."""
+    pass
+
+class NotFoundError(UserError):
+    """Resource not found."""
+    def __init__(self, resource: str, resource_id: int) -> None:
+        super().__init__(f"{resource} {resource_id} not found")
+        self.resource = resource
+        self.resource_id = resource_id
+
+class ValidationError(UserError):
+    """Validation failed."""
+    def __init__(self, field: str, message: str) -> None:
+        super().__init__(f"{field}: {message}")
+        self.field = field
+
+# Type-safe error handling
+def get_user(user_id: int) -> User:
+    """Get user by ID. Raises NotFoundError if not found."""
+    user = db.query_user(user_id)
+    if user is None:
+        raise NotFoundError("User", user_id)
+    return user
+
+# Caller knows exactly what errors to expect
+try:
+    user = get_user(123)
+except NotFoundError as e:
+    print(f"User not found: {e.resource_id}")
+except ValidationError as e:
+    print(f"Validation failed: {e.field}")
+```
+
+### Type-Safe Builder Pattern
+
+```python
+from typing import Self
+
+class QueryBuilder:
+    """Type-safe query builder."""
+
+    def __init__(self) -> None:
+        self._table: str | None = None
+        self._where: list[str] = []
+
+    def table(self, name: str) -> Self:
+        """Set table name. Returns self for chaining."""
+        self._table = name
+        return self
+
+    def where(self, condition: str) -> Self:
+        """Add where condition. Returns self for chaining."""
+        self._where.append(condition)
+        return self
+
+    def build(self) -> str:
+        """Build query. Raises ValueError if table not set."""
+        if self._table is None:
+            raise ValueError("Table not set")
+
+        query = f"SELECT * FROM {self._table}"
+        if self._where:
+            query += " WHERE " + " AND ".join(self._where)
+        return query
+
+# Type-safe method chaining
+query = (
+    QueryBuilder()
+    .table("users")
+    .where("age > 18")
+    .where("active = true")
+    .build()
+)
+```
+
+### Type-Safe Async Code
+
+```python
+from typing import Awaitable
+import asyncio
+
+# Type-safe async function
+async def fetch_user(user_id: int) -> User:
+    """Fetch user asynchronously."""
+    await asyncio.sleep(0.1)  # Simulate I/O
+    return User(id=user_id, name="Alice")
+
+# Type-safe concurrent execution
+async def fetch_multiple(user_ids: list[int]) -> list[User]:
+    """Fetch multiple users concurrently."""
+    async with asyncio.TaskGroup() as tg:
+        tasks = [tg.create_task(fetch_user(uid)) for uid in user_ids]
+    return [task.result() for task in tasks]
+
+# Generic async wrapper with timeout
+async def with_timeout[T](coro: Awaitable[T], timeout: float) -> T:
+    """Execute coroutine with timeout. Type-safe return value."""
+    async with asyncio.timeout(timeout):
+        return await coro
+```
+
+## Development Workflow
+
+### 1. Configure Strict Type Checking
+
+**pyproject.toml** (for mypy):
+```toml
+[tool.mypy]
+python_version = "3.14"
+strict = true
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+disallow_any_generics = true
+```
+
+**pyrightconfig.json** (for pyright):
+```json
+{
+  "typeCheckingMode": "strict",
+  "pythonVersion": "3.14",
+  "reportMissingTypeStubs": false
+}
+```
+
+### 2. Run Type Checkers in Development
 
 ```bash
-# In CI pipeline
-mypy src/
-pyright src/
+# Fast type checking with pyright
+pyright .
+
+# Comprehensive checking with mypy
+mypy .
+
+# Run before commit
+git commit && pyright && mypy
 ```
 
-This comprehensive guide covers type safety patterns essential for writing robust, maintainable Python code.
+### 3. Fix Type Errors Progressively
+
+```python
+# Start with basic types
+def process(data):  # No types
+    return data
+
+# Add function signature
+def process(data: dict) -> dict:
+    return data
+
+# Add specific types
+def process(data: dict[str, int]) -> dict[str, str]:
+    return {k: str(v) for k, v in data.items()}
+
+# Add TypedDict for structure
+class InputData(TypedDict):
+    user_id: int
+    count: int
+
+class OutputData(TypedDict):
+    user_id: str
+    count: str
+
+def process(data: InputData) -> OutputData:
+    return {
+        "user_id": str(data["user_id"]),
+        "count": str(data["count"]),
+    }
+```
+
+### 4. Use Type Checkers in CI/CD
+
+```yaml
+# .github/workflows/ci.yml
+- name: Type checking
+  run: |
+    pip install mypy pyright
+    mypy src/
+    pyright src/
+```
+
+## Common Type Safety Pitfalls
+
+### Pitfall 1: Using Any Instead of Unknown Types
+
+```python
+from typing import Any
+
+# ❌ Bad: Disables type checking
+def process_json(data: Any) -> Any:
+    return data["result"]
+
+# ✅ Good: Use TypedDict for structure
+class JsonResponse(TypedDict):
+    result: str
+    status: int
+
+def process_json(data: JsonResponse) -> str:
+    return data["result"]
+```
+
+### Pitfall 2: Ignoring None in Union Types
+
+```python
+# ❌ Bad: Assumes value is never None
+def get_length(text: str | None) -> int:
+    return len(text)  # Crashes if None!
+
+# ✅ Good: Handle None explicitly
+def get_length(text: str | None) -> int:
+    return len(text) if text is not None else 0
+```
+
+### Pitfall 3: Not Using Specific Collection Types
+
+```python
+# ❌ Bad: Generic list/dict
+def process_users(users: list) -> dict:
+    return {user["id"]: user for user in users}
+
+# ✅ Good: Specific types
+class User(TypedDict):
+    id: int
+    name: str
+
+def process_users(users: list[User]) -> dict[int, User]:
+    return {user["id"]: user for user in users}
+```
+
+### Pitfall 4: Silent Type: ignore Comments
+
+```python
+# ❌ Bad: Hiding real type errors
+result = unsafe_operation()  # type: ignore
+
+# ✅ Good: Fix the underlying issue or use specific ignores
+result = unsafe_operation()  # type: ignore[no-untyped-call]
+# TODO: Add types to unsafe_operation()
+```
+
+## Quick Reference: Type Safety Checklist
+
+✅ **Always do**:
+- Add type hints to all functions (parameters and return types)
+- Handle `None` explicitly with type narrowing
+- Use `TypedDict` for dictionary structures
+- Use `Literal` for fixed string/int values
+- Use `Protocol` for duck-typed interfaces
+- Run type checkers (`pyright` or `mypy`) before committing
+- Configure strict type checking in CI/CD
+
+❌ **Never do**:
+- Return `None` on errors (raise exceptions instead)
+- Use `Any` when you can use specific types
+- Ignore type errors with `# type: ignore` without investigation
+- Use mutable default arguments
+- Skip type hints on public APIs
+- Disable type checking for entire modules
+
+## Summary
+
+Type hints are your first line of defense against bugs. They:
+
+1. **Catch bugs at development time** - Before code runs
+2. **Document expected types** - Self-documenting code
+3. **Enable better IDE support** - Autocomplete, refactoring
+4. **Prevent None crashes** - Force explicit None handling
+5. **Catch typos** - Dictionary keys, attribute names
+6. **Ensure API contracts** - Function signatures enforced
+
+**The type checker is your automated code reviewer** - use it to catch bugs before they reach production.
