@@ -105,31 +105,15 @@ async def fetch_all(urls: list[str]) -> list[dict[str, str]]:
     async with asyncio.TaskGroup() as tg:
         tasks = [tg.create_task(fetch_data(url)) for url in urls]
     return [t.result() for t in tasks]
-
-# Async context managers
-class AsyncDatabase:
-    async def __aenter__(self) -> 'AsyncDatabase':
-        await self.connect()
-        return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
-        await self.disconnect()
-
-async def use_db() -> None:
-    async with AsyncDatabase() as db:
-        await db.query("SELECT * FROM users")
-
-# Async generators
-async def stream_results(query: str) -> AsyncIterator[dict[str, str]]:
-    """Yield results asynchronously."""
-    for i in range(10):
-        await asyncio.sleep(0.1)
-        yield {"result": i}
-
-async def process_stream() -> None:
-    async for result in stream_results("SELECT ..."):
-        print(result)
 ```
+
+**For comprehensive async patterns**, see [async-patterns.md](async-patterns.md):
+- Async context managers, generators, iterators
+- Synchronization primitives (Lock, Semaphore, Event, Queue)
+- Timeouts with `asyncio.timeout()` and `wait_for()`
+- Error handling, task cancellation, exception groups
+- Common patterns (rate limiting, connection pools, background tasks)
+- Testing async code with pytest-asyncio
 
 ### Error Handling - Specific and Explicit
 
@@ -377,6 +361,7 @@ Categories: {", ".join(categories)}
 """
 ```
 
+
 ### Walrus Operator for Assignment in Expressions
 
 ```python
@@ -492,100 +477,54 @@ def expensive_computation(param: str) -> dict[str, str]:
     return result
 ```
 
-## Python 3.14+ Specific Features
+## Python 3.14+ Awareness
 
-### JIT Compiler (Experimental)
-
-```python
-# Enable with: python --jit or PYTHON_JIT=1
-# 10-20% performance improvement for many workloads
-# No code changes needed - automatic optimization
-
-def compute_intensive(data: list[int]) -> int:
-    """JIT compiles hot paths automatically."""
-    return sum(x * 2 for x in data if x % 2 == 0)
-
-# Runs significantly faster with JIT enabled
-result = compute_intensive(range(10_000_000))
-```
-
-### Enhanced Pattern Matching
+### Forward References Without Quotes
 
 ```python
-# Dict unpacking in patterns
-def process(event: dict) -> str:
-    match event:
-        case {"type": "user", "action": "create", **data}:
-            return f"Creating user: {data}"
-        case {"type": "order", "items": items} if len(items) > 10:
-            return "Bulk order"
-        case _:
-            return "Other"
+# Python 3.14+ defers annotation evaluation by default
+# This means forward references work without quotes
+
+class Node:
+    """Self-referencing class - works in 3.14+ without quotes."""
+    def add_child(self, child: Node) -> None:  # ✅ No quotes needed in 3.14+
+        self.children.append(child)
+
+# For compatibility with Python 3.10-3.13, still use quotes:
+class NodeCompat:
+    """Self-referencing class - compatible with all versions."""
+    def add_child(self, child: "NodeCompat") -> None:  # ✅ Works everywhere
+        self.children.append(child)
+
+# AGENT GUIDANCE: Use quotes for forward references unless project requires 3.14+
 ```
 
-### Improved Async Support
+### Experimental Features (Not for Production Use)
 
 ```python
-# Better async timeout API
-async def fetch_with_timeout[T](coro: Awaitable[T], timeout: float) -> T:
-    """Generic timeout with full type safety."""
-    async with asyncio.timeout(timeout):
-        return await coro
+# Python 3.14 includes experimental features that agents should NOT recommend:
 
-# Enhanced error handling in TaskGroup
-async def fetch_multiple(urls: list[str]) -> list[str]:
-    async with asyncio.TaskGroup() as tg:
-        tasks = [tg.create_task(fetch(url)) for url in urls]
-    # Better cancellation propagation
-    return [t.result() for t in tasks]
-```
+# ❌ JIT Compiler (-X jit flag)
+# - Experimental, mixed results (~8% faster overall, but often slower)
+# - Not production-ready as of Python 3.14
+# - Agents should NOT suggest using this
 
-## Development Workflow
+# ❌ Free-threading (No-GIL build)
+# - Requires special Python build (python3.14t)
+# - Not available in standard environments
+# - Agents should NOT write code assuming this
 
-### Type Checking
+# ❌ T-strings (template string literals)
+# - Too new, most projects on Python 3.10-3.13
+# - Agents should NOT use t"..." syntax
 
-```bash
-# Always use type checker in development
-pyright .        # Fast, strict type checker
-mypy .           # Alternative type checker
-```
-
-### Linting and Formatting
-
-```bash
-# Use ruff for fast linting and formatting
-ruff check .     # Lint code
-ruff format .    # Format code
-```
-
-### Testing
-
-```python
-import pytest
-from typing import AsyncIterator
-
-# Type-hinted tests
-def test_user_creation() -> None:
-    """Test with type hints."""
-    user = create_user(name="Alice", age=30)
-    assert user["name"] == "Alice"
-
-# Async tests
-@pytest.mark.asyncio
-async def test_async_operation() -> None:
-    """Async test with pytest-asyncio."""
-    result = await fetch_data("http://example.com")
-    assert result["status"] == "ok"
-
-# Fixtures with type hints
-@pytest.fixture
-def user_data() -> dict[str, str | int]:
-    return {"name": "Alice", "age": 30}
+# AGENT GUIDANCE: Stick to stable, widely-supported features (3.10-3.13)
+# Only use 3.14-specific features if project explicitly requires Python 3.14+
 ```
 
 ## Summary of Essential Modern Features
 
-**Always Use**:
+**Always Use** (Python 3.10+ compatible):
 - Type hints everywhere (functions, classes, variables)
 - Dataclasses with `slots=True` for data models
 - Pattern matching for complex conditionals
@@ -594,10 +533,7 @@ def user_data() -> dict[str, str | int]:
 - Pathlib for file operations
 - F-strings for string formatting
 - Comprehensions over loops
-
-**Python 3.10+**:
 - Union types with `|` instead of `Union`
-- Pattern matching with `match/case`
 
 **Python 3.11+**:
 - Exception groups with `except*`
@@ -612,8 +548,18 @@ def user_data() -> dict[str, str | int]:
 - `TypedDict` with `Unpack` for `**kwargs`
 
 **Python 3.14+**:
-- JIT compiler for performance (experimental)
-- Enhanced pattern matching
-- Improved async/await support
+- Forward references without quotes (automatic deferred evaluation)
+- ❌ **Do NOT use**: JIT compiler, free-threading, t-strings (experimental/requires opt-in)
 
-Focus on writing clean, type-safe, idiomatic Python code using these modern features for better performance, maintainability, and developer experience.
+**Agent Guidelines**:
+- Default to Python 3.10-3.13 compatibility unless project specifies 3.14+
+- Use quotes for forward references for broader compatibility
+- Avoid experimental features (JIT, no-GIL, t-strings)
+- Focus on stable, widely-supported patterns
+
+Focus on writing clean, type-safe, idiomatic Python code using production-ready features for better performance, maintainability, and developer experience.
+
+## Related References
+
+- **[async-patterns.md](async-patterns.md)** - Comprehensive async/await patterns, TaskGroup, timeouts, error handling
+- **[type-safety-patterns.md](type-safety-patterns.md)** - Type safety, fail-fast principles, input validation, error handling

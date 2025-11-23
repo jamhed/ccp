@@ -60,7 +60,6 @@ When working with FastAPI, Django, or Flask:
 
 **References**:
 - [references/fastapi-patterns.md](references/fastapi-patterns.md)
-- [references/django-patterns.md](references/django-patterns.md)
 
 ## When to Use This Skill
 
@@ -260,49 +259,26 @@ The assistant adapts based on the codebase:
 
 ## Fail-Fast and Early Development Principles
 
-### Fail-Fast Practices
-
 **CRITICAL**: Apply fail-fast principles to catch errors early and prevent silent failures.
 
-- ✅ **Validate inputs early**: Check preconditions at function entry, fail immediately on invalid input
-- ✅ **Fail loudly**: Raise specific exceptions with clear messages instead of returning None/False
-- ✅ **No silent errors**: Never catch exceptions without logging or re-raising
-- ✅ **Strict validation**: Use Pydantic `strict=True`, no lenient defaults
-- ✅ **Early detection**: Use assertions for invariants (disabled in production)
-- ✅ **No default fallbacks**: Don't silently fall back to defaults when operations fail
+**Fail-Fast Summary**:
+- ✅ Validate inputs early at function entry
+- ✅ Fail loudly with specific exceptions (not None/False)
+- ✅ No silent errors (no catch-and-ignore)
+- ✅ Strict validation (Pydantic `strict=True`)
 
-**Examples**:
-```python
-# ❌ BAD: Silent failure
-def get_user(user_id: int) -> User | None:
-    try:
-        return db.query(User).filter(User.id == user_id).first()
-    except Exception:
-        return None  # Silently hides errors
+**Early Development**:
+- ✅ Start simple, add complexity when needed
+- ✅ Test immediately after implementation
+- ✅ Iterate quickly, refactor fearlessly
 
-# ✅ GOOD: Fail-fast with clear error
-def get_user(user_id: int) -> User:
-    if user_id <= 0:
-        raise ValueError(f"Invalid user_id: {user_id}")
-
-    user = db.query(User).filter(User.id == user_id).first()
-    if user is None:
-        raise UserNotFoundError(f"User {user_id} not found")
-    return user
-```
-
-### Early Development Practices
-
-- ✅ **Start simple**: Build minimum viable solution first, add complexity only when needed
-- ✅ **Test immediately**: Write test before or right after implementation, run it
-- ✅ **Iterate quickly**: Get working code fast, then refine
-- ✅ **Validate assumptions**: Test edge cases early, don't wait for integration
-- ✅ **Refactor fearlessly**: If design is wrong, fix it now (especially for features < 3 months old)
-
-**When NOT to Fail-Fast**:
-- User-facing operations (provide graceful degradation with clear error messages)
-- Network/IO operations (retry with exponential backoff)
-- Optional features (log warning and continue)
+**For comprehensive fail-fast patterns and examples**, see [references/type-safety-patterns.md](references/type-safety-patterns.md):
+- Input validation strategies
+- Error handling patterns
+- Type narrowing and strict checks
+- Avoiding defensive programming
+- Validation at construction time
+- Type-safe error handling
 
 ## Key Principles (2025)
 

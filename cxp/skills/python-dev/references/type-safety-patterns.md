@@ -2,6 +2,8 @@
 
 Guide to writing type-safe Python code that fails early and loudly. Type hints + strict validation = bugs caught at development time, not production.
 
+**For Python syntax and features**, see [modern-python-2025.md](modern-python-2025.md). This document focuses on validation, error handling, and fail-fast patterns.
+
 ## Core Principle: Fail Early, Fail Loudly
 
 ```python
@@ -786,16 +788,6 @@ ignore_missing_imports = false  # Fail on missing type stubs
   "reportUntypedClassDecorator": "error"
 }
 ```
-
-**Aligned checks** (both type checkers enforce):
-- ✅ All functions must have type hints
-- ✅ Fail on missing type stubs/imports
-- ✅ Warn about unreachable code
-- ✅ Warn about unnecessary casts
-- ✅ Warn about unused type ignore comments
-- ✅ Strict None/Optional checking
-- ✅ No bare generics (List vs list[T])
-- ✅ Catch missing return statements
 
 ## Fail-Fast Checklist for Code Review
 

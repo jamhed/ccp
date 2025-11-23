@@ -2,6 +2,8 @@
 
 Comprehensive guide to asynchronous programming in Python using async/await with asyncio, including Python 3.14+ improvements.
 
+**For Python syntax and features**, see [modern-python-2025.md](modern-python-2025.md). This document focuses on async/await patterns, best practices, and production-ready code.
+
 ## Python 3.14+ Async Improvements
 
 ### Enhanced asyncio.timeout() (3.14+)
