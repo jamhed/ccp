@@ -1,295 +1,428 @@
-# Safe Development with Python Types
+# Type Safety with Fail-Fast Principles
 
-Practical guide to catching bugs early and writing safer Python code using type hints and type checkers (mypy/pyright).
+Guide to writing type-safe Python code that fails early and loudly. Type hints + strict validation = bugs caught at development time, not production.
 
-## Why Type Safety Matters
-
-Type hints help catch bugs before runtime:
+## Core Principle: Fail Early, Fail Loudly
 
 ```python
-# Without types - bug discovered at runtime
-def get_user_age(user):
-    return user["age"] * 2  # Oops, multiplying age by 2
-
-age = get_user_age({"name": "Alice"})  # KeyError at runtime!
-
-# With types - bug caught by type checker
-def get_user_age(user: dict[str, int]) -> int:
-    return user["age"] * 2  # Type checker: "age" key might not exist
-
-# Better - explicit structure
-from typing import TypedDict
-
-class User(TypedDict):
-    name: str
-    age: int
-
-def get_user_age(user: User) -> int:
-    return user["age"]  # Type-safe: "age" is guaranteed to exist
-
-# Type checker catches this before you run code
-get_user_age({"name": "Alice"})  # ❌ Error: Missing "age" key
-```
-
-## Essential Type Safety Patterns
-
-### 1. Handle None Explicitly
-
-```python
-# Unsafe - crashes if user not found
-def get_user_name(user_id: int) -> str:
+# ❌ WRONG: Silent failures hide bugs
+def get_user_age(user_id: int) -> int:
     user = find_user(user_id)  # Returns User | None
-    return user["name"]  # ❌ Type error: might be None
+    if user is None:
+        return 0  # Silent failure - hides missing user!
+    return user["age"]
 
-# Safe - handle None case
-def get_user_name(user_id: int) -> str:
+# ✅ CORRECT: Fail immediately with clear error
+def get_user_age(user_id: int) -> int:
     user = find_user(user_id)
     if user is None:
-        return "Unknown"
-    return user["name"]  # ✅ Type narrowed to User
-
-# Or use default
-def get_user_name_alt(user_id: int) -> str:
-    user = find_user(user_id)
-    return user["name"] if user else "Unknown"
+        raise ValueError(f"User {user_id} not found")  # Fail loudly
+    return user["age"]
 ```
 
-### 2. Type Narrow with isinstance()
+**Why fail-fast matters**: Silent failures let bugs propagate. By the time you discover `age=0` is wrong, you're far from the root cause. Failing immediately shows exactly where and why.
+
+## Essential Patterns for Safe Code
+
+### 1. Validate Inputs Immediately
 
 ```python
-# Unsafe - assumes type without checking
-def process_value(value: int | str | None) -> str:
-    return value.upper()  # ❌ Error: int has no upper(), None crashes
+# ❌ WRONG: Accept anything, hope it's valid
+def process_user_data(data: dict) -> None:
+    # Process data without validation
+    user_id = data.get("id", 0)  # Defaults hide missing data
+    email = data.get("email", "")  # Empty string is not valid!
 
-# Safe - check type before using
-def process_value(value: int | str | None) -> str:
-    if value is None:
-        return "empty"
+# ✅ CORRECT: Validate structure at boundary
+from typing import TypedDict
 
-    if isinstance(value, int):
-        return f"number: {value}"
-
-    # Type checker knows value is str here
-    return f"text: {value.upper()}"
-```
-
-### 3. Use TypedDict for Dictionaries
-
-```python
-from typing import TypedDict, NotRequired
-
-# Unsafe - no structure validation
-def create_user(data: dict) -> dict:  # What keys? What types?
-    return {
-        "id": data["user_id"],  # Might be "id" not "user_id"
-        "email": data["email"].lower(),  # Might not be string
-    }
-
-# Safe - explicit structure
-class UserInput(TypedDict):
-    user_id: int
-    email: str
-    phone: NotRequired[str]  # Optional field
-
-class UserOutput(TypedDict):
+class UserData(TypedDict):
     id: int
     email: str
+    name: str
 
-def create_user(data: UserInput) -> UserOutput:
-    return {
-        "id": data["user_id"],
-        "email": data["email"].lower(),
-    }
+def process_user_data(data: UserData) -> None:
+    """Process user data. Type checker ensures structure is correct."""
+    # No validation needed - TypedDict guarantees structure
+    user_id = data["id"]  # Type checker ensures this exists
+    email = data["email"]  # Type checker ensures this is str
 
-# Type checker validates at call site
-create_user({"user_id": 1, "email": "user@example.com"})  # ✅
-create_user({"id": 1, "email": "user@example.com"})  # ❌ Wrong key
-create_user({"user_id": "1", "email": "user@example.com"})  # ❌ Wrong type
+# At system boundary (API, CLI, file input), validate early:
+def handle_request(raw_data: dict) -> None:
+    """Validate at boundary, then pass typed data internally."""
+    # Fail fast if structure is wrong
+    if "id" not in raw_data:
+        raise ValueError("Missing required field: id")
+    if "email" not in raw_data:
+        raise ValueError("Missing required field: email")
+    if not isinstance(raw_data["id"], int):
+        raise TypeError(f"id must be int, got {type(raw_data['id'])}")
+
+    # Now safe to cast - structure validated
+    validated: UserData = raw_data  # type: ignore[assignment]
+    process_user_data(validated)
 ```
 
-### 4. Never Return None on Errors
+### 2. Never Return None on Errors
 
 ```python
-# Unsafe - errors hidden by None
+# ❌ WRONG: Returning None hides errors
 def parse_config(path: str) -> dict[str, str] | None:
     try:
         with open(path) as f:
             return json.load(f)
     except Exception:
-        return None  # ❌ Lost error information
+        return None  # Lost all error information!
 
-# Safe - raise exceptions for errors
+# Caller doesn't know what went wrong:
+config = parse_config("config.json")
+if config is None:
+    # Was it missing file? Parse error? Permission denied? Unknown!
+    config = {}  # Wrong - hides real problem
+
+# ✅ CORRECT: Raise exceptions with context
 def parse_config(path: str) -> dict[str, str]:
-    """Parse config file. Raises FileNotFoundError or JSONDecodeError."""
-    with open(path) as f:
-        return json.load(f)  # Let exceptions propagate
+    """
+    Parse config file.
 
-# Caller handles errors explicitly
+    Raises:
+        FileNotFoundError: Config file not found
+        JSONDecodeError: Invalid JSON syntax
+        ValueError: Config has wrong structure
+    """
+    try:
+        with open(path) as f:
+            data = json.load(f)
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"Config file not found: {path}") from e
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON in {path}: {e}") from e
+
+    # Validate structure
+    if not isinstance(data, dict):
+        raise ValueError(f"Config must be dict, got {type(data)}")
+
+    return data
+
+# Caller handles specific errors explicitly:
 try:
     config = parse_config("config.json")
 except FileNotFoundError:
-    config = get_default_config()
-except json.JSONDecodeError as e:
-    raise ValueError(f"Invalid config: {e}") from e
+    # Specific handling for missing file
+    raise RuntimeError("Config file required for startup") from None
+except ValueError as e:
+    # Specific handling for invalid config
+    raise RuntimeError(f"Invalid configuration: {e}") from e
 ```
 
-### 5. Use Literal for Fixed Values
+### 3. Validate at System Boundaries
+
+```python
+# ❌ WRONG: Trust external data
+def create_user(request_data: dict) -> User:
+    # Assume data is valid
+    user = User(
+        email=request_data["email"],  # Might not exist
+        age=request_data["age"]  # Might be string "25"
+    )
+    return user
+
+# ✅ CORRECT: Validate external data immediately
+from typing import TypedDict
+
+class CreateUserRequest(TypedDict):
+    email: str
+    age: int
+    name: str
+
+def validate_create_user_request(data: dict) -> CreateUserRequest:
+    """
+    Validate external request data.
+
+    Raises:
+        ValueError: Missing required field or invalid type
+    """
+    # Check required fields exist
+    required = {"email", "age", "name"}
+    missing = required - set(data.keys())
+    if missing:
+        raise ValueError(f"Missing required fields: {missing}")
+
+    # Validate types
+    if not isinstance(data["email"], str):
+        raise ValueError(f"email must be str, got {type(data['email'])}")
+    if not isinstance(data["age"], int):
+        raise ValueError(f"age must be int, got {type(data['age'])}")
+    if not isinstance(data["name"], str):
+        raise ValueError(f"name must be str, got {type(data['name'])}")
+
+    # Validate values
+    if not data["email"] or "@" not in data["email"]:
+        raise ValueError(f"Invalid email: {data['email']}")
+    if data["age"] < 0 or data["age"] > 150:
+        raise ValueError(f"Invalid age: {data['age']}")
+
+    return data  # type: ignore[return-value]
+
+def create_user(request_data: dict) -> User:
+    """Create user from external request."""
+    # Validate at boundary - fail fast if invalid
+    validated = validate_create_user_request(request_data)
+
+    # Now safe to use - guaranteed valid structure
+    user = User(
+        email=validated["email"],
+        age=validated["age"],
+        name=validated["name"]
+    )
+    return user
+```
+
+### 4. No Defensive Defaults - Fail Instead
+
+```python
+# ❌ WRONG: Defensive defaults hide missing data
+def get_user_email(user_id: int) -> str:
+    user = db.get_user(user_id)
+    return user["email"] if user else ""  # Empty string hides missing user!
+
+def send_notification(user_id: int) -> None:
+    email = get_user_email(user_id)
+    if email:  # Silently skips if empty
+        send_email(email, "notification")
+    # Bug: User exists but has no email? Or user doesn't exist? Unknown!
+
+# ✅ CORRECT: Fail if data is missing
+def get_user_email(user_id: int) -> str:
+    """
+    Get user email.
+
+    Raises:
+        ValueError: User not found
+    """
+    user = db.get_user(user_id)
+    if user is None:
+        raise ValueError(f"User {user_id} not found")
+    if "email" not in user:
+        raise ValueError(f"User {user_id} has no email")
+    return user["email"]
+
+def send_notification(user_id: int) -> None:
+    """Send notification. Fails if user not found or has no email."""
+    email = get_user_email(user_id)  # Raises if invalid
+    send_email(email, "notification")
+```
+
+### 5. Type Narrowing with Strict Checks
+
+```python
+# ❌ WRONG: Lenient type handling
+def process_value(value: int | str | None) -> str:
+    # Convert everything to string
+    return str(value) if value is not None else "null"
+    # Loses distinction between 0 and None, "" and None
+
+# ✅ CORRECT: Strict type handling with clear errors
+def process_value(value: int | str | None) -> str:
+    """
+    Process value with strict type handling.
+
+    Raises:
+        ValueError: Value is None (not allowed)
+    """
+    if value is None:
+        raise ValueError("Value cannot be None")  # Fail fast
+
+    if isinstance(value, int):
+        return f"number:{value}"
+
+    # Type checker knows value is str here
+    return f"text:{value}"
+
+# Caller must handle None explicitly:
+def handle_input(input_value: int | str | None) -> None:
+    if input_value is None:
+        raise ValueError("Input is required")  # Fail at boundary
+    result = process_value(input_value)  # Safe - not None
+```
+
+### 6. Literal Types for Strict Validation
 
 ```python
 from typing import Literal
 
-# Unsafe - accepts any string
+# ❌ WRONG: Runtime validation only
 def set_log_level(level: str) -> None:
-    if level not in ("DEBUG", "INFO", "ERROR"):  # Runtime check
-        raise ValueError(f"Invalid level: {level}")
+    # Accepts any string, validates at runtime
+    if level not in ("DEBUG", "INFO", "ERROR"):
+        level = "INFO"  # Silent default hides typo!
+    logger.setLevel(level)
 
-# Safe - type checker enforces valid values
+# ✅ CORRECT: Type-checked at development time
 LogLevel = Literal["DEBUG", "INFO", "ERROR"]
 
 def set_log_level(level: LogLevel) -> None:
-    # No runtime check needed - type checker ensures correctness
-    print(f"Setting level: {level}")
+    """Set log level. Type checker ensures valid value."""
+    logger.setLevel(level)  # No runtime check needed
 
-set_log_level("DEBUG")    # ✅
-set_log_level("INVALID")  # ❌ Type error at development time
+# Type checker catches typos:
+set_log_level("DEBUG")   # ✅
+set_log_level("DEBGU")   # ❌ Type error at development time
+
+# For external input, validate explicitly:
+def set_log_level_from_input(level_str: str) -> None:
+    """Set log level from external input."""
+    valid_levels: set[LogLevel] = {"DEBUG", "INFO", "ERROR"}
+    if level_str not in valid_levels:
+        raise ValueError(
+            f"Invalid log level: {level_str}. "
+            f"Must be one of: {', '.join(valid_levels)}"
+        )
+    set_log_level(level_str)  # type: ignore[arg-type]
 ```
 
-### 6. Protocol for Interface Safety
+### 7. Protocol for Interface Enforcement
 
 ```python
 from typing import Protocol
 
-# Unsafe - accepts anything, hopes it has .save()
+# ❌ WRONG: Duck typing without verification
 def save_all(items: list) -> None:
     for item in items:
-        item.save()  # ❌ What if item has no save()?
+        item.save()  # Hope it has save()!
 
-# Safe - define required interface
+# ✅ CORRECT: Protocol enforces interface
 class Saveable(Protocol):
-    def save(self) -> None: ...
+    def save(self) -> None:
+        """Save the item."""
+        ...
 
 def save_all(items: list[Saveable]) -> None:
+    """Save all items. Type checker ensures all have save()."""
     for item in items:
-        item.save()  # ✅ Type checker ensures save() exists
+        item.save()  # Type-safe
 
-# Any class with save() method works
+# Type checker catches missing methods:
 class User:
     def save(self) -> None:
-        print("Saving user")
+        db.save_user(self)
 
 class Document:
-    def save(self) -> None:
-        print("Saving document")
+    pass  # No save() method
 
-save_all([User(), Document()])  # ✅ Both have save()
+save_all([User()])  # ✅
+save_all([Document()])  # ❌ Type error: Document not Saveable
 ```
 
-### 7. Generic Functions for Type Preservation
+## Catching Bugs with Fail-Fast + Types
+
+### Bug: Silent None Handling
 
 ```python
-from typing import TypeVar
+# ❌ BUG: Returns 0 when user not found - hides error
+def get_user_age_defensive(user_id: int) -> int:
+    user = db.get_user(user_id)
+    if user is None:
+        return 0  # Silent default
+    return user.get("age", 0)  # More silent defaults!
 
-T = TypeVar('T')
+# Causes bug far from root cause:
+age = get_user_age_defensive(999)  # Returns 0
+if age < 18:
+    # Wrong! User doesn't exist, but we treat as age=0
+    restrict_access()
 
-# Unsafe - loses type information
-def get_first_unsafe(items: list) -> object | None:
-    return items[0] if items else None
+# ✅ FIXED: Fail immediately at source
+def get_user_age(user_id: int) -> int:
+    """
+    Get user age.
 
-result = get_first_unsafe([1, 2, 3])  # Type: object | None
-# result + 5  # ❌ Can't add int to object
-
-# Safe - preserves type
-def get_first(items: list[T]) -> T | None:
-    return items[0] if items else None
-
-result = get_first([1, 2, 3])  # Type: int | None
-if result is not None:
-    value = result + 5  # ✅ Type checker knows it's int
-```
-
-## Catching Common Bugs with Types
-
-### Bug: Forgetting to Check None
-
-```python
-# Bug: crashes if user not found
-def get_email(user_id: int) -> str:
-    user = db.get_user(user_id)  # Returns User | None
-    return user.email  # ❌ AttributeError if None
-
-# Fixed: type checker forces None check
-def get_email(user_id: int) -> str:
+    Raises:
+        ValueError: User not found or has no age
+    """
     user = db.get_user(user_id)
     if user is None:
         raise ValueError(f"User {user_id} not found")
-    return user.email  # ✅ Type narrowed to User
+    if "age" not in user:
+        raise ValueError(f"User {user_id} has no age field")
+    return user["age"]
+
+# Caller handles error explicitly:
+try:
+    age = get_user_age(999)
+    if age < 18:
+        restrict_access()
+except ValueError as e:
+    # Clear error: user not found
+    logger.error(f"Cannot check age: {e}")
+    deny_access()  # Correct behavior
 ```
 
-### Bug: Mixing Incompatible Types
+### Bug: Accepting Invalid Input
 
 ```python
-# Bug: accidentally passing wrong type
+# ❌ BUG: Accepts negative prices
 def calculate_discount(price: float, percent: float) -> float:
     return price * (1 - percent)
 
-discount = calculate_discount(100, "10%")  # ❌ Type error: str is not float
-# Would crash at runtime with: TypeError: can't multiply sequence
+# Caller can pass invalid values:
+discount = calculate_discount(-100, 0.5)  # Negative price!
+discount = calculate_discount(100, 1.5)   # 150% discount!
 
-# Fixed: type checker prevents this at development time
-discount = calculate_discount(100, 0.10)  # ✅ Correct types
+# ✅ FIXED: Validate inputs immediately
+def calculate_discount(price: float, percent: float) -> float:
+    """
+    Calculate discounted price.
+
+    Args:
+        price: Original price (must be > 0)
+        percent: Discount percent (0.0 to 1.0)
+
+    Raises:
+        ValueError: Invalid price or percent
+    """
+    if price <= 0:
+        raise ValueError(f"Price must be positive, got {price}")
+    if not 0 <= percent <= 1:
+        raise ValueError(f"Percent must be 0-1, got {percent}")
+
+    return price * (1 - percent)
+
+# Catches bugs immediately:
+calculate_discount(-100, 0.5)  # ✅ Raises ValueError immediately
+calculate_discount(100, 1.5)   # ✅ Raises ValueError immediately
 ```
 
-### Bug: Wrong Dictionary Keys
+### Bug: Mutable Defaults
 
 ```python
-# Bug: typo in key name
-user_data = {"name": "Alice", "age": 30}
-email = user_data["email"]  # ❌ KeyError at runtime
-
-# Fixed with TypedDict
-from typing import TypedDict
-
-class UserData(TypedDict):
-    name: str
-    age: int
-
-user: UserData = {"name": "Alice", "age": 30}
-email = user["email"]  # ❌ Type error: "email" not in UserData
-```
-
-### Bug: Forgetting Return Value
-
-```python
-# Bug: forgot to return in some paths
-def get_status(active: bool) -> str:
-    if active:
-        return "active"
-    # ❌ Type error: Missing return statement
-    # Would return None at runtime
-
-# Fixed: type checker catches missing return
-def get_status(active: bool) -> str:
-    if active:
-        return "active"
-    return "inactive"  # ✅ All paths return str
-```
-
-### Bug: Mutating Shared State
-
-```python
-# Bug: mutable default argument
-def add_tag(tag: str, tags: list[str] = []) -> list[str]:  # ❌ Dangerous!
+# ❌ BUG: Shared mutable default
+def add_tag(tag: str, tags: list[str] = []) -> list[str]:
     tags.append(tag)
     return tags
 
 # Shared state bug:
 tags1 = add_tag("python")  # ["python"]
-tags2 = add_tag("go")      # ["python", "go"] - Oops!
+tags2 = add_tag("go")      # ["python", "go"] - Bug!
 
-# Fixed: type checker warns about mutable defaults (with strict settings)
+# ✅ FIXED: Fail if None, don't use mutable default
 def add_tag(tag: str, tags: list[str] | None = None) -> list[str]:
+    """
+    Add tag to list.
+
+    Args:
+        tag: Tag to add
+        tags: Existing tags (creates new list if None)
+
+    Raises:
+        ValueError: tag is empty
+    """
+    if not tag:
+        raise ValueError("Tag cannot be empty")
+
     if tags is None:
         tags = []
+
     tags.append(tag)
     return tags
 
@@ -297,280 +430,219 @@ tags1 = add_tag("python")  # ["python"]
 tags2 = add_tag("go")      # ["go"] - Correct
 ```
 
-## Advanced Safety Patterns
+## Advanced Fail-Fast Patterns
+
+### Validation at Construction
+
+```python
+from dataclasses import dataclass
+
+# ❌ WRONG: Allow invalid state
+@dataclass
+class User:
+    email: str
+    age: int
+
+# Can create invalid users:
+user = User(email="", age=-5)  # Invalid but allowed!
+
+# ✅ CORRECT: Validate in __post_init__
+@dataclass
+class User:
+    email: str
+    age: int
+
+    def __post_init__(self) -> None:
+        """Validate user data immediately after construction."""
+        if not self.email or "@" not in self.email:
+            raise ValueError(f"Invalid email: {self.email}")
+        if self.age < 0 or self.age > 150:
+            raise ValueError(f"Invalid age: {self.age}")
+
+# Fails immediately on construction:
+user = User(email="", age=30)     # ✅ Raises ValueError
+user = User(email="a@b.com", age=-5)  # ✅ Raises ValueError
+```
 
 ### Type-Safe Error Handling
 
 ```python
-# Define specific error types
+# ❌ WRONG: Generic exceptions
+def get_user(user_id: int) -> User:
+    user = db.query(user_id)
+    if not user:
+        raise Exception("Error")  # Vague, loses context
+
+# ✅ CORRECT: Specific exception types
 class UserError(Exception):
-    """User-related errors."""
+    """Base exception for user operations."""
     pass
 
-class NotFoundError(UserError):
-    """Resource not found."""
-    def __init__(self, resource: str, resource_id: int) -> None:
-        super().__init__(f"{resource} {resource_id} not found")
-        self.resource = resource
-        self.resource_id = resource_id
+class UserNotFoundError(UserError):
+    """User not found."""
+    def __init__(self, user_id: int) -> None:
+        super().__init__(f"User {user_id} not found")
+        self.user_id = user_id
 
-class ValidationError(UserError):
-    """Validation failed."""
-    def __init__(self, field: str, message: str) -> None:
-        super().__init__(f"{field}: {message}")
-        self.field = field
+class UserInvalidError(UserError):
+    """User data is invalid."""
+    def __init__(self, user_id: int, reason: str) -> None:
+        super().__init__(f"User {user_id} invalid: {reason}")
+        self.user_id = user_id
+        self.reason = reason
 
-# Type-safe error handling
 def get_user(user_id: int) -> User:
-    """Get user by ID. Raises NotFoundError if not found."""
-    user = db.query_user(user_id)
+    """
+    Get user by ID.
+
+    Raises:
+        UserNotFoundError: User doesn't exist
+        UserInvalidError: User data is invalid
+    """
+    if user_id <= 0:
+        raise ValueError(f"Invalid user_id: {user_id}")
+
+    user = db.query(user_id)
     if user is None:
-        raise NotFoundError("User", user_id)
+        raise UserNotFoundError(user_id)
+
+    if not user.get("email"):
+        raise UserInvalidError(user_id, "missing email")
+
     return user
 
-# Caller knows exactly what errors to expect
+# Caller can handle specific errors:
 try:
-    user = get_user(123)
-except NotFoundError as e:
-    print(f"User not found: {e.resource_id}")
-except ValidationError as e:
-    print(f"Validation failed: {e.field}")
+    user = get_user(user_id)
+except UserNotFoundError:
+    # Specific handling for not found
+    create_default_user(user_id)
+except UserInvalidError as e:
+    # Specific handling for invalid data
+    logger.error(f"Invalid user: {e.reason}")
+    raise
 ```
 
-### Type-Safe Builder Pattern
+### Strict Async Validation
 
 ```python
-from typing import Self
-
-class QueryBuilder:
-    """Type-safe query builder."""
-
-    def __init__(self) -> None:
-        self._table: str | None = None
-        self._where: list[str] = []
-
-    def table(self, name: str) -> Self:
-        """Set table name. Returns self for chaining."""
-        self._table = name
-        return self
-
-    def where(self, condition: str) -> Self:
-        """Add where condition. Returns self for chaining."""
-        self._where.append(condition)
-        return self
-
-    def build(self) -> str:
-        """Build query. Raises ValueError if table not set."""
-        if self._table is None:
-            raise ValueError("Table not set")
-
-        query = f"SELECT * FROM {self._table}"
-        if self._where:
-            query += " WHERE " + " AND ".join(self._where)
-        return query
-
-# Type-safe method chaining
-query = (
-    QueryBuilder()
-    .table("users")
-    .where("age > 18")
-    .where("active = true")
-    .build()
-)
-```
-
-### Type-Safe Async Code
-
-```python
-from typing import Awaitable
 import asyncio
+from typing import Awaitable
 
-# Type-safe async function
-async def fetch_user(user_id: int) -> User:
-    """Fetch user asynchronously."""
-    await asyncio.sleep(0.1)  # Simulate I/O
-    return User(id=user_id, name="Alice")
+# ❌ WRONG: Silent timeout handling
+async def fetch_with_timeout(url: str, timeout: float = 5.0) -> dict | None:
+    try:
+        async with asyncio.timeout(timeout):
+            return await fetch(url)
+    except asyncio.TimeoutError:
+        return None  # Silent failure!
 
-# Type-safe concurrent execution
-async def fetch_multiple(user_ids: list[int]) -> list[User]:
-    """Fetch multiple users concurrently."""
-    async with asyncio.TaskGroup() as tg:
-        tasks = [tg.create_task(fetch_user(uid)) for uid in user_ids]
-    return [task.result() for task in tasks]
+# ✅ CORRECT: Fail loudly on timeout
+async def fetch_with_timeout(url: str, timeout: float = 5.0) -> dict:
+    """
+    Fetch URL with timeout.
 
-# Generic async wrapper with timeout
-async def with_timeout[T](coro: Awaitable[T], timeout: float) -> T:
-    """Execute coroutine with timeout. Type-safe return value."""
-    async with asyncio.timeout(timeout):
-        return await coro
+    Args:
+        url: URL to fetch
+        timeout: Timeout in seconds (must be > 0)
+
+    Raises:
+        ValueError: Invalid timeout
+        asyncio.TimeoutError: Request timed out
+    """
+    if timeout <= 0:
+        raise ValueError(f"Timeout must be positive, got {timeout}")
+
+    try:
+        async with asyncio.timeout(timeout):
+            return await fetch(url)
+    except asyncio.TimeoutError as e:
+        raise asyncio.TimeoutError(
+            f"Request to {url} timed out after {timeout}s"
+        ) from e
+
+# Caller handles timeout explicitly:
+try:
+    data = await fetch_with_timeout(url, timeout=5.0)
+except asyncio.TimeoutError:
+    logger.error("Timeout - will retry")
+    raise
 ```
 
-## Development Workflow
+## Type Checker Configuration for Fail-Fast
 
-### 1. Configure Strict Type Checking
-
-**pyproject.toml** (for mypy):
+**pyproject.toml** (strict settings):
 ```toml
 [tool.mypy]
 python_version = "3.14"
 strict = true
 warn_return_any = true
 warn_unused_ignores = true
+warn_unreachable = true
 disallow_untyped_defs = true
 disallow_any_generics = true
+no_implicit_optional = true
+strict_optional = true
+warn_redundant_casts = true
+
+# Fail on missing imports
+ignore_missing_imports = false
 ```
 
-**pyrightconfig.json** (for pyright):
+**pyrightconfig.json** (strict settings):
 ```json
 {
   "typeCheckingMode": "strict",
   "pythonVersion": "3.14",
-  "reportMissingTypeStubs": false
+  "reportMissingTypeStubs": true,
+  "reportUnknownParameterType": "error",
+  "reportUnknownArgumentType": "error",
+  "reportUnknownMemberType": "error",
+  "reportOptionalMemberAccess": "error"
 }
 ```
 
-### 2. Run Type Checkers in Development
+## Fail-Fast Checklist for Code Review
 
-```bash
-# Fast type checking with pyright
-pyright .
+✅ **Input Validation**:
+- [ ] All external inputs validated immediately at boundary
+- [ ] Invalid inputs raise exceptions (never return None/defaults)
+- [ ] Validation errors have clear messages
 
-# Comprehensive checking with mypy
-mypy .
+✅ **Error Handling**:
+- [ ] Never return None on errors - raise exceptions
+- [ ] Specific exception types (not generic Exception)
+- [ ] Exception messages include context (values, reasons)
+- [ ] No silent `try/except: pass`
 
-# Run before commit
-git commit && pyright && mypy
-```
+✅ **Type Safety**:
+- [ ] All functions have type hints
+- [ ] TypedDict used for dict structures
+- [ ] Literal types for fixed values
+- [ ] Protocol types for interfaces
 
-### 3. Fix Type Errors Progressively
+✅ **No Defensive Programming**:
+- [ ] No defensive defaults (empty strings, 0, empty lists)
+- [ ] No mutable default arguments
+- [ ] No lenient validation ("accept anything")
+- [ ] No silent error swallowing
 
-```python
-# Start with basic types
-def process(data):  # No types
-    return data
+✅ **Fail-Fast Principles**:
+- [ ] Validate early (at function entry, at construction)
+- [ ] Fail loudly (raise, don't return error codes)
+- [ ] Fail immediately (don't propagate invalid state)
+- [ ] Fail with context (helpful error messages)
 
-# Add function signature
-def process(data: dict) -> dict:
-    return data
+## Summary: Type Safety + Fail-Fast
 
-# Add specific types
-def process(data: dict[str, int]) -> dict[str, str]:
-    return {k: str(v) for k, v in data.items()}
+**Type hints catch bugs at development time. Fail-fast catches bugs at runtime - as early as possible.**
 
-# Add TypedDict for structure
-class InputData(TypedDict):
-    user_id: int
-    count: int
+1. **Validate at boundaries** - Check external input immediately
+2. **Raise, don't return None** - Errors are exceptional, treat them that way
+3. **No defensive defaults** - Hiding errors with defaults makes debugging hard
+4. **Strict type checking** - Configure mypy/pyright for maximum strictness
+5. **Specific exceptions** - Generic errors lose information
+6. **Validate in constructors** - Never allow invalid objects to exist
+7. **No silent failures** - Every error should be visible
 
-class OutputData(TypedDict):
-    user_id: str
-    count: str
-
-def process(data: InputData) -> OutputData:
-    return {
-        "user_id": str(data["user_id"]),
-        "count": str(data["count"]),
-    }
-```
-
-### 4. Use Type Checkers in CI/CD
-
-```yaml
-# .github/workflows/ci.yml
-- name: Type checking
-  run: |
-    pip install mypy pyright
-    mypy src/
-    pyright src/
-```
-
-## Common Type Safety Pitfalls
-
-### Pitfall 1: Using Any Instead of Unknown Types
-
-```python
-from typing import Any
-
-# ❌ Bad: Disables type checking
-def process_json(data: Any) -> Any:
-    return data["result"]
-
-# ✅ Good: Use TypedDict for structure
-class JsonResponse(TypedDict):
-    result: str
-    status: int
-
-def process_json(data: JsonResponse) -> str:
-    return data["result"]
-```
-
-### Pitfall 2: Ignoring None in Union Types
-
-```python
-# ❌ Bad: Assumes value is never None
-def get_length(text: str | None) -> int:
-    return len(text)  # Crashes if None!
-
-# ✅ Good: Handle None explicitly
-def get_length(text: str | None) -> int:
-    return len(text) if text is not None else 0
-```
-
-### Pitfall 3: Not Using Specific Collection Types
-
-```python
-# ❌ Bad: Generic list/dict
-def process_users(users: list) -> dict:
-    return {user["id"]: user for user in users}
-
-# ✅ Good: Specific types
-class User(TypedDict):
-    id: int
-    name: str
-
-def process_users(users: list[User]) -> dict[int, User]:
-    return {user["id"]: user for user in users}
-```
-
-### Pitfall 4: Silent Type: ignore Comments
-
-```python
-# ❌ Bad: Hiding real type errors
-result = unsafe_operation()  # type: ignore
-
-# ✅ Good: Fix the underlying issue or use specific ignores
-result = unsafe_operation()  # type: ignore[no-untyped-call]
-# TODO: Add types to unsafe_operation()
-```
-
-## Quick Reference: Type Safety Checklist
-
-✅ **Always do**:
-- Add type hints to all functions (parameters and return types)
-- Handle `None` explicitly with type narrowing
-- Use `TypedDict` for dictionary structures
-- Use `Literal` for fixed string/int values
-- Use `Protocol` for duck-typed interfaces
-- Run type checkers (`pyright` or `mypy`) before committing
-- Configure strict type checking in CI/CD
-
-❌ **Never do**:
-- Return `None` on errors (raise exceptions instead)
-- Use `Any` when you can use specific types
-- Ignore type errors with `# type: ignore` without investigation
-- Use mutable default arguments
-- Skip type hints on public APIs
-- Disable type checking for entire modules
-
-## Summary
-
-Type hints are your first line of defense against bugs. They:
-
-1. **Catch bugs at development time** - Before code runs
-2. **Document expected types** - Self-documenting code
-3. **Enable better IDE support** - Autocomplete, refactoring
-4. **Prevent None crashes** - Force explicit None handling
-5. **Catch typos** - Dictionary keys, attribute names
-6. **Ensure API contracts** - Function signatures enforced
-
-**The type checker is your automated code reviewer** - use it to catch bugs before they reach production.
+**Remember**: A crash during development is better than silent corruption in production. Fail early, fail loudly, fail with context.
