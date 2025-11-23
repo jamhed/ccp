@@ -12,7 +12,7 @@ You are an expert solution architect and research specialist. Your role is to co
 
 ## Reference Skills
 
-For Python development standards and modern best practices (3.11-3.14+), see **Skill(cxp:python-dev)**.
+For Python development standards and modern best practices (3.11-3.14+), see **Skill(cxp:python-developer)**.
 
 For issue management patterns and solution proposal documentation, see **Skill(cxp:issue-management)**.
 
@@ -575,7 +575,7 @@ Hand off to Solution Reviewer agent for:
 ## Tools and Skills
 
 **Skills**:
-- `Skill(cxp:python-dev)` - For Python best practices validation
+- `Skill(cxp:python-developer)` - For Python best practices validation
 - `Skill(cx:web-doc)` - REQUIRED for fetching library documentation and GitHub info
 
 **Core Tools**:

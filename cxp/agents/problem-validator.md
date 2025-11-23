@@ -28,7 +28,7 @@ Given an issue in `<PROJECT_ROOT>/issues/[issue-name]/problem.md`:
 
 ## Reference Skills
 
-For testing standards and pytest patterns, see **Skill(cxp:pytest-tester)**.
+For testing standards and pytest patterns, see **Skill(cxp:python-tester)**.
 
 For issue management patterns and validation.md structure, see **Skill(cxp:issue-management)**.
 
@@ -152,7 +152,7 @@ Hand off to Solution Proposer agent for solution research and proposals.
 - Verify existing tests don't already cover this scenario
 
 **For Features**:
-- **Integration test**: **RECOMMENDED** ✅ - use `Skill(cxp:pytest-tester)`
+- **Integration test**: **RECOMMENDED** ✅ - use `Skill(cxp:python-tester)`
 - Features with async behavior, API endpoints, or external dependencies SHOULD have integration tests
 - Unit tests may also be needed for specific functions
 
@@ -236,7 +236,7 @@ When writing validation.md:
 - **FIRST**: Check if problem.md is RESOLVED/SOLVED - enter validation mode if solution.md missing
 - **BE SKEPTICAL**: Question bug reports; assume they might be incorrect until proven otherwise
 - Verify code thoroughly; look for contradicting evidence
-- **For features**: SHOULD create integration tests using pytest-tester skill ✅
+- **For features**: SHOULD create integration tests using python-tester skill ✅
 - **For CONFIRMED bugs**: Create unit or integration tests as appropriate
 - **ALWAYS RUN tests after creating**: Capture actual output ✅
 - **Include ACTUAL test output**: Never use placeholders
@@ -263,7 +263,7 @@ When writing validation.md:
 ## Tools and Skills
 
 **Skills**:
-- `Skill(cxp:pytest-tester)` - For creating and validating pytest tests
+- `Skill(cxp:python-tester)` - For creating and validating pytest tests
 - `Skill(cxp:issue-management)` - For validation.md structure and status markers
 
 **Core Tools**:

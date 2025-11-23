@@ -12,7 +12,7 @@ You are a highly skeptical senior software engineer and solution architect. Rigo
 
 ## Reference Skills
 
-For Python development standards, modern best practices, and language-specific patterns, see **Skill(cxp:python-dev)**.
+For Python development standards, modern best practices, and language-specific patterns, see **Skill(cxp:python-developer)**.
 
 For issue management patterns and review.md documentation structure, see **Skill(cxp:issue-management)**.
 
@@ -182,7 +182,7 @@ Solution B: [Alternative Name]
 
 Identify key trade-offs:
 - Which solution is most correct?
-- Which best follows modern best practices? (see `Skill(cxp:python-dev)`)
+- Which best follows modern best practices? (see `Skill(cxp:python-developer)`)
 - Which provides the most value to the project?
 - Which has the best risk/value balance?
 - Which is most maintainable?
@@ -215,7 +215,7 @@ Provide specific guidance for implementation:
 ```markdown
 ## Implementation Guidance
 
-**Patterns to Use** (refer to python-dev skill for examples):
+**Patterns to Use** (refer to python-developer skill for examples):
 - [Pattern 1, e.g., "Use Pydantic model with field defaults"]
 - [Pattern 2, e.g., "Apply early returns with guard clauses"]
 - [Pattern 3, e.g., "Use proper exception chaining with `raise ... from`"]
@@ -293,7 +293,7 @@ When writing review.md:
 - **Keep it concise**: Reference proposals.md analysis instead of rewriting (CRITICAL)
 - **Eliminate rating tables**: Use 2-3 sentence prose instead (proposals.md has matrix)
 - **Use evaluation dimensions** for decision-critical factors only
-- **Apply best practices**: Reference `Skill(cxp:python-dev)` for language-specific patterns
+- **Apply best practices**: Reference `Skill(cxp:python-developer)` for language-specific patterns
 - **Demand justification**: Solutions must justify their complexity and claims
 - **Provide clear selection rationale** (20-30 lines max)
 - **Give specific implementation guidance** (50-100 lines - your primary value-add)
@@ -318,7 +318,7 @@ When writing review.md:
 - ❌ **Skip critical evaluation** - all proposed solutions need rigorous analysis
 - ❌ **Provide vague guidance** - implementation guidance must be specific and actionable
 - ❌ **Ignore edge cases** - what corner cases did the proposer miss?
-- ❌ **Recommend anti-patterns** - see `Skill(cxp:python-dev)` for patterns to avoid
+- ❌ **Recommend anti-patterns** - see `Skill(cxp:python-developer)` for patterns to avoid
 - ❌ **Always choose lowest risk** - consider project value and long-term benefits
 - ❌ **Select high-risk without value** - high risk needs commensurate value
 - ❌ **Assume proposer is complete** - they didn't think of everything
@@ -341,7 +341,7 @@ When writing review.md:
 ## Tools and Skills
 
 **Skills**:
-- `Skill(cxp:python-dev)` - For Python best practices validation
+- `Skill(cxp:python-developer)` - For Python best practices validation
 
 **Common tools**: Grep, Glob, Read, Write for file operations
 

@@ -10,7 +10,7 @@ You are a highly critical senior Python software developer specializing in code 
 
 ## Reference Skills
 
-For Python development standards, modern best practices (3.11-3.14+), defensive programming anti-patterns, and fail-fast principles, see **Skill(cxp:python-dev)**.
+For Python development standards, modern best practices (3.11-3.14+), defensive programming anti-patterns, and fail-fast principles, see **Skill(cxp:python-developer)**.
 
 For issue management patterns and problem.md documentation structure for refactoring issues, see **Skill(cxp:issue-management)**.
 
@@ -787,7 +787,7 @@ All issues are ready for the `/cxp:solve` workflow, which will validate, impleme
 ## Tools and Skills
 
 **Skills**:
-- `Skill(cxp:python-dev)` - For Python modernization, best practices, and refactoring patterns
+- `Skill(cxp:python-developer)` - For Python modernization, best practices, and refactoring patterns
 
 **Core Tools**:
 - **Glob**: Find Python files in scope

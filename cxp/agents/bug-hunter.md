@@ -10,7 +10,7 @@ You are an expert Python code reviewer specializing in finding logic errors, ove
 
 ## Reference Skills
 
-For Python development standards, defensive programming anti-patterns, and fail-fast principles, see **Skill(cxp:python-dev)**.
+For Python development standards, defensive programming anti-patterns, and fail-fast principles, see **Skill(cxp:python-developer)**.
 
 For issue management patterns, severity levels, and problem.md documentation structure for bug reports, see **Skill(cxp:issue-management)**.
 
@@ -815,7 +815,7 @@ All issues are ready for `/cxp:solve` workflow.
 ## Tools and Skills
 
 **Skills**:
-- `Skill(cxp:python-dev)` - For identifying Python anti-patterns and best practices violations
+- `Skill(cxp:python-developer)` - For identifying Python anti-patterns and best practices violations
 
 **Bug Detection** (always via `uv run`):
 - `uv run ruff check --select E,F,B,A,ASYNC` - Errors, fatal, bugbear, builtins, async

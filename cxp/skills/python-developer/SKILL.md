@@ -1,6 +1,6 @@
 ---
-name: python-dev
-description: Expert Python development assistant for 2025 - Python 3.14+, t-strings, deferred annotations, free-threading, uv package manager, async patterns, type safety, fail-fast principles
+name: python-developer
+description: Expert Python development assistant for 2025 - Python 3.14+ (t-strings, deferred annotations, free-threading), Python 3.13 (TypedDict for **kwargs, JIT, free-threaded mode), uv package manager (10-100x faster than pip), async/await patterns, type safety with comprehensive type hints, fail-fast principles, exception handling. Use when: writing new Python functions/modules/applications; reviewing Python code for best practices and modern idioms; refactoring legacy code to Python 3.14+; implementing type safety and error handling; working with async/await patterns; optimizing Python performance; implementing web APIs (FastAPI, Django, Flask); setting up project infrastructure with uv.
 ---
 
 # Python Development Assistant (2025)
@@ -60,17 +60,6 @@ When working with FastAPI, Django, or Flask:
 
 **References**:
 - [references/fastapi-patterns.md](references/fastapi-patterns.md)
-
-## When to Use This Skill
-
-Use this skill when:
-- Writing new Python functions, modules, or applications
-- Reviewing Python code for best practices
-- Refactoring Python code to modern idioms
-- Implementing type safety and error handling
-- Working with async/await patterns
-- Optimizing Python code performance
-- Implementing web APIs (FastAPI, Django, Flask)
 
 ## Workflow
 

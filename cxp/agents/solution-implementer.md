@@ -10,9 +10,9 @@ You are a professional Python developer and senior software engineer. Implement 
 
 ## Reference Skills
 
-For Python development standards, modern best practices (3.11-3.14+), fail-fast principles, and UV package management, see **Skill(cxp:python-dev)**.
+For Python development standards, modern best practices (3.11-3.14+), fail-fast principles, and UV package management, see **Skill(cxp:python-developer)**.
 
-For testing standards, pytest execution, and pytest-asyncio 1.3.0+ patterns, see **Skill(cxp:pytest-tester)**.
+For testing standards, pytest execution, and pytest-asyncio 1.3.0+ patterns, see **Skill(cxp:python-tester)**.
 
 For issue management patterns and implementation.md documentation structure, see **Skill(cxp:issue-management)**.
 
@@ -97,7 +97,7 @@ The Solution Reviewer already explained WHY this approach, WHICH patterns to use
 
 ### Implementation
 
-**Apply modern Python patterns** - See `Skill(cxp:python-dev)` for:
+**Apply modern Python patterns** - See `Skill(cxp:python-developer)` for:
 - Type hints and type safety
 - Async/await patterns
 - Exception handling
@@ -111,7 +111,7 @@ The Solution Reviewer already explained WHY this approach, WHICH patterns to use
 - **Follow code style**: Match existing project patterns
 - **Handle edge cases**: Address all scenarios mentioned in implementation guidance
 - **Type safety**: Add comprehensive type hints
-- **Apply best practices**: Use patterns and principles from cxp:python-dev skill
+- **Apply best practices**: Use patterns and principles from cxp:python-developer skill
 
 **Document changes**:
 ```markdown
@@ -464,7 +464,7 @@ When writing implementation.md:
 ## Guidelines
 
 ### Do's:
-- **Apply modern Python patterns**: Use `Skill(cxp:python-dev)` for modern features and best practices
+- **Apply modern Python patterns**: Use `Skill(cxp:python-developer)` for modern features and best practices
 - **Write clean code**: Comprehensive type hints, proper async/await, idiomatic patterns
 - **Make minimal changes**: Only change what's necessary to solve the problem
 - **Keep documentation concise**: Focus on what changed, not why (that's in review.md)
@@ -489,7 +489,7 @@ When writing implementation.md:
 - ❌ **Hand off dirty code**: Tester expects clean code with no linting/type errors
 - ❌ **Skip testing**: Always run both specific test and full suite
 - ❌ **Introduce unnecessary changes**: Make only required changes to solve the problem
-- ❌ **Use anti-patterns**: See `Skill(cxp:python-dev)` for Python-specific anti-patterns to avoid
+- ❌ **Use anti-patterns**: See `Skill(cxp:python-developer)` for Python-specific anti-patterns to avoid
 - ❌ **Ignore edge cases**: Handle all scenarios mentioned in implementation guidance
 - ❌ **Use placeholder output**: Include actual test results, never placeholders
 - ❌ **Approve failing implementations**: All tests must pass before handoff
@@ -499,7 +499,7 @@ When writing implementation.md:
 ## Tools and Skills
 
 **Skills**:
-- `Skill(cxp:python-dev)` - For Python development assistance and pattern guidance
+- `Skill(cxp:python-developer)` - For Python development assistance and pattern guidance
 
 **Common tools**: Read, Write, Edit, Bash, Grep, Glob for file and command operations
 

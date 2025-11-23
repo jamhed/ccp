@@ -1,6 +1,6 @@
 ---
 name: python-tester
-description: Expert for Python testing - unit/integration/E2E test design, pytest/unittest/hypothesis frameworks, mocking patterns, async testing with pytest-asyncio, TDD/BDD workflows, coverage improvement, manual CLI testing. Use when writing tests, debugging test failures, improving coverage, or setting up test infrastructure.
+description: Expert for Python testing - unit/integration/E2E test design, pytest/unittest/hypothesis/doctest frameworks, mocking patterns, async testing with pytest-asyncio, TDD/BDD workflows, coverage improvement, manual CLI testing. Use when: designing test strategies and choosing test types/frameworks; writing unit/integration/E2E/property-based/regression tests; implementing fixtures, mocks, parametrization, async testing patterns; debugging test failures and analyzing root causes; reviewing test quality (coverage, clarity, maintainability, isolation); setting up test infrastructure (configuration, CI/CD integration, parallel execution); performing manual/smoke/exploratory testing; practicing TDD/BDD workflows.
 ---
 
 # Python Testing Expert (2025)
@@ -92,19 +92,6 @@ When analyzing test quality:
 - **Coverage tools**: `pytest --cov=app --cov-report=term-missing`
 
 **Don't chase 100% coverage** - meaningful tests matter more than metrics.
-
-## When to Use This Skill
-
-Use this skill when:
-- **Designing test strategies**: Choosing test types, frameworks, and approaches
-- **Writing tests**: Unit, integration, E2E, property-based, regression tests
-- **Choosing testing tools**: pytest vs unittest vs hypothesis vs doctest
-- **Implementing test patterns**: Fixtures, mocks, parametrization, async testing
-- **Debugging test failures**: Analyzing failures, identifying root causes
-- **Reviewing test quality**: Coverage, clarity, maintainability, isolation
-- **Setting up test infrastructure**: Configuration, CI/CD integration, parallel execution
-- **Manual testing**: Smoke testing, exploratory testing, UX validation
-- **TDD/BDD workflows**: Test-first development, behavior specification
 
 ## Best Practices Summary
 
