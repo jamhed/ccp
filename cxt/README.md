@@ -19,15 +19,7 @@ AI-powered TypeScript/Node.js development plugin with structured problem-solving
 - `cxt:typescript-dev` - Expert TypeScript development assistance
 - `cxt:jest-tester` - Jest testing framework expertise
 
-## Workflow
-
-1. **Problem Research** → `issues/[name]/problem.md`
-2. **Problem Validation** → `issues/[name]/validation.md`
-3. **Solution Proposals** → `issues/[name]/proposals.md`
-4. **Solution Review** → `issues/[name]/review.md`
-5. **Implementation** → `issues/[name]/implementation.md`
-6. **Testing & Review** → `issues/[name]/testing.md`
-7. **Documentation** → `archive/[name]/solution.md`
+See [main documentation](../README.md#problem-solving-approach) for complete workflow details.
 
 ## Requirements
 

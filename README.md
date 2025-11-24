@@ -105,11 +105,9 @@ Multi-phase problem-solving workflow for modern TypeScript 5.0+ and Node.js deve
 
 [**→ View cxt Documentation**](cxt/README.md)
 
-## Problem-Solving Workflow
+## Usage
 
-All plugins share a common multi-phase workflow for systematic problem-solving:
-
-### 1. Define the Problem
+### Define the Problem
 
 Identify and research issues in your codebase:
 
@@ -126,7 +124,7 @@ Identify and research issues in your codebase:
 
 **Output**: Creates `issues/[issue-name]/problem.md` with evidence, context, and acceptance criteria.
 
-### 2. Refine (Optional)
+### Refine (Optional)
 
 Enhance problem definitions with additional research:
 
@@ -143,9 +141,9 @@ Enhance problem definitions with additional research:
 
 **Output**: Updates `issues/[issue-name]/problem.md` with deeper analysis.
 
-### 3. Solve
+### Solve
 
-Execute the complete multi-phase workflow:
+Execute the complete multi-phase workflow (see "Problem-Solving Approach" above for phases):
 
 ```bash
 # Go projects
@@ -158,22 +156,9 @@ Execute the complete multi-phase workflow:
 /cxt:solve [issue-name]
 ```
 
-**Workflow Phases**:
-1. **Problem Validator** - Validates issue with tests → `validation.md`
-2. **Solution Proposer** - Proposes multiple solution approaches → `proposals.md`
-3. **Solution Reviewer** - Evaluates and selects best approach → `review.md`
-4. **Solution Implementer** - Implements fix with best practices → `implementation.md`
-5. **Code Reviewer & Tester** - Reviews code, runs tests, identifies refactoring opportunities → `testing.md`
-6. **Documentation Updater** - Creates summary, git commit, follow-up issues → `solution.md`
-
 **Output**: Complete audit trail in `issues/[issue-name]/` ready for archival and follow-up processing.
 
-**Post-Workflow Actions**:
-- Archive issue: Move `issues/[issue-name]/` → `archive/[issue-name]/`
-- Process follow-ups: Review `testing.md` for refactoring opportunities and create new issues
-- External review: Use Codex/OpenCode for additional code analysis and suggestions
-
-### 4. Code Quality (Python only)
+### Code Quality (Python only)
 
 Additional Python-specific workflows:
 
