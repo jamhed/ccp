@@ -23,10 +23,10 @@ After the Solution Implementer completes their work:
 2. **Review Code Quality** - Critically review against best practices (see `Skill(cxt:typescript-developer)`)
 3. **Execute Tests** - Run full test suite with type tests, validate coverage, find edge case gaps
 4. **Fix Failing Tests** - MANDATORY: Analyze and fix all test failures
-5. **Process Validation Tests IN PLACE** - MANDATORY: Run, convert to behavioral, or delete all validation tests
+5. **Convert Validation Tests to Behavior Tests** - MANDATORY: Transform structure checks into functionality tests
 6. **Hunt for Bugs** - Actively search for bugs through testing
 7. **Security Review** - Search for vulnerabilities (XSS, injection, prototype pollution, path traversal)
-8. **Document Findings** - Create testing.md with fixes, bugs found, validation tests processed, refactoring opportunities
+8. **Document Findings** - Create testing.md with fixes, bugs found, behavior test conversions, refactoring opportunities
 
 **IMPORTANT**: Implementer should have already run linting/type checking. Your focus is TESTING and BUG FINDING. If implementer skipped checks, note it but prioritize test execution and bug discovery.
 
@@ -111,9 +111,13 @@ pnpm exec eslint .
 
 **Target**: >80% coverage (>95% for critical paths), all type tests pass
 
-### Phase 5: Validation Tests - MANDATORY IN PLACE
+### Phase 5: Validation Tests → Behavior Tests (MANDATORY)
 
-**CRITICAL**: Handle validation tests created by Problem Validator. This work MUST be completed during your review. **NEVER defer to follow-ups.**
+**CRITICAL**: Convert ALL validation tests to behavior tests. This work MUST be completed during your review. **NEVER defer to follow-ups.**
+
+**Understanding the Distinction**:
+- **Validation tests** (BAD): Check structure/existence - "method exists", "has property", "is function"
+- **Behavior tests** (GOOD): Test actual functionality - "creates user", "throws on invalid input", "returns correct data"
 
 1. **Run validation tests explicitly**:
    ```bash
@@ -124,21 +128,22 @@ pnpm exec eslint .
 
 2. **Verify implementation proven**: Validation tests should PASS if implementation is correct
 
-3. **IMMEDIATELY convert or delete ALL validation tests**:
+3. **CONVERT ALL validation tests to BEHAVIOR tests**:
 
-   **Option A: Convert to Behavioral Tests** (PREFERRED):
-   - Remove validation naming/markers
-   - Transform structural checks into behavioral assertions
-   - Add type tests if testing type behavior
+   **Conversion Strategy** - Ask: "What behavior does this validate?"
+   - Structure check → Test the actual operation that uses the structure
+   - Method exists → Test calling the method with realistic inputs/outputs
+   - Property exists → Test reading/writing the property in real scenarios
+   - Type check → Move to type test file (*.test-d.ts) with `expectTypeOf`
 
-   **Example**:
+   **Examples**:
    ```typescript
-   // Before (structural validation)
+   // ❌ VALIDATION (checks structure - DELETE or CONVERT)
    it('validation: UserService has createUser method', () => {
      expect(typeof userService.createUser).toBe('function');
    });
 
-   // After (behavioral test)
+   // ✅ BEHAVIOR (tests actual functionality - KEEP)
    it('creates user with valid data', async () => {
      const user = await userService.createUser({
        name: 'Alice',
@@ -148,16 +153,40 @@ pnpm exec eslint .
      expect(user.name).toBe('Alice');
    });
 
-   // Type test (if needed)
-   // In *.test-d.ts file
+   // ❌ VALIDATION (checks existence)
+   it('validation: User has email property', () => {
+     expect(user).toHaveProperty('email');
+   });
+
+   // ✅ BEHAVIOR (tests actual usage)
+   it('returns user email for notification', () => {
+     const email = userService.getNotificationEmail(user);
+     expect(email).toBe('alice@example.com');
+   });
+
+   // ❌ VALIDATION (checks type at runtime)
+   it('validation: parseConfig returns object', () => {
+     expect(typeof parseConfig(raw)).toBe('object');
+   });
+
+   // ✅ BEHAVIOR (tests actual parsing)
+   it('parses config with all required fields', () => {
+     const config = parseConfig('{"port": 3000}');
+     expect(config.port).toBe(3000);
+   });
+
+   // ✅ TYPE TEST (in *.test-d.ts file)
    expectTypeOf(userService.createUser).returns.resolves.toMatchTypeOf<User>();
+   expectTypeOf(parseConfig).returns.toMatchTypeOf<Config>();
    ```
 
-   **Option B: Delete Validation Test** (ACCEPTABLE if no behavioral value):
-   - Delete tests that only check structure without behavior
-   - Document deletion in testing.md
+   **Delete if no behavioral value**: Some validation tests have no meaningful behavior to test (e.g., "class exists"). Delete these and document in testing.md.
 
-4. **VERIFY NO VALIDATION TESTS REMAIN** - Search to confirm all converted/deleted
+4. **VERIFY NO VALIDATION TESTS REMAIN**:
+   ```bash
+   # Search for remaining validation tests
+   grep -r "validation:" tests/ || echo "No validation tests remain ✅"
+   ```
 
 ### Phase 6: Fix Failing Tests
 
@@ -227,12 +256,12 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/testing.md`:
 **Type Tests**: X tests, Y passed, Z failed
 **Coverage**: Branches X%, Functions X%, Lines X%, Statements X%
 
-## Validation Tests Processed
+## Validation Tests → Behavior Tests
 **Validation Tests Run**: [Output from vitest validation tests]
-**Converted to Behavioral**: [List with before/after]
-**Converted to Type Tests**: [List - *.test-d.ts files]
-**Deleted**: [List with rationale]
-**Verification**: No validation tests remain ✅
+**Converted to Behavior Tests**: [List with before/after showing structure→behavior conversion]
+**Converted to Type Tests**: [List - *.test-d.ts files with expectTypeOf]
+**Deleted**: [List with rationale - no behavioral value]
+**Verification**: `grep -r "validation:" tests/` returns nothing ✅
 
 ## Test Fixes
 [Test failures fixed with category: Test issue / Implementation bug / Type issue]
@@ -275,7 +304,7 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/testing.md`:
 - [x] Checked for re-implementation needs
 - [x] Tests passing (all fixed or flagged for re-implementation)
 - [x] Type tests passing
-- [x] Validation tests processed (all converted/deleted)
+- [x] Validation tests → behavior tests (all converted or deleted)
 - [ ] Decision: Ready for Documentation Updater / Requires re-implementation
 ```
 
@@ -298,7 +327,7 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/testing.md`:
 - **Perform security review** - XSS, injection, prototype pollution, path traversal
 - **Test exhaustively** - Full suite with coverage AND type tests
 - **MANDATORY: Run validation tests** - Verify implementation
-- **MANDATORY: Convert or delete ALL validation tests IN PLACE** - NEVER defer to follow-ups
+- **MANDATORY: Convert ALL validation tests to behavior tests** - Structure→functionality
 - **Fix ALL failing tests** - Analyze root cause, apply fixes, re-run
 - **Find implementation bugs** - This is your primary value-add
 - **Document clearly** - Categorize: Test issue vs Implementation bug vs Type issue vs Security issue
@@ -311,9 +340,9 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/testing.md`:
 ### Don'ts:
 - ❌ **NEVER proceed with failing tests** - Fix them OR flag for re-implementation
 - ❌ **NEVER try to fix fundamental design issues** - Flag for re-implementation instead
-- ❌ **NEVER leave validation tests unconverted/undeleted** - MANDATORY IN PLACE
-- ❌ **NEVER defer validation test conversion** - Must be done during your review
-- ❌ **NEVER proceed while validation tests exist** - Must verify all converted/deleted
+- ❌ **NEVER leave validation tests as-is** - Convert to behavior tests or delete
+- ❌ **NEVER defer validation→behavior conversion** - Must be done during your review
+- ❌ **NEVER proceed while validation tests exist** - Must verify all converted to behavior tests
 - ❌ **Spend extensive time on linting/type checking** - Implementer's job, just verify
 - ❌ **Document all passing tests** - Use summary metrics only
 - ❌ **Write verbose reports** - Target: 100-250 lines for simple/medium fixes
@@ -380,12 +409,12 @@ Implementation fixes zod validation bypass. Implementer ran all checks (passed).
 **Type Tests**: 3/3 pass
 **Coverage**: 91% (branches 88%, functions 95%, lines 91%)
 
-## Validation Tests Processed
+## Validation Tests → Behavior Tests
 **Run**: 1 validation test passed
-**Converted**: 1 (validation_schema_exists → schema_validates_user_input)
-**Converted to Type Test**: 1 (schema type inference in user.test-d.ts)
+**Converted to Behavior**: validation_schema_exists → schema_validates_user_input (tests actual validation, not existence)
+**Converted to Type Test**: schema type inference in user.test-d.ts (expectTypeOf)
 **Deleted**: 0
-**Verification**: No validation tests remain ✅
+**Verification**: `grep -r "validation:" tests/` returns nothing ✅
 
 ## Test Fixes
 1. **test_invalid_email_rejected** - Fixed assertion (expected ZodError, not Error)
@@ -406,7 +435,7 @@ None identified for simple fix
 ## Next Steps
 - [x] All checks complete
 - [x] Tests passing (12/12 runtime, 3/3 type)
-- [x] Validation tests processed ✅
+- [x] Validation tests → behavior tests ✅
 - [x] Ready for Documentation Updater
 ```
 
