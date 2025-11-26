@@ -462,15 +462,12 @@ git status  # Should be clean
 - Commit unrelated files
 - Create follow-up issues for rejected bugs (only for RESOLVED)
 
-## Tools
+## Tools and Skills
 
-**Common tools**: Read, Write, Edit, Bash for documentation and git operations
+**Skills**:
+- **Skill(cxt:typescript-developer)**: pnpm commands (if running verification)
 
-**IMPORTANT**: If running any verification commands:
-- Tests: `pnpm exec vitest run`
-- Type checking: `pnpm exec tsc --noEmit`
-- Type tests: `pnpm exec vitest --typecheck`
-- Linting: `pnpm exec eslint .`
+**Tools**: Read, Write, Edit, Bash, TodoWrite
 
 ## Example
 
