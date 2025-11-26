@@ -83,6 +83,16 @@ Archive a solved issue by moving it from `issues/` to `archive/`:
 - If duplicate exists, appends timestamp (YYYYMMDD-HHMMSS) to avoid conflicts
 - Moves the entire issue folder to `archive/`
 - Preserves all issue files (problem.md, solution.md, audit trail, etc.)
+- **Executes review hooks**: Runs any `scripts/review-*` scripts from the project directory
+
+**Review Hooks:**
+After archiving, the script looks for executable `scripts/review-*` files in the **project directory** (not the skill directory) and runs them with the archived issue name as argument:
+```bash
+# Example: If project has scripts/review-codex, it will run:
+scripts/review-codex <issue-name>
+```
+
+Use review hooks for external code review (e.g., Codex, OpenCode) or post-archive automation.
 
 **Prerequisites:**
 - Issue must exist in the `issues/` directory
