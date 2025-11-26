@@ -1,673 +1,353 @@
 ---
 name: jest-tester
-description: Testing expert for TypeScript testing in 2025 - Vitest-first, explicit imports, type testing with expectTypeOf, zod validation, ESM support
+description: Testing expert for TypeScript with Jest - mature test runner, snapshot testing, extensive ecosystem, mocking with jest.fn/jest.mock, TDD workflows. Use when: working with existing Jest projects; writing or reviewing tests; implementing mocks and fixtures; debugging test failures; practicing TDD/BDD.
 ---
 
-# Vitest Testing Expert (2025)
+# Jest Testing Expert (2025)
 
-Expert assistant for writing comprehensive, type-safe tests with Vitest for TypeScript 5.7+ projects in 2025.
+Expert assistant for writing comprehensive, type-safe tests with Jest for TypeScript projects. Jest remains a solid choice for projects with existing Jest infrastructure or specific ecosystem requirements.
 
 ## Core Capabilities
 
-### 1. Test Framework - Vitest (2025 Standard)
-- **Vitest**: Industry standard for 2025 - blazing fast, Vite-native, ESM-first, type testing built-in
-- **Why Vitest in 2025**: Native ESM support, 10-20x faster than Jest in watch mode, type testing with `expectTypeOf`, better DX
-- **Migration from Jest**: Jest-compatible API (95% compatibility) makes migration seamless
-- **TypeScript 5.7+ integration**: Excellent support with minimal configuration
+### 1. Test Framework - Jest
+
+**Why Jest**:
+- **Mature & Stable**: Battle-tested, extensive documentation
+- **Rich Ecosystem**: Large plugin ecosystem, wide community support
+- **Snapshot Testing**: First-class snapshot testing support
+- **All-in-One**: Built-in assertions, mocking, coverage
+- **Widely Adopted**: Many projects use Jest, good for maintenance
+
+**When to Choose Jest over Vitest**:
+- Existing Jest codebase (migration cost not worth it)
+- Need specific Jest plugins not available in Vitest
+- Team familiarity with Jest
+- Projects requiring Jest-specific features
+
+**Key Principles**:
+- **Explicit imports**: Import `describe`, `it`, `expect` from `@jest/globals`
+- **Type-safe mocking**: Use `jest.fn<>()` with type parameters
+- **ESM support**: Use `--experimental-vm-modules` for ESM (or stick to CJS)
 
 **Reference**: [references/test-organization.md](references/test-organization.md)
 
-### 2. 2025 Testing Principles
-- **Explicit imports**: Never use globals, always import `describe`, `it`, `expect` explicitly
-- **Type testing**: Use `expectTypeOf` for testing types (not just runtime behavior)
-- **ESM-first**: All tests use import/export, no CommonJS
-- **Type-safe mocking**: Mocks must be type-safe, use `vi.fn<>()` with type parameters
+### 2. Test-Driven Development (TDD)
 
-### 3. Test-Driven Development (TDD)
-When implementing new features or fixing bugs:
-- **Write failing test first**: Define expected behavior in test
-- **Write minimal code**: Just enough to pass the test
+When implementing features or fixing bugs:
+- **Red**: Write failing test first (defines expected behavior)
+- **Green**: Write minimal code to pass
 - **Refactor**: Improve code quality while tests pass
-- Use TDD for complex logic, bug fixes, new features, zod schemas
+
+**Use TDD for**: Complex logic, bug fixes, new features, zod schemas
 
 **Reference**: [references/tdd-workflow.md](references/tdd-workflow.md)
 
-### 4. Mocking and Test Isolation
+### 3. Mocking and Test Isolation
+
 When mocking dependencies:
 - **Mock external dependencies**: HTTP, DB, filesystem, time, external APIs
 - **Don't mock internal code**: Test real integrations where possible
-- **Use type-safe mocks**: `vi.fn<[args], ReturnType>()` for type safety
-- **Use vi.hoisted()**: For mock references in vi.mock()
+- **Type-safe mocks**: `jest.fn<ReturnType, Args>()` for type safety
+- **Use jest.mock()**: For module-level mocking
 
 **Reference**: [references/mocking-patterns.md](references/mocking-patterns.md)
 
-### 5. Async Testing
+### 4. Async Testing
+
 When testing async code:
 - Use async/await in test functions
 - Use `.resolves/.rejects` for Promise assertions
-- Use `vi.useFakeTimers()` for testing delays and timeouts
+- Use `jest.useFakeTimers()` for delays and timeouts
 - Test both success and error paths
 
 **Reference**: [references/async-testing.md](references/async-testing.md)
 
-### Testing Patterns
+## Quick Start Example
 
-**Unit Tests**:
-- Test individual functions and classes in isolation
-- Mock external dependencies
-- Focus on business logic
-
-**Integration Tests**:
-- Test multiple units working together
-- Test API endpoints with supertest
-- Test database interactions with test databases
-
-**Component Tests** (React/Vue):
-- Testing Library (@testing-library/react, @testing-library/vue)
-- User-centric testing (query by role, text, label)
-- Fire events and assert on outcomes
-
-### Modern TypeScript Testing Patterns
-
-**Testing Branded Types**:
 ```typescript
-type UUID = string & { readonly brand: unique symbol };
-type Email = string & { readonly brand: unique symbol };
+// user.test.ts - Jest test file with explicit imports
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { UserService } from './user-service';
+import type { User } from './types';
 
-function createUUID(value: string): UUID {
-  if (!/^[0-9a-f-]{36}$/i.test(value)) {
-    throw new Error('Invalid UUID');
-  }
-  return value as UUID;
-}
+// Mock the module
+jest.mock('./api');
 
-test('branded types maintain type safety', () => {
-  const validUUID = '123e4567-e89b-12d3-a456-426614174000';
-  const uuid = createUUID(validUUID);
+import { fetchUser } from './api';
+const mockFetchUser = fetchUser as jest.MockedFunction<typeof fetchUser>;
 
-  expect(uuid).toBe(validUUID);
-  // Type system prevents mixing UUID and Email at compile time
+describe('UserService', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('getUser', () => {
+    it('returns user when found', async () => {
+      // Arrange
+      mockFetchUser.mockResolvedValue({
+        id: '1',
+        name: 'Alice',
+        email: 'alice@example.com',
+      });
+
+      // Act
+      const service = new UserService();
+      const user = await service.getUser('1');
+
+      // Assert
+      expect(user).toMatchObject({ name: 'Alice' });
+      expect(mockFetchUser).toHaveBeenCalledWith('1');
+    });
+
+    it('returns null when user not found', async () => {
+      mockFetchUser.mockResolvedValue(null);
+
+      const service = new UserService();
+      const user = await service.getUser('invalid');
+
+      expect(user).toBeNull();
+    });
+
+    it('throws on network error', async () => {
+      mockFetchUser.mockRejectedValue(new Error('Network failed'));
+
+      const service = new UserService();
+
+      await expect(service.getUser('1')).rejects.toThrow('Network failed');
+    });
+  });
 });
 ```
 
-**Testing Zod Schemas**:
+## Testing Zod Schemas
+
 ```typescript
+import { describe, it, expect } from '@jest/globals';
 import { z } from 'zod';
 
 const UserSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
   email: z.string().email(),
-  age: z.number().int().positive().optional()
+  age: z.number().int().positive().optional(),
 });
 
-test('validates correct user data', () => {
-  const validUser = {
-    id: '123e4567-e89b-12d3-a456-426614174000',
-    name: 'John Doe',
-    email: 'john@example.com',
-    age: 30
-  };
-
-  expect(() => UserSchema.parse(validUser)).not.toThrow();
-});
-
-test('rejects invalid email', () => {
-  const invalidUser = {
-    id: '123e4567-e89b-12d3-a456-426614174000',
-    name: 'John Doe',
-    email: 'not-an-email'
-  };
-
-  expect(() => UserSchema.parse(invalidUser)).toThrow(z.ZodError);
-});
-```
-
-**Testing Result Types**:
-```typescript
-type Result<T, E = Error> =
-  | { ok: true; value: T }
-  | { ok: false; error: E };
-
-async function fetchUser(id: string): Promise<Result<User>> {
-  try {
-    const response = await fetch(`/api/users/${id}`);
-    const data = await response.json();
-    return { ok: true, value: data };
-  } catch (error) {
-    return {
-      ok: false,
-      error: error instanceof Error ? error : new Error('Unknown error')
+describe('UserSchema', () => {
+  it('validates correct user data', () => {
+    const validUser = {
+      id: '123e4567-e89b-12d3-a456-426614174000',
+      name: 'John Doe',
+      email: 'john@example.com',
+      age: 30,
     };
-  }
-}
 
-test('returns success result for valid user', async () => {
-  const result = await fetchUser('123');
+    expect(() => UserSchema.parse(validUser)).not.toThrow();
+  });
 
-  if (result.ok) {
-    expect(result.value).toHaveProperty('id');
-  } else {
-    fail('Expected success result');
-  }
-});
+  it('rejects invalid email', () => {
+    const invalidUser = {
+      id: '123e4567-e89b-12d3-a456-426614174000',
+      name: 'John Doe',
+      email: 'not-an-email',
+    };
 
-test('returns error result for failed fetch', async () => {
-  const result = await fetchUser('invalid');
+    expect(() => UserSchema.parse(invalidUser)).toThrow(z.ZodError);
+  });
 
-  if (!result.ok) {
-    expect(result.error).toBeInstanceOf(Error);
-  } else {
-    fail('Expected error result');
-  }
-});
-```
+  it('rejects invalid UUID', () => {
+    const invalidUser = {
+      id: 'not-a-uuid',
+      name: 'John Doe',
+      email: 'john@example.com',
+    };
 
-**Testing Discriminated Unions**:
-```typescript
-type ApiResponse<T> =
-  | { status: 'loading' }
-  | { status: 'success'; data: T }
-  | { status: 'error'; error: Error };
-
-test('handles all union variants', () => {
-  const loading: ApiResponse<string> = { status: 'loading' };
-  const success: ApiResponse<string> = { status: 'success', data: 'hello' };
-  const error: ApiResponse<string> = { status: 'error', error: new Error('fail') };
-
-  expect(loading.status).toBe('loading');
-  expect(success.status).toBe('success');
-  expect(error.status).toBe('error');
-});
-```
-
-**Testing Inferred Type Predicates (TypeScript 5.5+)**:
-```typescript
-function isString(value: unknown) {
-  return typeof value === 'string';
-}
-
-test('type predicate filtering works correctly', () => {
-  const mixed = ['a', 1, 'b', 2, 'c', 3];
-  const strings = mixed.filter(isString);
-
-  // TypeScript 5.5+ infers strings as string[]
-  expect(strings).toEqual(['a', 'b', 'c']);
-  expect(strings.every(s => typeof s === 'string')).toBe(true);
-});
-```
-
-### Mocking (2025 Best Practices)
-
-**Functions (Explicit Imports)**:
-```typescript
-import { vi } from 'vitest';  // Explicit import - 2025 standard
-
-const mockFn = vi.fn();
-mockFn.mockReturnValue(42);
-mockFn.mockResolvedValue('async result');
-```
-
-**Modules (Type-Safe)**:
-```typescript
-import { vi } from 'vitest';
-import type { User } from './types';
-
-// Type-safe mock - compiler errors if types don't match
-vi.mock('./api', () => ({
-  fetchUser: vi.fn<[], Promise<User>>().mockResolvedValue({
-    id: '1',
-    name: 'Test'
-  })
-}));
-```
-
-**Timers**:
-```typescript
-import { vi } from 'vitest';
-
-vi.useFakeTimers();
-vi.advanceTimersByTime(1000);
-vi.runAllTimers();
-```
-
-### Type Testing (2025 Standard)
-
-**Testing Types with expectTypeOf**:
-```typescript
-import { test, expectTypeOf } from 'vitest';
-
-test('type inference works correctly', () => {
-  const user = { id: '1', name: 'Alice' };
-
-  // Test that TypeScript infers the correct type
-  expectTypeOf(user).toEqualTypeOf<{ id: string; name: string }>();
-  expectTypeOf(user.id).toBeString();
-  expectTypeOf(user.name).toBeString();
-});
-
-test('generic function returns correct type', () => {
-  function identity<T>(value: T): T {
-    return value;
-  }
-
-  const result = identity('hello');
-  expectTypeOf(result).toBeString();
-  expectTypeOf(result).not.toBeNumber();
-});
-
-test('branded types are distinct', () => {
-  type UUID = string & { readonly brand: unique symbol };
-  type Email = string & { readonly brand: unique symbol };
-
-  // These should be incompatible
-  expectTypeOf<UUID>().not.toMatchTypeOf<Email>();
-});
-```
-
-**Type Testing in *.test-d.ts Files**:
-```typescript
-// user.test-d.ts - type tests only
-import { expectTypeOf } from 'vitest';
-import type { User, UserInput } from './user';
-
-// All tests in .test-d.ts files are type tests
-expectTypeOf<User>().toHaveProperty('id');
-expectTypeOf<UserInput>().toMatchTypeOf<Omit<User, 'id'>>();
-```
-
-### Async Testing
-
-**Promises (Explicit Imports)**:
-```typescript
-import { test, expect } from 'vitest';  // Explicit imports
-
-test('async operation', async () => {
-  const result = await fetchData();
-  expect(result).toBe('data');
-});
-```
-
-**Callbacks**:
-```typescript
-test('callback test', (done) => {
-  fetchData((error, data) => {
-    expect(data).toBe('data');
-    done();
+    expect(() => UserSchema.parse(invalidUser)).toThrow(z.ZodError);
   });
 });
 ```
 
-### TypeScript Integration
+## Common Commands
 
-**Type-safe mocks**:
-```typescript
-import { vi } from 'vitest';
-import type { User } from './types';
-
-const mockUser: User = {
-  id: '1',
-  name: 'Test User',
-  email: 'test@example.com'
-};
-
-vi.mock('./api', () => ({
-  getUser: vi.fn().mockResolvedValue(mockUser)
-}));
-```
-
-**Type assertions**:
-```typescript
-import { expect, test } from 'vitest';
-
-test('type narrowing', () => {
-  const value: unknown = { name: 'test' };
-  expect(value).toHaveProperty('name');
-  // TypeScript knows value has 'name' property after assertion
-});
-```
-
-### Coverage
-
-**Configuration**:
-```json
-{
-  "jest": {
-    "collectCoverage": true,
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80,
-        "statements": 80
-      }
-    }
-  }
-}
-```
-
-**Running**:
-```bash
-# Jest
-npm test -- --coverage
-
-# Vitest
-npm test -- --coverage
-```
-
-### Best Practices
-
-**AAA Pattern** (Arrange, Act, Assert):
-```typescript
-test('user creation', () => {
-  // Arrange
-  const userData = { name: 'John', email: 'john@example.com' };
-
-  // Act
-  const user = createUser(userData);
-
-  // Assert
-  expect(user).toMatchObject(userData);
-  expect(user.id).toBeDefined();
-});
-```
-
-**Descriptive names**:
-```typescript
-// Good
-test('throws error when email is invalid', () => { });
-
-// Bad
-test('validation', () => { });
-```
-
-**One assertion per test** (when possible):
-```typescript
-// Prefer this
-test('user has valid id', () => {
-  expect(user.id).toBeDefined();
-});
-
-test('user has correct name', () => {
-  expect(user.name).toBe('John');
-});
-```
-
-**Test isolation**:
-```typescript
-beforeEach(() => {
-  // Reset state before each test
-  jest.clearAllMocks();
-});
-```
-
-### React Testing Library
-
-**Component testing**:
-```typescript
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Button } from './Button';
-
-test('button click handler', async () => {
-  const handleClick = vi.fn();
-  render(<Button onClick={handleClick}>Click me</Button>);
-
-  const button = screen.getByRole('button', { name: /click me/i });
-  await fireEvent.click(button);
-
-  expect(handleClick).toHaveBeenCalledTimes(1);
-});
-```
-
-**Async queries**:
-```typescript
-import { render, screen, waitFor } from '@testing-library/react';
-
-test('loading state', async () => {
-  render(<AsyncComponent />);
-
-  expect(screen.getByText(/loading/i)).toBeInTheDocument();
-
-  await waitFor(() => {
-    expect(screen.getByText(/loaded/i)).toBeInTheDocument();
-  });
-});
-```
-
-### Anti-Patterns to Avoid
-
-**Testing**:
-- Testing implementation details instead of behavior
-- Not testing error cases and edge conditions
-- Overly complex test setup (use factories/fixtures)
-- Tests that depend on execution order
-- Snapshot tests without review (prefer explicit assertions)
-- Mocking everything (test real integrations when possible)
-- Not cleaning up after tests (memory leaks, file handles)
-
-**TypeScript-Specific**:
-- Using `any` in test fixtures → Use proper types or `unknown`
-- Type assertions without runtime validation → Use type guards
-- Not testing type narrowing behavior
-- Ignoring TypeScript errors in test files
-- Not testing zod schemas and validators
-- Missing tests for discriminated union branches
-- Not testing async error handling paths
-
-### Common Commands (2025)
-
-**Vitest (Recommended)**:
 ```bash
 # Run all tests
-pnpm test
+npm test
 
-# Watch mode (default for development)
-pnpm exec vitest
-
-# UI mode (2025 best practice - visual testing)
-pnpm exec vitest --ui
-
-# Type checking (test types)
-pnpm exec vitest --typecheck
+# Run tests in watch mode
+npm test -- --watch
 
 # Run specific test file
-pnpm exec vitest user.test.ts
+npm test -- user.test.ts
 
 # Run with coverage
-pnpm test:coverage
-
-# All in one: tests + types + coverage
-pnpm exec vitest --typecheck --coverage
-```
-
-**Jest (Legacy - Not Recommended for New Projects in 2025)**:
-```bash
-# Only use if maintaining existing Jest projects
-npm test -- --watch
 npm test -- --coverage
+
+# Run tests matching pattern
+npm test -- -t "creates user"
+
+# Update snapshots
+npm test -- -u
+
+# Run in CI mode (no watch)
+npm test -- --ci
+
+# Verbose output
+npm test -- --verbose
 ```
 
-## Configuration Examples (2025)
+## Jest Configuration (TypeScript)
 
-### Vitest (2025 Standard)
-```typescript
-// vitest.config.ts
-import { defineConfig } from 'vitest/config';
+```javascript
+// jest.config.js
+/** @type {import('jest').Config} */
+module.exports = {
+  // TypeScript support
+  preset: 'ts-jest',
 
-export default defineConfig({
-  test: {
-    globals: true,
-    environment: 'node',
-    setupFiles: ['./vitest.setup.ts'],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html', 'lcov'],
-      exclude: [
-        '**/*.test.ts',
-        '**/*.spec.ts',
-        '**/node_modules/**',
-        '**/dist/**',
-        '**/*.d.ts'
-      ],
-      thresholds: {
-        branches: 80,
-        functions: 80,
-        lines: 80,
-        statements: 80
-      }
+  // Or use SWC for faster transforms
+  // transform: {
+  //   '^.+\\.(t|j)sx?$': '@swc/jest',
+  // },
+
+  // Test environment
+  testEnvironment: 'node',
+
+  // Setup files
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+
+  // Test patterns
+  testMatch: [
+    '**/__tests__/**/*.test.ts',
+    '**/*.test.ts',
+  ],
+
+  // Module resolution
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+
+  // Coverage
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/**/*.d.ts',
+    '!src/**/*.test.ts',
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
     },
-    // Type checking in tests
-    typecheck: {
-      enabled: true,
-      tsconfig: './tsconfig.test.json'
-    }
-  }
-});
+  },
+
+  // Clear mocks between tests
+  clearMocks: true,
+};
 ```
 
-**vitest.setup.ts**:
+### ESM Configuration (Experimental)
+
+```javascript
+// jest.config.js for ESM
+/** @type {import('jest').Config} */
+module.exports = {
+  preset: 'ts-jest/presets/default-esm',
+  testEnvironment: 'node',
+  extensionsToTreatAsEsm: ['.ts'],
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        useESM: true,
+      },
+    ],
+  },
+};
+```
+
+Run with: `NODE_OPTIONS='--experimental-vm-modules' npx jest`
+
+## Testing Patterns
+
+### Unit Tests (70% of test suite)
+- Test individual functions/classes in isolation
+- Mock external dependencies
+- Focus on business logic
+- Fast execution (<10ms each)
+
+### Integration Tests (20% of test suite)
+- Test component interactions
+- Use real dependencies (test DB, services)
+- Test API endpoints with supertest
+- Moderate speed (10ms-1s per test)
+
+### E2E Tests (10% of test suite)
+- Test complete user workflows
+- Most expensive to maintain
+- Critical paths only
+
+## Snapshot Testing
+
 ```typescript
-// Add custom matchers or global setup
-import { expect } from 'vitest';
+import { describe, it, expect } from '@jest/globals';
 
-// Example: Custom matcher for branded types
-expect.extend({
-  toBeValidUUID(received: string) {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    const pass = uuidRegex.test(received);
-    return {
-      pass,
-      message: () => `expected ${received} to be a valid UUID`
-    };
-  }
+describe('Component', () => {
+  it('matches snapshot', () => {
+    const output = renderComponent({ name: 'Alice' });
+    expect(output).toMatchSnapshot();
+  });
+
+  it('matches inline snapshot', () => {
+    const user = { id: '1', name: 'Alice' };
+    expect(user).toMatchInlineSnapshot(`
+      {
+        "id": "1",
+        "name": "Alice",
+      }
+    `);
+  });
 });
 ```
 
-## TypeScript 5.5+ Testing Best Practices
+## Best Practices Summary
 
-**Test Type Narrowing**:
-```typescript
-function processValue(value: string | number) {
-  if (typeof value === 'string') {
-    return value.toUpperCase();
-  }
-  return value * 2;
-}
+### Do's
+- **Explicit imports**: `import { describe, it, expect } from '@jest/globals'`
+- **AAA pattern**: Arrange, Act, Assert
+- **Descriptive names**: `it('throws ValidationError when email is invalid')`
+- **Type-safe mocks**: Use generic parameters
+- **Clear mocks**: `jest.clearAllMocks()` in beforeEach
+- **Test both paths**: Success and failure scenarios
 
-test('narrows string type correctly', () => {
-  expect(processValue('hello')).toBe('HELLO');
-});
-
-test('narrows number type correctly', () => {
-  expect(processValue(21)).toBe(42);
-});
-```
-
-**Test Inferred Type Predicates**:
-```typescript
-function isNotNull<T>(value: T | null) {
-  return value !== null;  // TypeScript 5.5+ infers: value is T
-}
-
-test('filters null values with inferred predicate', () => {
-  const values = [1, null, 2, null, 3];
-  const filtered = values.filter(isNotNull);
-
-  // TypeScript knows filtered is number[]
-  expect(filtered).toEqual([1, 2, 3]);
-  expect(filtered.length).toBe(3);
-});
-```
-
-**Test Error Chaining**:
-```typescript
-class ValidationError extends Error {
-  constructor(message: string, public cause?: unknown) {
-    super(message);
-    this.name = 'ValidationError';
-  }
-}
-
-test('error includes cause chain', async () => {
-  const originalError = new Error('Network failure');
-
-  try {
-    throw new ValidationError('User validation failed', { cause: originalError });
-  } catch (error) {
-    expect(error).toBeInstanceOf(ValidationError);
-    if (error instanceof ValidationError) {
-      expect(error.cause).toBe(originalError);
-      expect(error.message).toBe('User validation failed');
-    }
-  }
-});
-```
-
-**Test AbortController**:
-```typescript
-async function fetchWithTimeout(url: string, timeout: number, signal?: AbortSignal) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-  try {
-    const response = await fetch(url, {
-      signal: signal ?? controller.signal
-    });
-    clearTimeout(timeoutId);
-    return response;
-  } catch (error) {
-    clearTimeout(timeoutId);
-    throw error;
-  }
-}
-
-test('aborts fetch on timeout', async () => {
-  const controller = new AbortController();
-
-  setTimeout(() => controller.abort(), 100);
-
-  await expect(
-    fetchWithTimeout('https://slow-api.com', 1000, controller.signal)
-  ).rejects.toThrow();
-});
-```
-
-**Test Generic Constraints**:
-```typescript
-function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
-  return obj[key];
-}
-
-test('extracts property with type safety', () => {
-  const user = { id: 1, name: 'Alice' };
-
-  expect(getProperty(user, 'name')).toBe('Alice');
-  expect(getProperty(user, 'id')).toBe(1);
-  // TypeScript prevents: getProperty(user, 'invalid')
-});
-```
+### Don'ts
+- **Don't rely on globals**: Always import test functions
+- **Don't over-mock**: Mock external deps only
+- **Don't use `any`**: Keep tests type-safe
+- **Don't test implementation**: Test behavior
+- **Don't skip error cases**: Test failure paths
 
 ## Reference Files
 
-- **[test-organization.md](references/test-organization.md)**: Testing pyramid strategy (70/20/10), test types, directory structure, Vitest configuration, parallel execution, CI/CD integration
-- **[tdd-workflow.md](references/tdd-workflow.md)**: Test-Driven Development process, Red-Green-Refactor cycle, TDD patterns for TypeScript
-- **[mocking-patterns.md](references/mocking-patterns.md)**: vi.fn, vi.mock, vi.spyOn, type-safe mocking, when to mock
-- **[async-testing.md](references/async-testing.md)**: Async/await testing, Promise assertions, fake timers, concurrent tests
-- **[external-sources.md](references/external-sources.md)**: Curated external documentation and web references
+- **[test-organization.md](references/test-organization.md)**: Testing pyramid (70/20/10), directory structure, Jest config, CI/CD
+- **[tdd-workflow.md](references/tdd-workflow.md)**: Red-Green-Refactor cycle, TDD patterns, agent checklists
+- **[mocking-patterns.md](references/mocking-patterns.md)**: jest.fn, jest.mock, jest.spyOn, type-safe mocking
+- **[async-testing.md](references/async-testing.md)**: Async/await, Promise assertions, fake timers
+- **[external-sources.md](references/external-sources.md)**: Curated external documentation links
 
 Load references as needed based on the testing task at hand.
 
 ## When to Use This Skill
 
-**2025 Use Cases**:
-- Writing new tests with Vitest and TypeScript 5.7+
-- Type testing with `expectTypeOf` (testing type behavior)
-- Debugging failing tests in watch or UI mode
-- Setting up modern testing infrastructure (ESM, explicit imports)
-- Implementing type-safe mocks and stubs
-- Testing async code with proper error handling
-- Testing React/Vue components with Testing Library
+- Working with existing Jest codebases
+- Writing tests for projects using Jest
+- Snapshot testing requirements
+- Debugging failing Jest tests
+- Setting up Jest test infrastructure
+- Implementing mocks with jest.fn/jest.mock
+- Testing async code with Jest
 - Testing zod schemas and runtime validation
-- Testing branded types and discriminated unions
-- Setting up CI/CD with type checking + tests + coverage
-- Practicing TDD workflow for new features and bug fixes
+- Setting up CI/CD with Jest coverage
+- Practicing TDD workflow with Jest

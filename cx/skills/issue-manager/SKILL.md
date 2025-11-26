@@ -7,6 +7,17 @@ description: Manage project issues in the issues folder. List open issues, archi
 
 Expert assistant for managing project issues stored in the `issues/` folder. Provides utilities to list open issues, archive solved issues to the archive folder, and refine problem definitions.
 
+## Script Execution
+
+**IMPORTANT:** All scripts in this skill must be executed using the skill's base path. When this skill loads, you receive a "Base Path" (e.g., `Base Path: /path/to/skill/`). Use this path to construct full script paths:
+
+```bash
+# Pattern: {base_path}/scripts/<script-name>
+# Example: /Users/name/.claude/plugins/ccp/cx/skills/issue-manager/scripts/list-open
+```
+
+Always prepend the base path when running any script from this skill.
+
 ## Core Capabilities
 
 ### 1. List Open Issues
@@ -14,7 +25,7 @@ Expert assistant for managing project issues stored in the `issues/` folder. Pro
 List all open (non-archived) issues that have a `problem.md` file:
 
 ```bash
-scripts/list-open
+{base_path}/scripts/list-open
 ```
 
 **When to use:**
@@ -32,7 +43,7 @@ scripts/list-open
 List all solved issues that have a `solution.md` file but haven't been archived yet:
 
 ```bash
-scripts/list-solved
+{base_path}/scripts/list-solved
 ```
 
 **When to use:**
@@ -52,12 +63,12 @@ scripts/list-solved
 Archive a solved issue by moving it from `issues/` to `archive/`:
 
 ```bash
-scripts/archive <issue-name>
+{base_path}/scripts/archive <issue-name>
 ```
 
 **Example:**
 ```bash
-scripts/archive agent-crd-embedding-in-tool
+{base_path}/scripts/archive agent-crd-embedding-in-tool
 ```
 
 **When to use:**
@@ -82,19 +93,19 @@ scripts/archive agent-crd-embedding-in-tool
 Automatically solve all unsolved issues (issues with `problem.md` but no `solution.md`):
 
 ```bash
-scripts/solve-unsolved [command-name]
+{base_path}/scripts/solve-unsolved [command-name]
 ```
 
 **Examples:**
 ```bash
 # Use default cx:solve command
-scripts/solve-unsolved
+{base_path}/scripts/solve-unsolved
 
 # Use Python-specific solve workflow
-scripts/solve-unsolved cxp:solve
+{base_path}/scripts/solve-unsolved cxp:solve
 
 # Use TypeScript-specific solve workflow
-scripts/solve-unsolved cxt:solve
+{base_path}/scripts/solve-unsolved cxt:solve
 ```
 
 **Parameters:**
@@ -147,29 +158,29 @@ scripts/solve-unsolved cxt:solve
 
 1. **List open issues** to see what needs work:
    ```bash
-   scripts/list-open
+   {base_path}/scripts/list-open
    ```
 
 2. **Solve all unsolved issues** (batch mode):
    ```bash
    # For general projects
-   scripts/solve-unsolved
+   {base_path}/scripts/solve-unsolved
 
    # For Python projects
-   scripts/solve-unsolved cxp:solve
+   {base_path}/scripts/solve-unsolved cxp:solve
 
    # For TypeScript projects
-   scripts/solve-unsolved cxt:solve
+   {base_path}/scripts/solve-unsolved cxt:solve
    ```
 
 3. **List solved issues** ready to archive:
    ```bash
-   scripts/list-solved
+   {base_path}/scripts/list-solved
    ```
 
 4. **Archive when solved**:
    ```bash
-   scripts/archive agent-crd-embedding-in-tool
+   {base_path}/scripts/archive agent-crd-embedding-in-tool
    ```
 
 ## Directory Structure

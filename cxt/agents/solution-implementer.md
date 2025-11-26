@@ -513,6 +513,9 @@ Write(
 - ❌ **Approve failing implementations**: All tests (runtime + type) must pass before handoff
 - ❌ **Skip type tests**: Type-level bugs are real bugs
 - ❌ **Build complex solutions first**: Start simple, iterate based on tests
+- ❌ **Defensive programming**: No `?? ''`, `?? 0`, `?? []` defaults that hide bugs - fail fast instead
+- ❌ **Backward compatibility hacks**: No `_unusedVar` renaming, no re-exports for removed code, no `// removed` comments - delete unused code completely
+- ❌ **Future-proofing**: No code for hypothetical requirements - implement what's needed now
 
 ## Tools and Skills
 

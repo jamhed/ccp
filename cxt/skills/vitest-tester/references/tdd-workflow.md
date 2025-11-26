@@ -1,6 +1,6 @@
-# Test-Driven Development (TDD) Workflow (Jest)
+# Test-Driven Development (TDD) Workflow
 
-Comprehensive guide to Test-Driven Development methodology, the Red-Green-Refactor cycle, and TDD best practices for TypeScript development with Jest.
+Comprehensive guide to Test-Driven Development methodology, the Red-Green-Refactor cycle, and TDD best practices for TypeScript development with Vitest.
 
 ## Agent Guidance: When to Apply TDD
 
@@ -12,13 +12,15 @@ User asks to implement feature/fix bug
     ├─ Is this complex logic? → YES, use TDD
     ├─ Is this bug fix? → YES, write failing test first
     ├─ Is this new feature? → YES, use TDD
+    ├─ Does it involve complex types? → YES, write type tests first
     └─ Is this zod schema? → YES, use TDD
 ```
 
 **Agent Instructions**:
-1. **ALWAYS** use TDD for: complex business logic, bug fixes, new features, API development
+1. **ALWAYS** use TDD for: complex business logic, bug fixes, new features, API development, type-heavy code
 2. **SKIP** TDD for: UI prototypes, proof-of-concepts, one-off scripts
 3. **FOLLOW** this sequence: Red (failing test) → Green (minimal code) → Refactor (improve)
+4. **INCLUDE** type tests for complex generics
 5. **NEVER** skip the refactor step
 6. **ENSURE** only ONE failing test at a time
 
@@ -34,7 +36,7 @@ TDD follows a simple three-step cycle:
 
 ```typescript
 // 1. RED - Write a failing test
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { ShoppingCart, Product } from './cart';
 
 describe('ShoppingCart', () => {
@@ -114,11 +116,12 @@ class ShoppingCart {
 **Step-by-Step Agent Procedure**:
 1. **Understand requirement** - Clarify what needs to be implemented
 2. **Write failing test** - Test describes expected behavior
-3. **Run test** - Verify it fails (Red): `npm test`
+3. **Run test** - Verify it fails (Red)
 4. **Write minimal code** - Just enough to pass the test
-5. **Run test** - Verify it passes (Green): `npm test`
-6. **Refactor** - Improve code quality, run tests again
-7. **Repeat** - Next requirement/edge case
+5. **Run test** - Verify it passes (Green)
+6. **Write type test** - If complex types are involved
+7. **Refactor** - Improve code quality, run tests again
+8. **Repeat** - Next requirement/edge case
 
 **Test Naming Convention for Agents**:
 ```typescript
@@ -142,6 +145,7 @@ it('creates order with correct total', () => {});
 - Never have more than one failing test at a time
 - Use descriptive test names
 - Follow Arrange-Act-Assert (AAA) structure
+- Include type tests for complex generics
 - Test zod schemas and validation
 
 **Don'ts**:
@@ -170,6 +174,7 @@ Studies show significant benefits:
 - Complex business logic
 - API development
 - Library/framework development
+- Type-heavy code
 - Zod schema validation
 
 **Less suitable for**:
@@ -186,7 +191,7 @@ Studies show significant benefits:
 
 **Step 1 - Red**: Write failing test
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { ShoppingCart, Product } from './cart';
 
 describe('ShoppingCart', () => {
@@ -268,7 +273,7 @@ class ShoppingCart {
 
 **Step 1 - Red**: Write test that reproduces bug
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { ShoppingCart, Product, ValidationError } from './cart';
 
 describe('ShoppingCart', () => {
@@ -278,7 +283,7 @@ describe('ShoppingCart', () => {
       const product = new Product('Book', 10.00);
 
       expect(() => cart.addItem(product, -5))
-        .toThrow(ValidationError);
+        .toThrowError(ValidationError);
     });
 
     it('throws ValidationError when quantity is zero', () => {
@@ -286,7 +291,7 @@ describe('ShoppingCart', () => {
       const product = new Product('Book', 10.00);
 
       expect(() => cart.addItem(product, 0))
-        .toThrow(ValidationError);
+        .toThrowError(ValidationError);
     });
   });
 });
@@ -333,7 +338,7 @@ class ShoppingCart {
 ### Arrange-Act-Assert (AAA)
 
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 
 describe('UserService', () => {
   it('creates user with valid data', () => {
@@ -396,11 +401,33 @@ it('test', () => {});
 it('user', () => {});
 ```
 
-## TDD with Zod Schemas
+## Type-Driven Development with TDD
+
+TypeScript adds a powerful dimension to TDD - write type tests alongside unit tests.
+
+### Type Test Example
+
+```typescript
+// user.test-d.ts
+import { expectTypeOf } from 'vitest';
+import type { User, CreateUserInput, UserId } from './user';
+
+// Test type relationships
+expectTypeOf<CreateUserInput>().toMatchTypeOf<Omit<User, 'id'>>();
+
+// Test branded types are distinct
+expectTypeOf<UserId>().not.toMatchTypeOf<string>();
+
+// Test function return types
+import { createUser } from './user';
+expectTypeOf(createUser).returns.toMatchTypeOf<User>();
+```
+
+### TDD with Zod Schemas
 
 ```typescript
 // 1. RED - Write failing test for schema
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { UserSchema } from './schemas';
 
 describe('UserSchema', () => {
@@ -463,11 +490,11 @@ Test with too many mocks that doesn't test real behavior:
 ```typescript
 // BAD - The Mockery
 it('processes order', () => {
-  const mockDb = jest.fn();
-  const mockEmail = jest.fn();
-  const mockPayment = jest.fn();
-  const mockInventory = jest.fn();
-  const mockShipping = jest.fn();
+  const mockDb = vi.fn();
+  const mockEmail = vi.fn();
+  const mockPayment = vi.fn();
+  const mockInventory = vi.fn();
+  const mockShipping = vi.fn();
   // Not testing any real code
 });
 ```
@@ -498,6 +525,7 @@ Before completing TDD implementation, verify:
 - [ ] Tests follow Arrange-Act-Assert pattern
 - [ ] Edge cases are covered (empty, null, undefined, boundary values)
 - [ ] Error cases are tested with proper error types
+- [ ] Type tests written for complex generics
 
 **Code Quality**:
 - [ ] Minimal code written to pass tests (no over-engineering)
@@ -508,7 +536,8 @@ Before completing TDD implementation, verify:
 - [ ] Zod schemas used for runtime validation
 
 **Test Execution**:
-- [ ] All tests pass (`npm test`)
+- [ ] All tests pass (`pnpm exec vitest run`)
+- [ ] Type tests pass (`pnpm exec vitest --typecheck`)
 - [ ] Tests run fast (<100ms for unit tests)
 - [ ] Tests are independent (can run in any order)
 - [ ] No test interdependencies
@@ -527,6 +556,7 @@ Before completing TDD implementation, verify:
 | Bug fix | **Test-first** | Reproduce bug with test |
 | Complex logic | **Test-first** | Think through edge cases |
 | Refactoring | **Test-first** | Ensure no regression |
+| Complex types | **Type test first** | Define type behavior |
 | Zod schemas | **Test-first** | Define validation rules |
 | Prototype/POC | **Code-first** | Explore solution space |
 | UI mockup | **Code-first** | Visual feedback needed |

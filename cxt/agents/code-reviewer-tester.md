@@ -266,6 +266,9 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/testing.md`:
 - [ ] Branded types for domain values
 - [ ] Error chaining with `cause`
 - [ ] No `any` without justification
+- [ ] No defensive programming (`?? ''`, `?? 0`, `?? []` defaults)
+- [ ] No backward compatibility hacks (unused `_vars`, re-exports, `// removed` comments)
+- [ ] Unused code deleted completely (not renamed or commented)
 
 ## Next Steps
 - [x] Code review completed
@@ -320,6 +323,9 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/testing.md`:
 - ❌ **Accept `any` without justification** - Flag for fix or follow-up
 - ❌ **Skip type tests** - They catch type-level bugs
 - ❌ **Proceed if re-implementation required** - Report and stop
+- ❌ **Accept defensive programming** - Flag `?? ''`, `?? 0`, `?? []` defaults that hide bugs
+- ❌ **Accept backward compatibility hacks** - Flag `_unusedVar`, re-exports, `// removed` comments - unused code must be deleted
+- ❌ **Accept over-engineering** - Flag code for hypothetical future requirements
 
 ## Critical Mindset
 

@@ -1,6 +1,6 @@
-# Test Organization and CI/CD (Jest)
+# Test Organization and CI/CD (2025)
 
-Comprehensive guide to TypeScript test strategy, organization, directory structure, Jest configuration, parallel execution, and CI/CD integration.
+Comprehensive guide to TypeScript test strategy, organization, directory structure, Vitest configuration, parallel execution, and CI/CD integration.
 
 ## Agent Guidance: Test Type Selection
 
@@ -10,6 +10,7 @@ Comprehensive guide to TypeScript test strategy, organization, directory structu
 - **API endpoint** → INTEGRATION TEST
 - **External service call** → INTEGRATION TEST (mock) or E2E TEST (real)
 - **Complete user workflow** → E2E TEST
+- **Type behavior/inference** → TYPE TEST (*.test-d.ts)
 - **Zod schema validation** → UNIT TEST
 - **React/Vue component** → COMPONENT TEST
 
@@ -17,8 +18,9 @@ Comprehensive guide to TypeScript test strategy, organization, directory structu
 1. **DEFAULT** to unit tests (70% of tests)
 2. **ADD** integration tests for component boundaries (20% of tests)
 3. **LIMIT** E2E tests to critical workflows only (10% of tests)
-4. **WRITE** tests from bottom up: Unit → Integration → E2E
-5. **NEVER** skip unit tests in favor of integration/E2E tests
+4. **ADD** type tests for complex type behaviors
+5. **WRITE** tests from bottom up: Unit → Integration → E2E
+6. **NEVER** skip unit tests in favor of integration/E2E tests
 
 ## Testing Pyramid Strategy
 
@@ -47,10 +49,17 @@ Comprehensive guide to TypeScript test strategy, organization, directory structu
 - Most brittle (depend on full system)
 - Highest value for critical paths
 
+**Type Tests**:
+- Compile-time verification
+- Test type inference behavior
+- Use `expectTypeOf` assertions
+- No runtime cost
+
 **Context-Specific Adjustments**:
 - Microservices: May need more integration tests (60/30/10)
 - UI-heavy apps: May need more E2E tests (60/25/15)
 - Libraries: Can focus more on unit tests (80/15/5)
+- Type-heavy libs: Add significant type tests
 
 ### Test Type Characteristics
 
@@ -59,6 +68,7 @@ Comprehensive guide to TypeScript test strategy, organization, directory structu
 | **Unit** | <10ms | `*.test.ts` | Single function | Pure logic, calculations |
 | **Integration** | <1s | `*.integration.test.ts` | Component interaction | DB, API, services |
 | **E2E** | >1s | `*.e2e.test.ts` | Full system | Critical user flows |
+| **Type** | Compile | `*.test-d.ts` | Type behavior | Type inference, generics |
 | **Component** | <100ms | `*.test.tsx` | UI components | React/Vue components |
 
 ### Test Coverage Goals
@@ -67,6 +77,7 @@ Comprehensive guide to TypeScript test strategy, organization, directory structu
 - Unit tests: >80% code coverage
 - Integration tests: All major components
 - E2E tests: All critical user paths
+- Type tests: Complex generic types
 
 **By Code Area**:
 - Business logic: >90% coverage
@@ -78,7 +89,7 @@ Comprehensive guide to TypeScript test strategy, organization, directory structu
 
 ## Directory Structure
 
-### Recommended Structure (Jest)
+### Recommended Structure (Vitest)
 
 ```
 project/
@@ -89,7 +100,7 @@ project/
 │       ├── services.ts
 │       └── utils.ts
 ├── tests/
-│   ├── setup.ts              # Jest setup file
+│   ├── setup.ts              # Test setup (vitest.setup.ts)
 │   ├── helpers/              # Test utilities
 │   │   └── factories.ts      # Test data factories
 │   ├── unit/
@@ -100,9 +111,11 @@ project/
 │   │   ├── api.test.ts
 │   │   ├── database.test.ts
 │   │   └── external.test.ts
-│   └── e2e/
-│       └── workflows.test.ts
-├── jest.config.js
+│   ├── e2e/
+│   │   └── workflows.test.ts
+│   └── types/
+│       └── inference.test-d.ts
+├── vitest.config.ts
 ├── tsconfig.json
 └── package.json
 ```
@@ -115,15 +128,16 @@ project/
 │   └── myapp/
 │       ├── models.ts
 │       ├── models.test.ts        # Co-located unit tests
+│       ├── models.test-d.ts      # Co-located type tests
 │       ├── services.ts
 │       └── services.test.ts
 ├── tests/
 │   ├── integration/
 │   └── e2e/
-└── jest.config.js
+└── vitest.config.ts
 ```
 
-### __tests__ Directory Structure
+### Feature-Based Structure
 
 ```
 project/
@@ -145,95 +159,92 @@ project/
         └── checkout.e2e.test.ts
 ```
 
-## Jest Configuration (TypeScript)
+## Vitest Configuration (2025)
 
 ### Basic Configuration
 
-```javascript
-// jest.config.js
-/** @type {import('jest').Config} */
-module.exports = {
-  // TypeScript support with ts-jest
-  preset: 'ts-jest',
+```typescript
+// vitest.config.ts
+import { defineConfig } from 'vitest/config';
 
-  // Test environment
-  testEnvironment: 'node',
+export default defineConfig({
+  test: {
+    // Explicit imports (2025 best practice - avoid globals)
+    globals: false,
 
-  // Setup files
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+    // Environment
+    environment: 'node',
 
-  // Test patterns
-  testMatch: [
-    '**/__tests__/**/*.test.ts',
-    '**/*.test.ts',
-  ],
+    // Setup files
+    setupFiles: ['./tests/setup.ts'],
 
-  // Ignore patterns
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/dist/',
-  ],
+    // Include patterns
+    include: [
+      'src/**/*.test.ts',
+      'tests/**/*.test.ts',
+    ],
 
-  // Module resolution
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-  },
+    // Type testing
+    typecheck: {
+      enabled: true,
+      tsconfig: './tsconfig.json',
+      include: ['**/*.test-d.ts'],
+    },
 
-  // Coverage configuration
-  collectCoverageFrom: [
-    'src/**/*.ts',
-    '!src/**/*.d.ts',
-    '!src/**/*.test.ts',
-    '!src/**/index.ts',
-  ],
-  coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'html'],
-  coverageThreshold: {
-    global: {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
+    // Coverage
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
+      exclude: [
+        '**/*.test.ts',
+        '**/*.test-d.ts',
+        '**/*.spec.ts',
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/*.d.ts',
+        '**/tests/**',
+      ],
+      thresholds: {
+        branches: 80,
+        functions: 80,
+        lines: 80,
+        statements: 80,
+      },
     },
   },
-
-  // Clear mocks between tests
-  clearMocks: true,
-
-  // Verbose output
-  verbose: true,
-};
+});
 ```
 
-### React/Browser Configuration
+### React/Vue Configuration
 
-```javascript
-// jest.config.js
-/** @type {import('jest').Config} */
-module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom',
-  setupFilesAfterEnv: [
-    '<rootDir>/tests/setup.ts',
-    '@testing-library/jest-dom',
-  ],
-  moduleNameMapper: {
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-    '^@/(.*)$': '<rootDir>/src/$1',
+```typescript
+// vitest.config.ts
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: false,
+    environment: 'jsdom',
+    setupFiles: ['./tests/setup.ts'],
+    css: true,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+    },
   },
-  transform: {
-    '^.+\\.tsx?$': 'ts-jest',
-  },
-};
+});
 ```
 
 ### Setup File
 
 ```typescript
 // tests/setup.ts
-import { jest } from '@jest/globals';
+import { expect, vi } from 'vitest';
+import '@testing-library/jest-dom/vitest';
 
-// Extend expect with custom matchers
+// Custom matchers
 expect.extend({
   toBeValidUUID(received: string) {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -247,11 +258,8 @@ expect.extend({
 
 // Global setup
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
-
-// Increase timeout for integration tests
-jest.setTimeout(10000);
 ```
 
 ## Test Naming Conventions
@@ -261,6 +269,7 @@ jest.setTimeout(10000);
 ```
 ✅ Good:
 - user.test.ts           # Unit tests
+- user.test-d.ts         # Type tests
 - user.integration.test.ts  # Integration tests
 - user.e2e.test.ts       # E2E tests
 - Button.test.tsx        # Component tests
@@ -292,7 +301,7 @@ describe('UserService', () => {
 ### Test Organization
 
 ```typescript
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('UserService', () => {
   // Group by method
@@ -313,23 +322,31 @@ describe('UserService', () => {
 ### Running Tests in Parallel
 
 ```bash
-# Default parallel execution (uses workers)
-npm test
+# Default parallel execution
+pnpm exec vitest
 
-# Specify max workers
-npm test -- --maxWorkers=4
+# Specify workers
+pnpm exec vitest --pool=threads --poolOptions.threads.maxThreads=4
 
-# Run in band (sequential, for debugging)
-npm test -- --runInBand
+# Sequential (for tests that can't run in parallel)
+pnpm exec vitest --pool=forks --poolOptions.forks.singleFork
+```
 
-# Run specific tests in parallel
-npm test -- --testPathPattern="unit"
+### Marking Sequential Tests
+
+```typescript
+// Use describe.sequential for tests that must run in order
+describe.sequential('Database migrations', () => {
+  it('runs migration 1', () => {});
+  it('runs migration 2', () => {});
+  it('runs migration 3', () => {});
+});
 ```
 
 ### Test Isolation
 
 ```typescript
-import { describe, it, beforeEach, afterEach } from '@jest/globals';
+import { describe, it, beforeEach, afterEach } from 'vitest';
 
 describe('Database tests', () => {
   let connection: Connection;
@@ -365,28 +382,36 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ['18.x', '20.x']
+        node-version: ['20.x', '22.x']
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 9
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+        cache: 'pnpm'
 
     - name: Install dependencies
-      run: npm ci
+      run: pnpm install
 
     - name: Run type checking
-      run: npx tsc --noEmit
+      run: pnpm exec tsc --noEmit
 
     - name: Run linters
-      run: npm run lint
+      run: pnpm exec eslint .
 
     - name: Run tests
-      run: npm test -- --coverage --ci
+      run: pnpm exec vitest run --coverage --reporter=verbose
+
+    - name: Run type tests
+      run: pnpm exec vitest --typecheck
 
     - name: Upload coverage
       uses: codecov/codecov-action@v4
@@ -399,46 +424,46 @@ jobs:
 ```json
 {
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "test:ci": "jest --ci --coverage --maxWorkers=2",
-    "test:unit": "jest --testPathPattern=unit",
-    "test:integration": "jest --testPathPattern=integration",
-    "test:e2e": "jest --testPathPattern=e2e"
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:types": "vitest --typecheck",
+    "test:watch": "vitest --watch",
+    "test:ci": "vitest run --coverage --reporter=verbose"
   }
 }
 ```
 
-## Common Commands
+## Common Commands (2025)
 
 ```bash
-# Run all tests
-npm test
+# Run all tests (watch mode by default)
+pnpm exec vitest
 
-# Watch mode
-npm test -- --watch
+# Run tests once
+pnpm exec vitest run
 
-# Run specific file
-npm test -- user.test.ts
+# UI mode (visual testing)
+pnpm exec vitest --ui
 
-# Run tests matching pattern
-npm test -- -t "creates user"
+# Type checking
+pnpm exec vitest --typecheck
 
-# Coverage report
-npm test -- --coverage
+# Run specific test file
+pnpm exec vitest user.test.ts
 
-# Update snapshots
-npm test -- -u
+# Run with coverage
+pnpm exec vitest run --coverage
 
-# Run in CI mode
-npm test -- --ci
+# All in one: tests + types + coverage
+pnpm exec vitest run --typecheck --coverage
 
-# Verbose output
-npm test -- --verbose
+# Run only changed files
+pnpm exec vitest --changed
 
-# Run sequentially (debugging)
-npm test -- --runInBand
+# Filter by test name
+pnpm exec vitest -t "creates user"
 ```
 
 ## Agent Implementation Checklist
@@ -450,6 +475,7 @@ When implementing tests for a TypeScript feature, follow this checklist:
 - [ ] Identify public API / external interfaces
 - [ ] Note all error conditions
 - [ ] List edge cases (empty, null, undefined, boundary values)
+- [ ] Identify type behaviors to test
 
 **Step 2: Write Unit Tests First (70%)**
 - [ ] Test each function/method independently
@@ -459,19 +485,25 @@ When implementing tests for a TypeScript feature, follow this checklist:
 - [ ] Test zod schema validation (if applicable)
 - [ ] Ensure all tests pass
 
-**Step 3: Add Integration Tests (20%)**
+**Step 3: Write Type Tests**
+- [ ] Test type inference behavior
+- [ ] Test generic constraints
+- [ ] Test branded types (if applicable)
+- [ ] Test discriminated unions
+
+**Step 4: Add Integration Tests (20%)**
 - [ ] Test database interactions
 - [ ] Test API endpoints
 - [ ] Test service integrations
 - [ ] Ensure all tests pass
 
-**Step 4: Add E2E Tests (10%)**
+**Step 5: Add E2E Tests (10%)**
 - [ ] Identify 2-3 critical user workflows
 - [ ] Write E2E tests for critical paths only
 - [ ] Ensure all tests pass
 
-**Step 5: Validate Coverage**
-- [ ] Run coverage report: `npm test -- --coverage`
+**Step 6: Validate Coverage**
+- [ ] Run coverage report: `pnpm exec vitest run --coverage`
 - [ ] Verify >80% coverage for critical code
 - [ ] Identify and test uncovered critical paths
 - [ ] Don't chase 100% - focus on meaningful coverage
@@ -482,21 +514,20 @@ When implementing tests for a TypeScript feature, follow this checklist:
 
 1. **Follow the testing pyramid**
    - 70% unit tests, 20% integration, 10% E2E
+   - Add type tests for complex types
 
-2. **Use explicit imports**
+2. **Use explicit imports (2025 standard)**
    ```typescript
-   import { describe, it, expect, jest } from '@jest/globals';
+   import { describe, it, expect, vi } from 'vitest';
    ```
 
-3. **Clear mocks between tests**
-   ```typescript
-   beforeEach(() => {
-     jest.clearAllMocks();
-   });
-   ```
+3. **Run tests in parallel**
+   - Vitest runs tests in parallel by default
+   - Mark sequential tests appropriately
 
 4. **Use type-safe mocks**
-   - Use `jest.MockedFunction<typeof fn>` for typed mocks
+   - Leverage TypeScript for mock type safety
+   - Use `vi.fn<[], ReturnType>()` for typed mocks
 
 5. **Integrate with CI/CD**
    - Run tests on every commit
@@ -504,14 +535,19 @@ When implementing tests for a TypeScript feature, follow this checklist:
 
 ### Don'ts
 
-1. **Don't rely on global jest**
-   - Always import from `@jest/globals`
+1. **Don't use globals**
+   - Always import test functions explicitly
+   - Avoid `globals: true` in config
 
 2. **Don't mix test types**
    - Separate unit, integration, e2e directories
    - Use clear file naming patterns
 
-3. **Don't ignore TypeScript errors in tests**
+3. **Don't skip type tests**
+   - Test type inference for complex generics
+   - Use `.test-d.ts` files
+
+4. **Don't ignore TypeScript errors in tests**
    - Tests should be as type-safe as production code
 
 ## Resources

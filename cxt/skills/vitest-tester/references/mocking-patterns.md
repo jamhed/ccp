@@ -1,17 +1,17 @@
-# Mocking Patterns and Test Doubles (Jest)
+# Mocking Patterns and Test Doubles (2025)
 
-Comprehensive guide to mocking in TypeScript tests using Jest's mocking utilities, type-safe mocking patterns, and test doubles.
+Comprehensive guide to mocking in TypeScript tests using Vitest's `vi` utilities, type-safe mocking patterns, and test doubles.
 
 ## Agent Quick Reference: When to Mock
 
 **Decision Tree**:
 ```
 What are you testing?
-├─ HTTP/API call? → MOCK (use jest.fn or msw)
+├─ HTTP/API call? → MOCK (use vi.fn or msw)
 ├─ Database operation? → DON'T MOCK (use test database)
-├─ File I/O? → MOCK (use jest.mock)
-├─ Time/random? → MOCK (use jest.useFakeTimers)
-├─ External service? → MOCK (use jest.fn)
+├─ File I/O? → MOCK (use vi.mock)
+├─ Time/random? → MOCK (use vi.useFakeTimers)
+├─ External service? → MOCK (use vi.fn)
 ├─ Internal business logic? → DON'T MOCK (test directly)
 └─ Your own classes? → DON'T MOCK (refactor or use real instances)
 ```
@@ -19,22 +19,22 @@ What are you testing?
 **Agent Instructions**:
 1. **MOCK** external dependencies only (APIs, external services, time)
 2. **DON'T MOCK** internal code (business logic, your classes)
-3. **USE** type-safe mocks with `jest.MockedFunction`
-4. **USE** `jest.mock()` for module-level mocking
-5. **USE** `jest.spyOn()` sparingly (prefer full mocks or real objects)
-6. **RESET** mocks between tests with `jest.clearAllMocks()`
+3. **USE** type-safe mocks with generic parameters
+4. **USE** vi.hoisted() for mock references in vi.mock()
+5. **USE** vi.spyOn() sparingly (prefer full mocks or real objects)
+6. **RESET** mocks between tests with vi.clearAllMocks()
 
 **Golden Rule for Agents**: If you own the code, don't mock it. Test it directly.
 
-## Agent Quick Reference: jest.fn vs jest.mock vs jest.spyOn
+## Agent Quick Reference: vi.fn vs vi.mock vs vi.spyOn
 
 | What You're Mocking | Use This | Example |
 |---------------------|----------|---------|
-| Function argument | `jest.fn()` | `const callback = jest.fn()` |
-| Module export | `jest.mock()` | `jest.mock('./module')` |
-| Object method | `jest.spyOn()` | `jest.spyOn(obj, 'method')` |
-| HTTP requests | `jest.fn()` or MSW | Mock fetch/axios |
-| Timers | `jest.useFakeTimers()` | Control time |
+| Function argument | `vi.fn()` | `const callback = vi.fn()` |
+| Module export | `vi.mock()` | `vi.mock('./module')` |
+| Object method | `vi.spyOn()` | `vi.spyOn(obj, 'method')` |
+| HTTP requests | `vi.fn()` or MSW | Mock fetch/axios |
+| Timers | `vi.useFakeTimers()` | Control time |
 
 ## Test Doubles Overview
 
@@ -56,16 +56,16 @@ What are you testing?
 - Wraps real object
 - Records interactions for verification
 
-## jest.fn() - Creating Mock Functions
+## vi.fn() - Creating Mock Functions
 
 ### Basic Usage
 
 ```typescript
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi } from 'vitest';
 
-describe('jest.fn basics', () => {
+describe('vi.fn basics', () => {
   it('creates a mock function', () => {
-    const mock = jest.fn();
+    const mock = vi.fn();
     mock('arg1', 'arg2');
 
     expect(mock).toHaveBeenCalled();
@@ -75,45 +75,47 @@ describe('jest.fn basics', () => {
 });
 ```
 
-### Type-Safe Mock Functions
+### Type-Safe Mock Functions (2025 Best Practice)
 
 ```typescript
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 
 // Type-safe mock with return type
-const mockFn = jest.fn<(a: string, b: number) => boolean>();
+const mockFn = vi.fn<[string, number], boolean>();
 mockFn.mockReturnValue(true);
 
-// Using MockedFunction type
+// Type-safe mock from function type
 type UserFetcher = (id: string) => Promise<User>;
-const mockFetch: jest.MockedFunction<UserFetcher> = jest.fn();
+const mockFetch = vi.fn<Parameters<UserFetcher>, ReturnType<UserFetcher>>();
 mockFetch.mockResolvedValue({ id: '1', name: 'Alice' });
 
-// Type from existing function
-import { getUser } from './api';
-const mockedGetUser = getUser as jest.MockedFunction<typeof getUser>;
-mockedGetUser.mockResolvedValue({ id: '1', name: 'Alice' });
+// Using MockedFunction type
+import type { MockedFunction } from 'vitest';
+
+const realFn = (x: number) => x * 2;
+const mockedFn: MockedFunction<typeof realFn> = vi.fn();
+mockedFn.mockReturnValue(42);
 ```
 
 ### Return Values
 
 ```typescript
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 
 // Return specific value
-const mock = jest.fn().mockReturnValue(42);
+const mock = vi.fn().mockReturnValue(42);
 expect(mock()).toBe(42);
 
 // Return promise
-const asyncMock = jest.fn().mockResolvedValue({ data: 'value' });
+const asyncMock = vi.fn().mockResolvedValue({ data: 'value' });
 expect(await asyncMock()).toEqual({ data: 'value' });
 
 // Return rejected promise
-const failingMock = jest.fn().mockRejectedValue(new Error('Failed'));
+const failingMock = vi.fn().mockRejectedValue(new Error('Failed'));
 await expect(failingMock()).rejects.toThrow('Failed');
 
 // Return different values on successive calls
-const multiMock = jest.fn()
+const multiMock = vi.fn()
   .mockReturnValueOnce(1)
   .mockReturnValueOnce(2)
   .mockReturnValue(99);
@@ -126,14 +128,14 @@ expect(multiMock()).toBe(99); // Subsequent calls
 ### Implementation Mock
 
 ```typescript
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 
 // Custom implementation
-const mock = jest.fn().mockImplementation((a: number, b: number) => a + b);
+const mock = vi.fn().mockImplementation((a: number, b: number) => a + b);
 expect(mock(2, 3)).toBe(5);
 
 // One-time implementation
-const onceMock = jest.fn()
+const onceMock = vi.fn()
   .mockImplementationOnce(() => 'first')
   .mockImplementationOnce(() => 'second');
 
@@ -142,47 +144,22 @@ expect(onceMock()).toBe('second');
 expect(onceMock()).toBeUndefined();
 ```
 
-## jest.mock() - Module Mocking
+## vi.mock() - Module Mocking
 
 ### Basic Module Mock
 
 ```typescript
-import { jest, describe, it, expect } from '@jest/globals';
+import { vi, describe, it, expect } from 'vitest';
 
-// Mock must be hoisted - placed before imports
-jest.mock('./userService');
-
-import { getUser, createUser } from './userService';
-
-// Cast to MockedFunction
-const mockGetUser = getUser as jest.MockedFunction<typeof getUser>;
-const mockCreateUser = createUser as jest.MockedFunction<typeof createUser>;
-
-describe('with mocked userService', () => {
-  beforeEach(() => {
-    mockGetUser.mockResolvedValue({ id: '1', name: 'Alice' });
-  });
-
-  it('uses mocked getUser', async () => {
-    const user = await getUser('1');
-    expect(user.name).toBe('Alice');
-  });
-});
-```
-
-### Manual Mock with Factory
-
-```typescript
-import { jest } from '@jest/globals';
-
-jest.mock('./userService', () => ({
-  getUser: jest.fn().mockResolvedValue({ id: '1', name: 'Alice' }),
-  createUser: jest.fn().mockResolvedValue({ id: '2', name: 'Bob' }),
+// Mock must be hoisted - use vi.mock at top level
+vi.mock('./userService', () => ({
+  getUser: vi.fn().mockResolvedValue({ id: '1', name: 'Alice' }),
+  createUser: vi.fn().mockResolvedValue({ id: '2', name: 'Bob' }),
 }));
 
 import { getUser, createUser } from './userService';
 
-describe('with factory mock', () => {
+describe('with mocked userService', () => {
   it('uses mocked getUser', async () => {
     const user = await getUser('1');
     expect(user.name).toBe('Alice');
@@ -190,17 +167,57 @@ describe('with factory mock', () => {
 });
 ```
 
-### Partial Module Mock (requireActual)
+### Using vi.hoisted() for Mock References
 
 ```typescript
-import { jest } from '@jest/globals';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
-jest.mock('./utils', () => {
-  const actual = jest.requireActual('./utils');
+// Use vi.hoisted() to create mock references accessible in tests
+const mocks = vi.hoisted(() => ({
+  getUser: vi.fn(),
+  createUser: vi.fn(),
+}));
+
+vi.mock('./userService', () => ({
+  getUser: mocks.getUser,
+  createUser: mocks.createUser,
+}));
+
+import { getUser, createUser } from './userService';
+
+describe('with hoisted mocks', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('can configure mock in test', async () => {
+    mocks.getUser.mockResolvedValue({ id: '1', name: 'Alice' });
+
+    const user = await getUser('1');
+    expect(user.name).toBe('Alice');
+    expect(mocks.getUser).toHaveBeenCalledWith('1');
+  });
+
+  it('can use different mock values', async () => {
+    mocks.getUser.mockResolvedValue({ id: '2', name: 'Bob' });
+
+    const user = await getUser('2');
+    expect(user.name).toBe('Bob');
+  });
+});
+```
+
+### Partial Module Mock (importOriginal)
+
+```typescript
+import { vi } from 'vitest';
+
+vi.mock('./utils', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./utils')>();
   return {
     ...actual,
     // Only mock specific exports
-    formatDate: jest.fn().mockReturnValue('2025-01-01'),
+    formatDate: vi.fn().mockReturnValue('2025-01-01'),
     // Keep others as-is
   };
 });
@@ -209,11 +226,10 @@ jest.mock('./utils', () => {
 ### Default Export Mock
 
 ```typescript
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 
 // Default export requires special handling
-jest.mock('./config', () => ({
-  __esModule: true,
+vi.mock('./config', () => ({
   default: {
     apiUrl: 'http://test.api.com',
     timeout: 1000,
@@ -227,17 +243,15 @@ import config from './config';
 ### Class Mock
 
 ```typescript
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 
-jest.mock('./Database', () => {
-  return {
-    Database: jest.fn().mockImplementation(() => ({
-      connect: jest.fn().mockResolvedValue(true),
-      query: jest.fn().mockResolvedValue([]),
-      close: jest.fn(),
-    })),
-  };
-});
+vi.mock('./Database', () => ({
+  Database: vi.fn().mockImplementation(() => ({
+    connect: vi.fn().mockResolvedValue(true),
+    query: vi.fn().mockResolvedValue([]),
+    close: vi.fn(),
+  })),
+}));
 
 import { Database } from './Database';
 
@@ -250,69 +264,65 @@ describe('with mocked Database', () => {
 });
 ```
 
-## jest.spyOn() - Spy on Methods
+## vi.spyOn() - Spy on Methods
 
 ### Basic Spy Usage
 
 ```typescript
-import { jest, describe, it, expect } from '@jest/globals';
+import { vi, describe, it, expect } from 'vitest';
 
 const calculator = {
   add: (a: number, b: number) => a + b,
   multiply: (a: number, b: number) => a * b,
 };
 
-describe('jest.spyOn', () => {
+describe('vi.spyOn', () => {
   it('spies on method calls', () => {
-    const spy = jest.spyOn(calculator, 'add');
+    const spy = vi.spyOn(calculator, 'add');
 
     const result = calculator.add(2, 3);
 
     expect(result).toBe(5);  // Real implementation called
     expect(spy).toHaveBeenCalledWith(2, 3);
     expect(spy).toHaveBeenCalledTimes(1);
-
-    spy.mockRestore();  // Restore original
   });
 
   it('can mock implementation', () => {
-    const spy = jest.spyOn(calculator, 'add').mockReturnValue(100);
+    const spy = vi.spyOn(calculator, 'add').mockReturnValue(100);
 
     const result = calculator.add(2, 3);
 
     expect(result).toBe(100);  // Mocked return value
     expect(spy).toHaveBeenCalledWith(2, 3);
-
-    spy.mockRestore();
   });
 });
 ```
 
-### When to Use jest.spyOn
+### When to Use vi.spyOn
 
 **Best Practice for Agents**:
-- Prefer `jest.mock()` for module-level mocking
-- Use `jest.spyOn()` when you need the real implementation but want to verify calls
-- Use `jest.fn()` for callbacks and function arguments
+- Prefer `vi.mock()` for module-level mocking
+- Use `vi.spyOn()` when you need the real implementation but want to verify calls
+- Use `vi.fn()` for callbacks and function arguments
 
 ## Mocking External Dependencies
 
 ### Mocking HTTP Requests (fetch)
 
 ```typescript
-import { jest, describe, it, expect, beforeEach } from '@jest/globals';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 describe('API client', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('fetches user data', async () => {
     const mockResponse = {
       ok: true,
-      json: jest.fn().mockResolvedValue({ id: '1', name: 'Alice' }),
+      json: vi.fn().mockResolvedValue({ id: '1', name: 'Alice' }),
     };
-    global.fetch = jest.fn().mockResolvedValue(mockResponse) as jest.Mock;
+    global.fetch = vi.fn().mockResolvedValue(mockResponse);
 
     const response = await fetch('/api/users/1');
     const user = await response.json();
@@ -322,7 +332,7 @@ describe('API client', () => {
   });
 
   it('handles fetch errors', async () => {
-    global.fetch = jest.fn().mockRejectedValue(new Error('Network error')) as jest.Mock;
+    global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
 
     await expect(fetch('/api/users/1')).rejects.toThrow('Network error');
   });
@@ -332,11 +342,11 @@ describe('API client', () => {
 ### Mocking Axios
 
 ```typescript
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 import axios from 'axios';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+vi.mock('axios');
+const mockedAxios = vi.mocked(axios);
 
 describe('with mocked axios', () => {
   it('makes GET request', async () => {
@@ -355,43 +365,43 @@ describe('with mocked axios', () => {
 ### Mocking Timers
 
 ```typescript
-import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 describe('timer functions', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('tests setTimeout', () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
     setTimeout(callback, 1000);
 
     expect(callback).not.toHaveBeenCalled();
 
-    jest.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(1000);
 
     expect(callback).toHaveBeenCalledTimes(1);
   });
 
   it('tests setInterval', () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
     setInterval(callback, 1000);
 
-    jest.advanceTimersByTime(3000);
+    vi.advanceTimersByTime(3000);
 
     expect(callback).toHaveBeenCalledTimes(3);
   });
 
   it('runs all pending timers', () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
     setTimeout(callback, 5000);
     setTimeout(callback, 10000);
 
-    jest.runAllTimers();
+    vi.runAllTimers();
 
     expect(callback).toHaveBeenCalledTimes(2);
   });
@@ -401,16 +411,16 @@ describe('timer functions', () => {
 ### Mocking Date
 
 ```typescript
-import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 describe('date functions', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2025-01-15T10:00:00Z'));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-01-15T10:00:00Z'));
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('uses mocked date', () => {
@@ -422,7 +432,7 @@ describe('date functions', () => {
   });
 
   it('advances time', () => {
-    jest.advanceTimersByTime(24 * 60 * 60 * 1000);  // 1 day
+    vi.advanceTimersByTime(24 * 60 * 60 * 1000);  // 1 day
 
     const now = new Date();
     expect(now.getDate()).toBe(16);
@@ -433,13 +443,13 @@ describe('date functions', () => {
 ### Mocking Environment Variables
 
 ```typescript
-import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 describe('environment variables', () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
-    jest.resetModules();
+    vi.resetModules();
     process.env = { ...originalEnv };
   });
 
@@ -460,45 +470,47 @@ describe('environment variables', () => {
 ### Mocking with Correct Types
 
 ```typescript
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 import type { User, UserService } from './types';
 
 // Type-safe mock service
-const mockUserService: jest.Mocked<UserService> = {
-  getUser: jest.fn<(id: string) => Promise<User | null>>()
+const mockUserService: UserService = {
+  getUser: vi.fn<[string], Promise<User | null>>()
     .mockResolvedValue({ id: '1', name: 'Alice', email: 'alice@example.com' }),
 
-  createUser: jest.fn<(data: Omit<User, 'id'>) => Promise<User>>()
+  createUser: vi.fn<[Omit<User, 'id'>], Promise<User>>()
     .mockImplementation(async (data) => ({
       id: 'new-id',
       ...data,
     })),
 
-  deleteUser: jest.fn<(id: string) => Promise<boolean>>()
+  deleteUser: vi.fn<[string], Promise<boolean>>()
     .mockResolvedValue(true),
 };
 
 // TypeScript will error if mock doesn't match interface
 ```
 
-### Using jest.Mocked for Type Inference
+### Using vi.mocked() for Type Inference
 
 ```typescript
-import { jest } from '@jest/globals';
-import axios from 'axios';
+import { vi } from 'vitest';
+import { getUser } from './userService';
 
-jest.mock('axios');
+vi.mock('./userService');
 
-// jest.Mocked adds proper mock types
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+// vi.mocked adds proper mock types
+const mockedGetUser = vi.mocked(getUser);
 
-mockedAxios.get.mockResolvedValue({
-  data: { users: [] },
+mockedGetUser.mockResolvedValue({
+  id: '1',
+  name: 'Alice',
+  email: 'alice@example.com',
 });
 
-// TypeScript knows mockedAxios.get is a mock
-mockedAxios.get.mockClear();
-mockedAxios.get.mockReset();
+// TypeScript knows mockedGetUser is MockedFunction
+mockedGetUser.mockClear();
+mockedGetUser.mockReset();
 ```
 
 ## Mocking Best Practices
@@ -508,33 +520,37 @@ mockedAxios.get.mockReset();
 1. **Mock external dependencies only**
 ```typescript
 // GOOD - Mock external API
-jest.mock('axios');
+vi.mock('axios');
 
 // BAD - Don't mock internal business logic
-jest.mock('./calculateTotal'); // Test the real calculation instead
+vi.mock('./calculateTotal'); // Test the real calculation instead
 ```
 
 2. **Use type-safe mocks**
 ```typescript
 // GOOD
-const mock = jest.fn<(x: string) => number>().mockReturnValue(42);
+const mock = vi.fn<[string], number>().mockReturnValue(42);
 
 // BAD - No type safety
-const mock = jest.fn().mockReturnValue(42);
+const mock = vi.fn().mockReturnValue(42);
 ```
 
 3. **Clear mocks between tests**
 ```typescript
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 ```
 
-4. **Restore spies after tests**
+4. **Use vi.hoisted() with vi.mock()**
 ```typescript
-afterEach(() => {
-  jest.restoreAllMocks();
-});
+const mocks = vi.hoisted(() => ({
+  fetchData: vi.fn(),
+}));
+
+vi.mock('./api', () => ({
+  fetchData: mocks.fetchData,
+}));
 ```
 
 ### Don'ts
@@ -542,20 +558,20 @@ afterEach(() => {
 1. **Don't over-mock**
 ```typescript
 // BAD - Mocking everything defeats the test
-jest.mock('./service1');
-jest.mock('./service2');
-jest.mock('./service3');
-jest.mock('./service4');
+vi.mock('./service1');
+vi.mock('./service2');
+vi.mock('./service3');
+vi.mock('./service4');
 // Not testing anything real
 ```
 
 2. **Don't mock what you own**
 ```typescript
 // BAD - Mocking internal functions
-jest.mock('./utils/helpers');
+vi.mock('./utils/helpers');
 
 // GOOD - Mock external dependencies only
-jest.mock('axios');
+vi.mock('axios');
 ```
 
 3. **Don't create brittle mocks**
@@ -588,9 +604,9 @@ const user: User = { id: '1', name: 'Alice', email: 'alice@example.com' };
 ```typescript
 // Mock chained calls: service.get().process().result()
 const mock = {
-  get: jest.fn().mockReturnThis(),
-  process: jest.fn().mockReturnThis(),
-  result: jest.fn().mockReturnValue(42),
+  get: vi.fn().mockReturnThis(),
+  process: vi.fn().mockReturnThis(),
+  result: vi.fn().mockReturnValue(42),
 };
 
 const result = mock.get().process().result();
@@ -600,10 +616,10 @@ expect(result).toBe(42);
 ### Mock with Side Effects
 
 ```typescript
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 
 // Retry logic test
-const mockApi = jest.fn()
+const mockApi = vi.fn()
   .mockRejectedValueOnce(new Error('Connection failed'))
   .mockRejectedValueOnce(new Error('Connection failed'))
   .mockResolvedValue({ status: 'success' });
@@ -619,9 +635,9 @@ expect(mockApi).toHaveBeenCalledTimes(3);
 ### Mock Assertions
 
 ```typescript
-import { jest, expect } from '@jest/globals';
+import { vi, expect } from 'vitest';
 
-const mock = jest.fn();
+const mock = vi.fn();
 mock('arg1', 'arg2');
 mock('arg3');
 
@@ -660,24 +676,24 @@ expect(mock.mock.lastCall).toEqual(['arg3']);
 When using mocks in tests, verify:
 
 **Mock Selection**:
-- [ ] Using jest.fn() for function mocks
-- [ ] Using jest.mock() for module mocks
-- [ ] Using jest.spyOn() only when real implementation needed
+- [ ] Using vi.fn() for function mocks
+- [ ] Using vi.mock() for module mocks
+- [ ] Using vi.spyOn() only when real implementation needed
 - [ ] Not mocking internal business logic
 
 **Type Safety**:
 - [ ] Mocks have correct type parameters
-- [ ] Using jest.MockedFunction or jest.Mocked
+- [ ] Using vi.mocked() for type inference
 - [ ] No `any` types in mock code
 
 **Mock Configuration**:
 - [ ] mockReturnValue/mockResolvedValue set correctly
 - [ ] mockRejectedValue for error cases
+- [ ] vi.hoisted() used with vi.mock()
 
 **Cleanup**:
-- [ ] jest.clearAllMocks() in beforeEach
-- [ ] jest.useRealTimers() in afterEach (if using fake timers)
-- [ ] jest.restoreAllMocks() if using spies
+- [ ] vi.clearAllMocks() in beforeEach
+- [ ] vi.useRealTimers() in afterEach (if using fake timers)
 - [ ] Mocks reset between tests
 
 **Assertions**:
@@ -692,21 +708,21 @@ When using mocks in tests, verify:
 1. Mock external dependencies, not internal code
 2. Use type-safe mocks with generic parameters
 3. Clear mocks between tests
-4. Prefer real objects over mocks when possible
-5. Test behavior, not implementation
+4. Use vi.hoisted() with vi.mock()
+5. Prefer real objects over mocks when possible
+6. Test behavior, not implementation
 
 ### Tools Summary
 
 | Tool | Use Case |
 |------|----------|
-| `jest.fn()` | Create mock function |
-| `jest.mock()` | Mock module exports |
-| `jest.spyOn()` | Spy on object methods |
-| `jest.Mocked<T>` | Type for mocked module |
-| `jest.MockedFunction<T>` | Type for mocked function |
-| `jest.useFakeTimers()` | Mock time |
-| `jest.clearAllMocks()` | Reset all mocks |
-| `jest.restoreAllMocks()` | Restore spied functions |
+| `vi.fn()` | Create mock function |
+| `vi.mock()` | Mock module exports |
+| `vi.spyOn()` | Spy on object methods |
+| `vi.mocked()` | Add mock types to function |
+| `vi.hoisted()` | Create references for vi.mock |
+| `vi.useFakeTimers()` | Mock time |
+| `vi.clearAllMocks()` | Reset all mocks |
 
 ## Resources
 

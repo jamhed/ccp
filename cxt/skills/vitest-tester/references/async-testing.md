@@ -1,6 +1,6 @@
-# Async Testing Patterns (Jest)
+# Async Testing Patterns (2025)
 
-Comprehensive guide to testing asynchronous TypeScript code with Jest, including async/await patterns, Promise testing, and timer mocking.
+Comprehensive guide to testing asynchronous TypeScript code with Vitest, including async/await patterns, Promise testing, and concurrent test execution.
 
 ## Agent Quick Reference: Async Testing
 
@@ -11,7 +11,7 @@ What are you testing?
 ├─ Promise-returning function? → Use async test or resolves/rejects
 ├─ Callback-based function? → Convert to Promise or use done callback
 ├─ Concurrent operations? → Use Promise.all in test
-├─ Timeout behavior? → Use jest.useFakeTimers()
+├─ Timeout behavior? → Use vi.useFakeTimers()
 ├─ AbortController? → Test abort signal handling
 └─ Sync function? → Use regular test (no async)
 ```
@@ -20,7 +20,7 @@ What are you testing?
 1. **ALWAYS** use async/await in test functions for async code
 2. **USE** .resolves/.rejects for cleaner Promise assertions
 3. **AVOID** mixing callbacks and Promises
-4. **USE** jest.useFakeTimers() for testing timeouts/delays
+4. **USE** vi.useFakeTimers() for testing timeouts/delays
 5. **HANDLE** cleanup properly in afterEach
 6. **TEST** both success and error paths
 
@@ -36,7 +36,7 @@ What are you testing?
 ### Using async/await
 
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 
 describe('async functions', () => {
   it('awaits async function result', async () => {
@@ -55,7 +55,7 @@ describe('async functions', () => {
 ### Using .resolves/.rejects Matchers
 
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 
 describe('Promise matchers', () => {
   it('uses resolves for successful Promise', async () => {
@@ -79,7 +79,7 @@ describe('Promise matchers', () => {
 ### Testing Rejected Promises
 
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 
 describe('error handling', () => {
   it('rejects with specific error', async () => {
@@ -95,7 +95,7 @@ describe('error handling', () => {
   it('catches rejection in try-catch', async () => {
     try {
       await fetchUser('invalid');
-      expect(true).toBe(false); // Should not reach here
+      expect.fail('Should have thrown');
     } catch (error) {
       expect(error).toBeInstanceOf(NotFoundError);
       expect((error as NotFoundError).message).toBe('User not found');
@@ -109,19 +109,19 @@ describe('error handling', () => {
 ### Using Fake Timers
 
 ```typescript
-import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 describe('timeout functions', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
-  it('tests debounced function', () => {
-    const callback = jest.fn();
+  it('tests debounced function', async () => {
+    const callback = vi.fn();
     const debounced = debounce(callback, 1000);
 
     debounced();
@@ -130,7 +130,7 @@ describe('timeout functions', () => {
 
     expect(callback).not.toHaveBeenCalled();
 
-    jest.advanceTimersByTime(1000);
+    await vi.advanceTimersByTimeAsync(1000);
 
     expect(callback).toHaveBeenCalledTimes(1);
   });
@@ -139,20 +139,20 @@ describe('timeout functions', () => {
     const promise = delayedFetch('/api/data', 5000);
 
     // Fast-forward time
-    jest.advanceTimersByTime(5000);
+    await vi.advanceTimersByTimeAsync(5000);
 
     const result = await promise;
     expect(result).toBeDefined();
   });
 
-  it('runs all pending timers', () => {
-    const callbacks = [jest.fn(), jest.fn(), jest.fn()];
+  it('runs all pending timers', async () => {
+    const callbacks = [vi.fn(), vi.fn(), vi.fn()];
 
     setTimeout(callbacks[0], 1000);
     setTimeout(callbacks[1], 2000);
     setTimeout(callbacks[2], 3000);
 
-    jest.runAllTimers();
+    await vi.runAllTimersAsync();
 
     callbacks.forEach(cb => expect(cb).toHaveBeenCalledTimes(1));
   });
@@ -162,7 +162,7 @@ describe('timeout functions', () => {
 ### Testing Real Timeouts
 
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 
 describe('real timeout tests', () => {
   it('completes within timeout', async () => {
@@ -184,7 +184,7 @@ describe('real timeout tests', () => {
 ## Testing AbortController
 
 ```typescript
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi } from 'vitest';
 
 describe('AbortController', () => {
   it('aborts fetch request', async () => {
@@ -212,7 +212,7 @@ describe('AbortController', () => {
   });
 
   it('handles timeout with AbortController', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -221,12 +221,12 @@ describe('AbortController', () => {
       signal: controller.signal,
     });
 
-    jest.advanceTimersByTime(5000);
+    await vi.advanceTimersByTimeAsync(5000);
 
     await expect(fetchPromise).rejects.toThrow();
 
     clearTimeout(timeoutId);
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 });
 ```
@@ -236,7 +236,7 @@ describe('AbortController', () => {
 ### Testing Concurrent Operations
 
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 
 describe('concurrent operations', () => {
   it('runs operations in parallel', async () => {
@@ -287,16 +287,93 @@ describe('concurrent operations', () => {
 });
 ```
 
+### Testing with Promise.any
+
+```typescript
+import { describe, it, expect } from 'vitest';
+
+describe('Promise.any', () => {
+  it('returns first successful result', async () => {
+    const result = await Promise.any([
+      Promise.reject(new Error('Server 1 failed')),
+      fetchFromServer2(),  // Succeeds
+      Promise.reject(new Error('Server 3 failed')),
+    ]);
+
+    expect(result).toBeDefined();
+  });
+
+  it('throws AggregateError when all fail', async () => {
+    await expect(Promise.any([
+      Promise.reject(new Error('Failed 1')),
+      Promise.reject(new Error('Failed 2')),
+      Promise.reject(new Error('Failed 3')),
+    ])).rejects.toBeInstanceOf(AggregateError);
+  });
+});
+```
+
+## Testing Async Iterators
+
+```typescript
+import { describe, it, expect } from 'vitest';
+
+describe('async iterators', () => {
+  it('iterates async generator', async () => {
+    const results: number[] = [];
+
+    async function* numberGenerator() {
+      yield 1;
+      yield 2;
+      yield 3;
+    }
+
+    for await (const num of numberGenerator()) {
+      results.push(num);
+    }
+
+    expect(results).toEqual([1, 2, 3]);
+  });
+
+  it('collects stream data', async () => {
+    const chunks: string[] = [];
+
+    for await (const chunk of createReadableStream()) {
+      chunks.push(chunk);
+    }
+
+    expect(chunks.join('')).toBe('Hello, World!');
+  });
+
+  it('handles async iterator errors', async () => {
+    async function* failingGenerator() {
+      yield 1;
+      throw new Error('Generator failed');
+    }
+
+    const results: number[] = [];
+
+    await expect(async () => {
+      for await (const num of failingGenerator()) {
+        results.push(num);
+      }
+    }).rejects.toThrow('Generator failed');
+
+    expect(results).toEqual([1]);
+  });
+});
+```
+
 ## Testing Event Emitters
 
 ```typescript
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi } from 'vitest';
 import { EventEmitter } from 'events';
 
 describe('event emitters', () => {
-  it('listens for events', () => {
+  it('listens for events', async () => {
     const emitter = new EventEmitter();
-    const handler = jest.fn();
+    const handler = vi.fn();
 
     emitter.on('data', handler);
     emitter.emit('data', { value: 42 });
@@ -341,15 +418,15 @@ describe('event emitters', () => {
 ## Testing Retries
 
 ```typescript
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 describe('retry logic', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('succeeds after retries', async () => {
-    const mockFetch = jest.fn()
+    const mockFetch = vi.fn()
       .mockRejectedValueOnce(new Error('Attempt 1 failed'))
       .mockRejectedValueOnce(new Error('Attempt 2 failed'))
       .mockResolvedValue({ data: 'success' });
@@ -361,7 +438,7 @@ describe('retry logic', () => {
   });
 
   it('throws after max retries', async () => {
-    const mockFetch = jest.fn()
+    const mockFetch = vi.fn()
       .mockRejectedValue(new Error('Always fails'));
 
     await expect(retryWithBackoff(mockFetch, 3))
@@ -371,9 +448,9 @@ describe('retry logic', () => {
   });
 
   it('respects backoff timing', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
-    const mockFetch = jest.fn()
+    const mockFetch = vi.fn()
       .mockRejectedValueOnce(new Error('Fail 1'))
       .mockRejectedValueOnce(new Error('Fail 2'))
       .mockResolvedValue({ data: 'success' });
@@ -387,19 +464,78 @@ describe('retry logic', () => {
     expect(mockFetch).toHaveBeenCalledTimes(1);
 
     // Wait for first backoff (1000ms)
-    jest.advanceTimersByTime(1000);
-    await Promise.resolve(); // Flush microtasks
+    await vi.advanceTimersByTimeAsync(1000);
     expect(mockFetch).toHaveBeenCalledTimes(2);
 
     // Wait for second backoff (2000ms)
-    jest.advanceTimersByTime(2000);
-    await Promise.resolve();
+    await vi.advanceTimersByTimeAsync(2000);
     expect(mockFetch).toHaveBeenCalledTimes(3);
 
     const result = await promise;
     expect(result.data).toBe('success');
 
-    jest.useRealTimers();
+    vi.useRealTimers();
+  });
+});
+```
+
+## Testing WebSockets
+
+```typescript
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
+describe('WebSocket', () => {
+  let mockWebSocket: {
+    send: ReturnType<typeof vi.fn>;
+    close: ReturnType<typeof vi.fn>;
+    onmessage?: (event: { data: string }) => void;
+    onopen?: () => void;
+    onerror?: (error: Error) => void;
+    onclose?: () => void;
+  };
+
+  beforeEach(() => {
+    mockWebSocket = {
+      send: vi.fn(),
+      close: vi.fn(),
+    };
+
+    vi.stubGlobal('WebSocket', vi.fn(() => mockWebSocket));
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('sends message over WebSocket', async () => {
+    const client = new WebSocketClient('ws://example.com');
+
+    // Simulate connection open
+    mockWebSocket.onopen?.();
+
+    client.send({ type: 'greeting', message: 'Hello' });
+
+    expect(mockWebSocket.send).toHaveBeenCalledWith(
+      JSON.stringify({ type: 'greeting', message: 'Hello' })
+    );
+  });
+
+  it('receives messages', async () => {
+    const client = new WebSocketClient('ws://example.com');
+    const messageHandler = vi.fn();
+
+    client.onMessage(messageHandler);
+    mockWebSocket.onopen?.();
+
+    // Simulate receiving message
+    mockWebSocket.onmessage?.({
+      data: JSON.stringify({ type: 'response', value: 42 }),
+    });
+
+    expect(messageHandler).toHaveBeenCalledWith({
+      type: 'response',
+      value: 42,
+    });
   });
 });
 ```
@@ -407,7 +543,7 @@ describe('retry logic', () => {
 ## Async Setup and Teardown
 
 ```typescript
-import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
 
 describe('async setup/teardown', () => {
   let database: Database;
@@ -449,7 +585,7 @@ describe('async setup/teardown', () => {
 ### Pattern 1: Testing Async Error Boundaries
 
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 
 describe('async error boundaries', () => {
   it('handles async errors gracefully', async () => {
@@ -475,7 +611,7 @@ describe('async error boundaries', () => {
 ### Pattern 2: Testing Async Queues
 
 ```typescript
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi } from 'vitest';
 
 describe('async queue', () => {
   it('processes items in order', async () => {
@@ -495,13 +631,33 @@ describe('async queue', () => {
 
     expect(results).toEqual([1, 2, 3]);
   });
+
+  it('handles concurrent processing', async () => {
+    const queue = new AsyncQueue<number>({ concurrency: 2 });
+    const processing: number[] = [];
+
+    queue.onProcess(async (item) => {
+      processing.push(item);
+      await delay(100);
+      processing.splice(processing.indexOf(item), 1);
+    });
+
+    queue.push(1);
+    queue.push(2);
+    queue.push(3);
+
+    await delay(50);
+
+    // Two items processing concurrently
+    expect(processing).toHaveLength(2);
+  });
 });
 ```
 
 ### Pattern 3: Testing Race Conditions
 
 ```typescript
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi } from 'vitest';
 
 describe('race conditions', () => {
   it('handles concurrent updates correctly', async () => {
@@ -532,30 +688,6 @@ describe('race conditions', () => {
   });
 });
 ```
-
-## Using done Callback (Legacy)
-
-For callback-based APIs that can't be promisified:
-
-```typescript
-import { describe, it, expect } from '@jest/globals';
-
-describe('callback tests', () => {
-  it('handles callback-based API', (done) => {
-    fetchDataWithCallback((error, data) => {
-      try {
-        expect(error).toBeNull();
-        expect(data).toBe('success');
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-  });
-});
-```
-
-**Note**: Prefer async/await over done callback when possible.
 
 ## Best Practices
 
@@ -594,9 +726,9 @@ When implementing async tests, verify:
 - [ ] Using try-catch appropriately
 
 **Timers**:
-- [ ] jest.useFakeTimers() for delay tests
-- [ ] jest.useRealTimers() in afterEach
-- [ ] Using advanceTimersByTime correctly
+- [ ] vi.useFakeTimers() for delay tests
+- [ ] vi.useRealTimers() in afterEach
+- [ ] Using advanceTimersByTimeAsync for async timers
 
 **Cleanup**:
 - [ ] Resources cleaned in afterEach
