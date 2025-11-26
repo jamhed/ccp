@@ -9,17 +9,46 @@ Expert assistant for writing comprehensive, type-safe tests with Vitest for Type
 
 ## Core Capabilities
 
-### Test Framework - Vitest (2025 Standard)
+### 1. Test Framework - Vitest (2025 Standard)
 - **Vitest**: Industry standard for 2025 - blazing fast, Vite-native, ESM-first, type testing built-in
-- **Why Vitest in 2025**: Native ESM support, 2-3x faster than Jest, type testing with `expectTypeOf`, better DX
-- **Migration from Jest**: Jest-compatible API makes migration seamless
+- **Why Vitest in 2025**: Native ESM support, 10-20x faster than Jest in watch mode, type testing with `expectTypeOf`, better DX
+- **Migration from Jest**: Jest-compatible API (95% compatibility) makes migration seamless
 - **TypeScript 5.7+ integration**: Excellent support with minimal configuration
 
-### 2025 Testing Principles
+**Reference**: [references/test-organization.md](references/test-organization.md)
+
+### 2. 2025 Testing Principles
 - **Explicit imports**: Never use globals, always import `describe`, `it`, `expect` explicitly
 - **Type testing**: Use `expectTypeOf` for testing types (not just runtime behavior)
 - **ESM-first**: All tests use import/export, no CommonJS
-- **Type-safe mocking**: Mocks must be type-safe, errors on misalignment
+- **Type-safe mocking**: Mocks must be type-safe, use `vi.fn<>()` with type parameters
+
+### 3. Test-Driven Development (TDD)
+When implementing new features or fixing bugs:
+- **Write failing test first**: Define expected behavior in test
+- **Write minimal code**: Just enough to pass the test
+- **Refactor**: Improve code quality while tests pass
+- Use TDD for complex logic, bug fixes, new features, zod schemas
+
+**Reference**: [references/tdd-workflow.md](references/tdd-workflow.md)
+
+### 4. Mocking and Test Isolation
+When mocking dependencies:
+- **Mock external dependencies**: HTTP, DB, filesystem, time, external APIs
+- **Don't mock internal code**: Test real integrations where possible
+- **Use type-safe mocks**: `vi.fn<[args], ReturnType>()` for type safety
+- **Use vi.hoisted()**: For mock references in vi.mock()
+
+**Reference**: [references/mocking-patterns.md](references/mocking-patterns.md)
+
+### 5. Async Testing
+When testing async code:
+- Use async/await in test functions
+- Use `.resolves/.rejects` for Promise assertions
+- Use `vi.useFakeTimers()` for testing delays and timeouts
+- Test both success and error paths
+
+**Reference**: [references/async-testing.md](references/async-testing.md)
 
 ### Testing Patterns
 
@@ -618,6 +647,16 @@ test('extracts property with type safety', () => {
 });
 ```
 
+## Reference Files
+
+- **[test-organization.md](references/test-organization.md)**: Testing pyramid strategy (70/20/10), test types, directory structure, Vitest configuration, parallel execution, CI/CD integration
+- **[tdd-workflow.md](references/tdd-workflow.md)**: Test-Driven Development process, Red-Green-Refactor cycle, TDD patterns for TypeScript
+- **[mocking-patterns.md](references/mocking-patterns.md)**: vi.fn, vi.mock, vi.spyOn, type-safe mocking, when to mock
+- **[async-testing.md](references/async-testing.md)**: Async/await testing, Promise assertions, fake timers, concurrent tests
+- **[external-sources.md](references/external-sources.md)**: Curated external documentation and web references
+
+Load references as needed based on the testing task at hand.
+
 ## When to Use This Skill
 
 **2025 Use Cases**:
@@ -631,3 +670,4 @@ test('extracts property with type safety', () => {
 - Testing zod schemas and runtime validation
 - Testing branded types and discriminated unions
 - Setting up CI/CD with type checking + tests + coverage
+- Practicing TDD workflow for new features and bug fixes
