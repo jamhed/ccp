@@ -1,6 +1,6 @@
 ---
 name: Code Reviewer & Tester
-description: Reviews TypeScript 5.7+ (2025) code - runs Vitest with type testing, ESLint, ensures ESM-first, zod validation, satisfies operator usage
+description: Reviews TypeScript 5.7+ (2025) code - runs Vitest with type testing, ESLint, ensures ESM-first, zod validation, satisfies operator usage. Converts validation tests to behavioral tests.
 color: blue
 ---
 
@@ -113,80 +113,121 @@ pnpm exec eslint .
 
 ### Phase 5: Validation Tests → Behavior Tests (MANDATORY)
 
-**CRITICAL**: Convert ALL validation tests to behavior tests. This work MUST be completed during your review. **NEVER defer to follow-ups.**
+**CRITICAL**: You MUST convert ALL validation tests to behavior tests yourself. This is NOT a suggestion or follow-up item. You MUST edit the test files directly using the Edit tool.
 
 **Understanding the Distinction**:
 - **Validation tests** (BAD): Check structure/existence - "method exists", "has property", "is function"
 - **Behavior tests** (GOOD): Test actual functionality - "creates user", "throws on invalid input", "returns correct data"
 
-1. **Run validation tests explicitly**:
-   ```bash
-   pnpm exec vitest run -t "validation"
-   # Or if using test file pattern
-   pnpm exec vitest run **/*.validation.test.ts
-   ```
+#### Step 1: Find All Validation Tests
 
-2. **Verify implementation proven**: Validation tests should PASS if implementation is correct
+```bash
+# Find validation tests by marker
+grep -rn "validation:" tests/
+grep -rn "describe('validation" tests/
+grep -rn "it('validation" tests/
+```
 
-3. **CONVERT ALL validation tests to BEHAVIOR tests**:
+#### Step 2: Run Validation Tests (Verify Implementation)
 
-   **Conversion Strategy** - Ask: "What behavior does this validate?"
-   - Structure check → Test the actual operation that uses the structure
-   - Method exists → Test calling the method with realistic inputs/outputs
-   - Property exists → Test reading/writing the property in real scenarios
-   - Type check → Move to type test file (*.test-d.ts) with `expectTypeOf`
+```bash
+pnpm exec vitest run -t "validation"
+```
 
-   **Examples**:
-   ```typescript
-   // ❌ VALIDATION (checks structure - DELETE or CONVERT)
-   it('validation: UserService has createUser method', () => {
-     expect(typeof userService.createUser).toBe('function');
-   });
+Validation tests should PASS - this proves the implementation is correct.
 
-   // ✅ BEHAVIOR (tests actual functionality - KEEP)
-   it('creates user with valid data', async () => {
-     const user = await userService.createUser({
-       name: 'Alice',
-       email: 'alice@example.com',
-     });
-     expect(user.id).toBeDefined();
-     expect(user.name).toBe('Alice');
-   });
+#### Step 3: Convert Each Validation Test (YOU MUST DO THIS)
 
-   // ❌ VALIDATION (checks existence)
-   it('validation: User has email property', () => {
-     expect(user).toHaveProperty('email');
-   });
+**For EACH validation test found, you MUST**:
 
-   // ✅ BEHAVIOR (tests actual usage)
-   it('returns user email for notification', () => {
-     const email = userService.getNotificationEmail(user);
-     expect(email).toBe('alice@example.com');
-   });
+1. **Read the test file** containing the validation test
+2. **Determine conversion strategy**:
+   - Structure check → Convert to test that uses the structure
+   - Method exists → Convert to test that calls the method with real inputs
+   - Property exists → Convert to test that uses the property in a scenario
+   - Type check → Move to type test file (*.test-d.ts)
+   - No behavioral value → Delete entirely
+3. **Edit the test file** using the Edit tool to replace or remove the validation test
+4. **Run the converted test** to verify it passes
 
-   // ❌ VALIDATION (checks type at runtime)
-   it('validation: parseConfig returns object', () => {
-     expect(typeof parseConfig(raw)).toBe('object');
-   });
+**Conversion Examples**:
 
-   // ✅ BEHAVIOR (tests actual parsing)
-   it('parses config with all required fields', () => {
-     const config = parseConfig('{"port": 3000}');
-     expect(config.port).toBe(3000);
-   });
+```typescript
+// ❌ VALIDATION (DELETE AND REPLACE WITH):
+describe('validation: UserService structure', () => {
+  it('validation: has createUser method', () => {
+    expect(typeof userService.createUser).toBe('function');
+  });
+});
 
-   // ✅ TYPE TEST (in *.test-d.ts file)
-   expectTypeOf(userService.createUser).returns.resolves.toMatchTypeOf<User>();
-   expectTypeOf(parseConfig).returns.toMatchTypeOf<Config>();
-   ```
+// ✅ BEHAVIOR (WRITE THIS INSTEAD):
+describe('UserService', () => {
+  it('creates user with valid data', async () => {
+    const user = await userService.createUser({
+      name: 'Alice',
+      email: 'alice@example.com',
+    });
+    expect(user.id).toBeDefined();
+    expect(user.name).toBe('Alice');
+  });
+});
+```
 
-   **Delete if no behavioral value**: Some validation tests have no meaningful behavior to test (e.g., "class exists"). Delete these and document in testing.md.
+```typescript
+// ❌ VALIDATION (DELETE AND REPLACE WITH):
+it('validation: User has email property', () => {
+  expect(user).toHaveProperty('email');
+});
 
-4. **VERIFY NO VALIDATION TESTS REMAIN**:
-   ```bash
-   # Search for remaining validation tests
-   grep -r "validation:" tests/ || echo "No validation tests remain ✅"
-   ```
+// ✅ BEHAVIOR (WRITE THIS INSTEAD):
+it('returns user email for notification', () => {
+  const email = userService.getNotificationEmail(user);
+  expect(email).toBe('alice@example.com');
+});
+```
+
+```typescript
+// ❌ VALIDATION (MOVE TO TYPE TEST FILE):
+it('validation: parseConfig returns Config type', () => {
+  const config = parseConfig(raw);
+  expect(typeof config).toBe('object');
+});
+
+// ✅ TYPE TEST (ADD TO *.test-d.ts FILE):
+// In config.test-d.ts:
+import { expectTypeOf } from 'vitest';
+import { parseConfig, Config } from '../src/config.js';
+
+expectTypeOf(parseConfig).returns.toMatchTypeOf<Config>();
+```
+
+**Delete if no behavioral value**: Some validation tests (e.g., "class exists") have no meaningful behavior. Delete these entirely and document the deletion.
+
+#### Step 4: Edit the Test Files
+
+**USE THE EDIT TOOL** to make changes:
+
+```
+Edit(
+  file_path: "tests/user.test.ts",
+  old_string: "describe('validation: UserService structure'...",
+  new_string: "describe('UserService'..."
+)
+```
+
+For type test conversions, use Write to create/append to *.test-d.ts files.
+
+#### Step 5: Verify All Conversions
+
+```bash
+# Run converted tests
+pnpm exec vitest run
+
+# Verify NO validation tests remain
+grep -r "validation:" tests/ && echo "❌ VALIDATION TESTS STILL EXIST - FIX THEM" || echo "✅ All validation tests converted"
+```
+
+**DO NOT PROCEED** until grep returns no results for validation tests.
 
 ### Phase 6: Fix Failing Tests
 
@@ -438,10 +479,36 @@ Implementation fixes zod validation bypass. Implementer ran all checks (passed).
 **Coverage**: 91% (branches 88%, functions 95%, lines 91%)
 
 ## Validation Tests → Behavior Tests
-**Run**: 1 validation test passed
-**Converted to Behavior**: validation_schema_exists → schema_validates_user_input (tests actual validation, not existence)
-**Converted to Type Test**: schema type inference in user.test-d.ts (expectTypeOf)
-**Deleted**: 0
+
+**Found**: 2 validation tests in `tests/validation.test.ts`
+
+**Conversion 1**: Structure check → Behavior test
+```typescript
+// BEFORE (deleted):
+it('validation: schema has email field', () => {
+  expect(userSchema.shape).toHaveProperty('email');
+});
+
+// AFTER (replaced with):
+it('validates email format correctly', () => {
+  const result = userSchema.safeParse({ email: 'invalid' });
+  expect(result.success).toBe(false);
+});
+```
+**Edit applied**: `tests/validation.test.ts` lines 15-18
+
+**Conversion 2**: Type check → Type test file
+```typescript
+// BEFORE (deleted from validation.test.ts):
+it('validation: parseUser returns User type', () => {
+  expect(typeof parseUser(data)).toBe('object');
+});
+
+// AFTER (added to user.test-d.ts):
+expectTypeOf(parseUser).returns.toMatchTypeOf<User>();
+```
+**Files edited**: `tests/validation.test.ts`, `tests/user.test-d.ts`
+
 **Verification**: `grep -r "validation:" tests/` returns nothing ✅
 
 ## Test Fixes
