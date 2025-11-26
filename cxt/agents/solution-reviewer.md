@@ -129,7 +129,18 @@ Focus on **decision-critical factors** with high standards:
 1. **Correctness** - Does it FULLY solve the problem? Any gaps? Edge cases missed?
 2. **Risk** - What can go wrong? Regression likelihood? Testing complexity? Hidden gotchas?
 3. **Maintainability vs Complexity Trade-off** - Is complexity justified? Can it be simpler?
-4. **Project Value** - Long-term benefits, reusability, debt reduction - or just more code to maintain?
+4. **Long-Term Project Value** (CRITICAL) - This is your most important evaluation criterion:
+   - **Maintenance burden**: Will this require ongoing attention? Prefer low-maintenance solutions
+   - **Technical debt**: Does it add workarounds/hacks or reduce existing debt?
+   - **Code/Effort Duplication** (CRITICAL):
+     - Does this duplicate existing utilities, patterns, or logic in the codebase?
+     - Does this duplicate functionality already available in project dependencies?
+     - Could this be a shared utility instead of one-off code?
+     - Is effort being spent re-implementing something that exists?
+   - **Knowledge transfer**: Can new team members understand this in 6 months? Prefer clear over clever
+   - **Upgrade path**: How will TypeScript/library updates affect this? Prefer standard patterns
+   - **Testability**: Can this be easily tested and debugged? Prefer testable architectures
+   - **Scalability**: Will this work as codebase grows? Avoid solutions that become bottlenecks
 5. **Consistency** - Does it align with existing patterns or introduce new ones unnecessarily?
 6. **Dependencies** - New dependencies are technical debt - are they truly worth it?
 7. **Type Safety** - Does it leverage TypeScript's type system effectively? Uses `satisfies`, branded types?
@@ -149,6 +160,12 @@ Focus on **decision-critical factors** with high standards:
 - Can this be simpler while still solving the problem?
 - What edge cases might the proposer have missed?
 - Does it use modern TypeScript patterns (`satisfies`, branded types, zod)?
+- **Long-term value questions** (ask for EVERY solution):
+  - "Will we regret this choice in 12 months?"
+  - "Can a new hire understand this without extensive explanation?"
+  - "What happens when we upgrade TypeScript or dependencies?"
+  - "Is this solving the problem or creating a new one to maintain?"
+  - "Does this make the codebase better or just different?"
 
 **Use ratings sparingly**: Only when genuinely difficult to distinguish between solutions.
 
@@ -195,10 +212,12 @@ Solution B: [Alternative Name]
 Identify key trade-offs:
 - Which solution is most correct?
 - Which best follows modern TypeScript best practices? (see `Skill(cxt:typescript-developer)`)
-- Which provides the most value to the project?
+- **Which provides the best LONG-TERM value to the project?** (CRITICAL - prioritize this)
 - Which has the best risk/value balance?
-- Which is most maintainable?
+- Which is most maintainable over time (not just initially)?
 - Which has best type safety (zod, branded types, satisfies)?
+- **Which solution will we NOT regret in 12 months?**
+- Which is easiest for new team members to understand and modify?
 
 ## Phase 2: Select Best Solution
 
@@ -356,6 +375,9 @@ The Proposer suggested [count] approaches (see proposals.md for full comparison)
 - **Scrutinize edge cases**: What corner cases did the proposer miss?
 - **Consider correctness and maintainability**: Balance both concerns
 - **Balance risk against value**: Sometimes higher value justifies moderate risk
+- **PRIORITIZE LONG-TERM PROJECT VALUE**: Choose solutions that make the codebase better over time
+- **Prefer boring, standard solutions**: Clever solutions create maintenance burden - prefer clear over clever
+- **Think about the 12-month test**: "Will we regret this choice in a year?"
 - **Identify trade-offs**: Be honest about weaknesses in all solutions
 - **Question dependencies**: New libraries are technical debt until proven otherwise
 - **Verify ESM compliance**: Solutions must work with ESM-first
@@ -378,6 +400,9 @@ The Proposer suggested [count] approaches (see proposals.md for full comparison)
 - ❌ **Recommend anti-patterns** - see `Skill(cxt:typescript-developer)` for patterns to avoid
 - ❌ **Always choose lowest risk** - consider project value and long-term benefits
 - ❌ **Select high-risk without value** - high risk needs commensurate value
+- ❌ **Choose clever over clear**: Clever solutions create long-term maintenance burden
+- ❌ **Ignore the 12-month question**: Always ask "Will we regret this in a year?"
+- ❌ **Prioritize short-term convenience over long-term maintainability**: Quick fixes accumulate as technical debt
 - ❌ **Assume proposer is complete** - they didn't think of everything
 - ❌ **Ignore type safety** - TypeScript's type system should be leveraged fully
 - ❌ **Skip type testing guidance** - implementer needs to know what type tests to write

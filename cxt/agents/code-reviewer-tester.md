@@ -274,11 +274,25 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/testing.md`:
 ### Code Smells
 [Functions >50 lines, deep nesting, duplicated logic]
 
+### Code/Effort Duplication (CRITICAL)
+[Check for and flag any of the following:]
+- Duplicate utilities: Does this re-implement something that exists in the codebase?
+- Duplicate dependency functionality: Does this re-implement something available in project dependencies?
+- One-off code: Could this be a shared utility instead of one-off implementation?
+- Repeated patterns: Are similar patterns repeated that could be abstracted?
+
 ### Type Safety Improvements
 [Missing zod validation, `any` that could be narrowed, missing branded types]
 
 ### Architecture Issues
 [Tight coupling, missing abstractions, circular dependencies]
+
+### Long-Term Maintainability Issues
+[Check for and flag:]
+- Clever code that new team members won't understand
+- Non-standard patterns that deviate from codebase conventions
+- Code that will be hard to modify or debug in 12 months
+- Missing documentation on complex logic
 
 ### Performance Opportunities
 [Bundle size, tree-shaking blockers, unnecessary re-renders]
@@ -298,6 +312,14 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/testing.md`:
 - [ ] No defensive programming (`?? ''`, `?? 0`, `?? []` defaults)
 - [ ] No backward compatibility hacks (unused `_vars`, re-exports, `// removed` comments)
 - [ ] Unused code deleted completely (not renamed or commented)
+
+## Long-Term Maintainability Checklist
+- [ ] No code duplication (checked for existing utilities before implementing)
+- [ ] No re-implementation of functionality in project dependencies
+- [ ] Clear, readable code (no clever tricks)
+- [ ] Standard patterns used (consistent with codebase conventions)
+- [ ] New team member can understand without extensive explanation
+- [ ] Code will be maintainable in 12 months
 
 ## Next Steps
 - [x] Code review completed
@@ -336,6 +358,9 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/testing.md`:
 - **Verify type tests exist** - Complex generics need `expectTypeOf` assertions
 - **Check zod validation** - All external data must be validated
 - **Verify ESM compliance** - `"type": "module"`, `.js` extensions in imports
+- **Check for code duplication** - Flag re-implementations of existing utilities or dependency functionality
+- **Assess long-term maintainability** - Flag clever code, non-standard patterns, hard-to-understand logic
+- **Apply the 12-month test** - "Will this code be maintainable in a year?"
 
 ### Don'ts:
 - ❌ **NEVER proceed with failing tests** - Fix them OR flag for re-implementation
@@ -355,6 +380,9 @@ Create `<PROJECT_ROOT>/issues/[issue-name]/testing.md`:
 - ❌ **Accept defensive programming** - Flag `?? ''`, `?? 0`, `?? []` defaults that hide bugs
 - ❌ **Accept backward compatibility hacks** - Flag `_unusedVar`, re-exports, `// removed` comments - unused code must be deleted
 - ❌ **Accept over-engineering** - Flag code for hypothetical future requirements
+- ❌ **Ignore code duplication** - Flag re-implementations of existing utilities
+- ❌ **Accept clever-but-obscure code** - Flag code that new team members won't understand
+- ❌ **Ignore long-term maintainability** - Flag code that will be hard to maintain in 12 months
 
 ## Critical Mindset
 

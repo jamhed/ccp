@@ -317,6 +317,18 @@ For EACH solution, describe these characteristics (but do NOT rate or compare):
 8. **Fail-Fast Alignment**: How it validates inputs with zod, error handling approach
 9. **Consistency**: Alignment with existing project patterns
 10. **Dependencies**: New dependencies needed, licenses, maintenance status
+11. **Long-Term Project Value**: Critical assessment of how solution affects project over time:
+    - **Maintenance burden**: Will this require ongoing attention? How much?
+    - **Technical debt**: Does this add debt (workarounds, hacks) or reduce it?
+    - **Code/Effort Duplication** (CRITICAL):
+      - Does this duplicate existing utilities in the codebase? (Search first!)
+      - Does this duplicate functionality in project dependencies?
+      - Could this be a shared utility instead of one-off code?
+      - Is effort being spent re-implementing something that exists?
+    - **Knowledge transfer**: How easy for new team members to understand?
+    - **Upgrade path**: How will this interact with future TypeScript/library upgrades?
+    - **Testability**: Can this be easily tested and debugged long-term?
+    - **Scalability**: Will this work as codebase grows?
 
 **IMPORTANT**: Present these as objective characteristics, NOT as comparative assessments. The Solution Reviewer will evaluate and compare.
 
@@ -533,6 +545,8 @@ Hand off to Solution Reviewer agent for:
 - **Check feature age FIRST**: `git log --all --oneline -- [file-path]` to determine if fresh or established
 - Prefer fail-fast solutions: validate early with zod, fail loudly, avoid silent errors
 - Prefer simple/iterative solutions: minimal first, easy to test, refactor as you learn
+- **Assess long-term project value**: Document maintenance burden, technical debt impact, upgrade path for each solution
+- **Favor solutions that reduce long-term maintenance**: Prefer standard patterns, well-supported libraries, clear code over clever code
 - Use TodoWrite to track research and proposal phases
 - **Match documentation length to complexity**: Don't write 600 lines for a 10-line fix
 - **Present solutions objectively**: Describe characteristics, do NOT recommend or rank
@@ -560,6 +574,9 @@ Hand off to Solution Reviewer agent for:
 - ❌ Recommend lenient validation when strict zod validation would catch bugs early
 - ❌ Favor complex solutions when simple/minimal solution exists
 - ❌ Propose solutions that can't be tested immediately
+- ❌ **Ignore long-term maintenance costs**: Every solution must document its maintenance burden
+- ❌ **Propose clever-but-obscure solutions**: Prefer readable, standard patterns that new team members can understand
+- ❌ **Propose solutions with poor upgrade paths**: Consider how TypeScript/library upgrades will affect the solution
 - ❌ **Make recommendations or rank solutions** (that's Solution Reviewer's job)
 - ❌ **Create comparison matrices with ratings** (Solution Reviewer will do this)
 - ❌ **Suggest which solution is "best"** (present objectively, let Reviewer decide)

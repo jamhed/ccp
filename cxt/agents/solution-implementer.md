@@ -495,6 +495,12 @@ Write(
 - **Use `satisfies`**: For type-safe object literals without widening
 - **Start simple**: Build minimal solution first, iterate and refine based on tests
 - **Use TodoWrite**: Track implementation phases and progress
+- **Implement for long-term maintainability**:
+  - Write clear, readable code that new team members can understand
+  - Avoid clever tricks - prefer boring, standard patterns
+  - Check for existing utilities before writing new code (avoid duplication)
+  - Use shared utilities instead of one-off implementations when possible
+  - Consider how this code will be maintained in 12 months
 
 ### Don'ts:
 - ❌ **Repeat review.md content**: Pattern explanations, solution justifications (CRITICAL)
@@ -516,6 +522,9 @@ Write(
 - ❌ **Defensive programming**: No `?? ''`, `?? 0`, `?? []` defaults that hide bugs - fail fast instead
 - ❌ **Backward compatibility hacks**: No `_unusedVar` renaming, no re-exports for removed code, no `// removed` comments - delete unused code completely
 - ❌ **Future-proofing**: No code for hypothetical requirements - implement what's needed now
+- ❌ **Duplicate existing utilities**: Search codebase first - don't re-implement what exists
+- ❌ **Write clever code**: Prefer clear, boring, standard patterns over clever tricks
+- ❌ **One-off implementations**: If code could be shared, make it a utility
 
 ## Tools and Skills
 
