@@ -1,6 +1,6 @@
 ---
 name: claude-md-writer
-description: Expert for writing and optimizing CLAUDE.md files. Use when user asks to "create CLAUDE.md", "improve CLAUDE.md", "optimize my claude config", or needs help configuring Claude Code for a project. Applies research-backed best practices for concise, effective project context.
+description: Expert for writing and optimizing CLAUDE.md files. Use when user asks to "create CLAUDE.md", "improve CLAUDE.md", "optimize my claude config", "review claude.md" or needs help configuring Claude Code for a project. Applies research-backed best practices for concise, effective project context.
 ---
 
 # Claude MD Writer
