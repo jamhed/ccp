@@ -25,6 +25,8 @@ The [docs/web/](docs/web/) directory contains cached technical documentation:
 - [anthropic-tool-use.md](docs/web/anthropic-tool-use.md) - Tool use best practices
 - [anthropic-prompt-engineering.md](docs/web/anthropic-prompt-engineering.md) - Prompt engineering guide
 - [issue-management-patterns.md](docs/web/issue-management-patterns.md) - Issue management patterns
+- [claude-md-best-practices.md](docs/web/claude-md-best-practices.md) - CLAUDE.md optimization guide
+- [prompt-learning-agent-optimization.md](docs/web/prompt-learning-agent-optimization.md) - Prompt learning and agent design
 
 **Note**: Always check cached docs before fetching from web (use `cx:web-doc` skill for new fetches).
 
