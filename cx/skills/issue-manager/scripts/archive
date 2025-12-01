@@ -46,3 +46,29 @@ if [ -d "scripts" ]; then
     done
   fi
 fi
+
+# Git commit and push
+echo "Committing and pushing..."
+
+# Stage the moved files (delete from issues, add to archive)
+git add "$ISSUES_DIR/$ISSUE_NAME" 2>/dev/null || true
+git add "$ARCHIVE_DIR/$TARGET_NAME"
+
+# Create commit
+git commit -m "archive: $ISSUE_NAME
+
+Move solved issue to archive folder."
+
+if [ $? -eq 0 ]; then
+  echo "Committed: archive $ISSUE_NAME"
+
+  # Push to remote
+  git push
+  if [ $? -eq 0 ]; then
+    echo "Pushed to remote"
+  else
+    echo "Warning: Failed to push (commit is local)"
+  fi
+else
+  echo "Warning: Nothing to commit or commit failed"
+fi

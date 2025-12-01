@@ -84,6 +84,8 @@ Archive a solved issue by moving it from `issues/` to `archive/`:
 - Moves the entire issue folder to `archive/`
 - Preserves all issue files (problem.md, solution.md, audit trail, etc.)
 - **Executes review hooks**: Runs any `scripts/review-*` scripts from the project directory
+- **Commits changes**: Creates a git commit with message "archive: <issue-name>"
+- **Pushes to remote**: Pushes the commit to the remote repository
 
 **Review Hooks:**
 After archiving, the script looks for executable `scripts/review-*` files in the **project directory** (not the skill directory) and runs them with the archived issue name as argument:
@@ -97,6 +99,7 @@ Use review hooks for external code review (e.g., Codex, OpenCode) or post-archiv
 **Prerequisites:**
 - Issue must exist in the `issues/` directory
 - Issue should be fully solved with a `solution.md` file
+- Git repository initialized with remote configured (for push)
 
 ### 4. Solve All Unsolved Issues
 

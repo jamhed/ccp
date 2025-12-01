@@ -73,6 +73,17 @@ All plugins follow a multi-phase workflow:
 /cxg:solve [issue-name]       # Execute full workflow
 ```
 
+**Ark YAML Agents (cxa)**:
+```bash
+/cxa:problem [description]    # Research and define YAML agent problem
+/cxa:refine [issue-name]      # Enhance problem definition
+/cxa:solve [issue-name]       # Execute full workflow (propose, review, implement)
+```
+
+The cxa plugin is specialized for developing YAML-based Ark agents. It includes:
+- `cxa:ark-agent-dev` skill with comprehensive patterns (agents, tools, teams, templates)
+- Project search to find existing conventions in the current codebase
+
 ## File Naming Conventions
 
 **CRITICAL**: All issue-related files use lowercase names:
