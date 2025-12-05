@@ -21,6 +21,139 @@ This skill provides comprehensive guidance for developing YAML-based Ark agents,
 | **ConfigMap** | Shared configuration |
 | **Secret** | Sensitive data |
 
+## Project Search Patterns
+
+Find existing Ark resources in a project:
+
+```bash
+# Find agents
+Grep: "kind: Agent" --glob "*.yaml"
+
+# Find tools
+Grep: "kind: Tool" --glob "*.yaml"
+
+# Find teams
+Grep: "kind: Team" --glob "*.yaml"
+
+# Find queries
+Grep: "kind: Query" --glob "*.yaml"
+
+# Find all Ark resources
+Grep: "ark.mckinsey.com" --glob "*.yaml"
+```
+
+## Validation Checklist
+
+### Agent
+- [ ] `apiVersion: ark.mckinsey.com/v1alpha1`
+- [ ] `kind: Agent`
+- [ ] `metadata.name`: lowercase, hyphenated
+- [ ] `spec.prompt`: non-empty string
+- [ ] `spec.description`: present if used as tool
+
+### Tool
+- [ ] `apiVersion: ark.mckinsey.com/v1alpha1`
+- [ ] `kind: Tool`
+- [ ] `metadata.name`: lowercase, hyphenated
+- [ ] `spec.type`: mcp, agent, fetcher, or built-in
+- [ ] `spec.description`: clear description
+- [ ] `spec.inputSchema`: valid JSON Schema
+
+### Query
+- [ ] `apiVersion: ark.mckinsey.com/v1alpha1`
+- [ ] `kind: Query`
+- [ ] `metadata.name`: lowercase, hyphenated
+- [ ] `spec.input`: non-empty string
+- [ ] `spec.targets`: at least one target
+- [ ] `spec.timeout`: reasonable value (e.g., `30s`)
+
+## YAML Validation with decl
+
+Use the `decl` CLI to validate Ark YAML files against CRD schemas and business logic.
+
+### Basic Validation Commands
+
+```bash
+# Validate a specific file
+uv run decl validate -f path/to/agent.yaml
+
+# Validate all resources in a namespace
+uv run decl validate -n namespace-name
+
+# Validate all resources of a specific kind
+uv run decl validate agent -n namespace-name
+
+# Validate a specific resource by kind/name
+uv run decl validate agent/my-agent -n namespace-name
+
+# Validate entire base folder (all namespaces)
+uv run decl validate
+
+# Validate with verbose output (shows each resource)
+uv run decl validate -v
+
+# Continue validation on errors (collect all errors)
+uv run decl validate --continue
+```
+
+### Validation Layers
+
+The decl validator performs two-layer validation:
+
+1. **CRD Schema Validation** - Validates against OpenAPI v3 schemas from Ark CRDs
+   - Checks required fields (apiVersion, kind, metadata.name)
+   - Validates field types and formats
+   - Checks enum values
+
+2. **Business Logic Validation** - Ark admission webhook rules
+   - Validates filename matches `metadata.name`
+   - Checks cross-references (tools, models)
+   - Validates parameter configurations
+
+### Validation Output
+
+**Success:**
+```
+Validation passed!
+
+Resource: Agent
+Name: my-agent
+Status: Valid (passed CRD and webhook validation)
+```
+
+**Failure:**
+```
+Validation failed for Agent
+Name: my-agent
+File: namespace/agents/my-agent.yaml
+
+Validation Errors (2 found):
+
+  1. [REQUIRED] spec.prompt
+     Error: Field required
+
+  2. [TYPE] spec.tools.0.name
+     Error: Input should be a valid string
+     Actual: 123
+```
+
+### Common Validation Errors
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `Field required` | Missing required field | Add the field |
+| `Input should be a valid string` | Wrong type | Use correct type |
+| `No CRD schema found` | Unknown apiVersion | Check apiVersion spelling |
+| `filename_mismatch` | File name ≠ metadata.name | Rename file or update metadata |
+
+### Quick Syntax Validation
+
+For quick YAML syntax check (without full CRD validation):
+
+```bash
+python -c "import yaml; yaml.safe_load(open('path/to/file.yaml'))"
+```
+
 ## Core Resource Types
 
 ### Agent
