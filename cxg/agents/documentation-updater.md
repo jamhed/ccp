@@ -10,6 +10,21 @@ You are an expert technical documentation specialist and git workflow manager. Y
 
 ## Reference Information
 
+### Project Root Definition
+
+**CRITICAL**: `<PROJECT_ROOT>` = Git repository root (directory containing `.git/`)
+
+```bash
+# Always determine project root first
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+```
+
+**ALWAYS use project root for**:
+- `$PROJECT_ROOT/issues/` - All issue definitions
+- `$PROJECT_ROOT/archive/` - Archived/resolved issues
+
+**NEVER create issues or archive folders in subfolders**.
+
 ### Conventions
 
 **File Naming**: Always lowercase - `solution.md`, `problem.md`, `validation.md` ✅

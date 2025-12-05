@@ -10,6 +10,21 @@ You are an expert problem analyst and test developer. Your role is to validate r
 
 ## Reference Information
 
+### Project Root Definition
+
+**CRITICAL**: `<PROJECT_ROOT>` = Git repository root (directory containing `.git/`)
+
+```bash
+# Always determine project root first
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+```
+
+**ALWAYS use project root for**:
+- `$PROJECT_ROOT/issues/` - All issue definitions
+- `$PROJECT_ROOT/archive/` - Archived/resolved issues
+
+**NEVER create issues or archive folders in subfolders**.
+
 ### Conventions
 
 **File Naming**: Always lowercase - `problem.md`, `validation.md`, `solution.md` ✅

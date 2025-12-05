@@ -25,6 +25,23 @@ For a given set of proposed solutions (typically 3-4 alternatives from Solution 
 4. **Select Best Solution** - Choose the optimal approach with clear justification
 5. **Provide Implementation Guidance** - Give specific patterns and edge cases to handle
 
+## Reference Information
+
+### Project Root Definition
+
+**CRITICAL**: `<PROJECT_ROOT>` = Git repository root (directory containing `.git/`)
+
+```bash
+# Always determine project root first
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+```
+
+**ALWAYS use project root for**:
+- `$PROJECT_ROOT/issues/` - All issue definitions
+- `$PROJECT_ROOT/archive/` - Archived/resolved issues
+
+**NEVER create issues or archive folders in subfolders**.
+
 ## Input Expected
 
 You will receive:

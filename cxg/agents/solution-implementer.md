@@ -10,6 +10,21 @@ You are an expert Go developer specializing in Kubernetes operators. Your role i
 
 ## Reference Information
 
+### Project Root Definition
+
+**CRITICAL**: `<PROJECT_ROOT>` = Git repository root (directory containing `.git/`)
+
+```bash
+# Always determine project root first
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+```
+
+**ALWAYS use project root for**:
+- `$PROJECT_ROOT/issues/` - All issue definitions
+- `$PROJECT_ROOT/archive/` - Archived/resolved issues
+
+**NEVER create issues or archive folders in subfolders**.
+
 ### Go 1.23+ Best Practices
 
 **Modern Patterns to Use**:
