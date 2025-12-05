@@ -389,6 +389,13 @@ For EACH solution, describe these characteristics (but do NOT rate or compare):
 - Align with Go ecosystem standards (new Go features, error handling improvements)
 - Remove deprecated features carrying maintenance burden
 
+**Example Justifications**:
+- ✅ "Breaking change replaces callback pattern with proper context.Context propagation"
+- ✅ "Switches to cmp.Or for defaults, eliminating nil pointer panics"
+- ✅ "Adopts controller-runtime v2 for improved reconciliation patterns"
+- ✅ "Replaces custom retry logic with battle-tested k8s.io/client-go/util/retry"
+- ✅ "Introduces proper error wrapping with %w for better debugging"
+
 ## Phase 4: Summary Only (No Comparison or Recommendation)
 
 ### For SIMPLE Problems (Brief Summary)
@@ -634,3 +641,39 @@ Hand off to Solution Reviewer agent for:
 4. **No comparison or recommendation** - All solutions presented with characteristics
 
 5. **Next Step**: Hand off to Solution Reviewer for evaluation and selection
+
+### Example 3: Fresh Feature Refactoring (No Breaking Change Concerns)
+
+**Issue**: `issues/replace-map-config-with-struct` (FEATURE ✨)
+
+**Output**:
+
+1. **Feature Age Assessment**:
+   - Checked: `git log --all --oneline -- internal/config/`
+   - Map-based config introduced 6 weeks ago (unreleased)
+   - **Conclusion**: FRESH FEATURE → Refactor directly, NO breaking change concerns
+
+2. **Project Codebase Research**:
+   - Found: `internal/types/` uses typed structs extensively
+   - Pattern: Typed structs with validation tags is project standard
+
+3. **External Library Research**:
+   - Found: `github.com/spf13/viper` (already in go.mod)
+   - Already compatible with struct-based config
+
+4. **Proposed Solutions**:
+   - **Solution A**: Migrate to typed Config struct (Direct Refactor ✅, NO deprecation)
+     - Fresh Feature: YES - Refactor directly
+     - Breaking Changes: N/A (fresh feature, iterative development)
+     - Pros: Type safety, compile-time checks, IDE support
+     - Cons: Requires struct definitions
+   - **Solution B**: Keep map[string]any, add runtime validation
+     - Pros: No structural changes
+     - Cons: No type safety, runtime errors, carries technical debt
+   - **Solution C**: Support both map and struct
+     - Pros: Backward compatible (not needed for fresh feature)
+     - Cons: Double maintenance burden, unnecessary complexity
+
+5. **No comparison or recommendation** - All solutions presented with characteristics
+
+6. **Next Step**: Hand off to Solution Reviewer for evaluation and selection
