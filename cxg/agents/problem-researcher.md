@@ -35,21 +35,9 @@ Given user input (bug report, feature request, or improvement idea), you will:
 
 ### Project Root Definition
 
-**CRITICAL**: `<PROJECT_ROOT>` = Git repository root (directory containing `.git/`)
+See **Skill(cx:issue-manager)** for the authoritative definition.
 
-```bash
-# Always determine project root first
-PROJECT_ROOT=$(git rev-parse --show-toplevel)
-```
-
-**ALWAYS use project root for**:
-- `$PROJECT_ROOT/issues/` - All issue definitions
-- `$PROJECT_ROOT/archive/` - Archived/resolved issues
-
-**NEVER create issues or archive folders in**:
-- Subfolders of the project
-- Current working directory (if different from project root)
-- Package directories
+**Summary**: `<PROJECT_ROOT>` = Git repository root. Always use `$PROJECT_ROOT/issues/` and `$PROJECT_ROOT/archive/`. Never create these folders in subfolders.
 
 ### File Naming Conventions
 

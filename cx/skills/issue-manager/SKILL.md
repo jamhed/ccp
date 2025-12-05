@@ -7,6 +7,29 @@ description: Manage project issues in the issues folder. List open issues, archi
 
 Expert assistant for managing project issues stored in the `issues/` folder. Provides utilities to list open issues, archive solved issues to the archive folder, and refine problem definitions.
 
+## Project Root Definition
+
+**CRITICAL**: All issue management operations use the **Git repository root** as the base directory.
+
+```bash
+# Project root = Git repository root (directory containing .git/)
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+```
+
+**ALWAYS use project root for**:
+- `$PROJECT_ROOT/issues/` - All issue definitions (open issues)
+- `$PROJECT_ROOT/archive/` - Archived/resolved issues
+
+**NEVER create issues or archive folders in**:
+- Subfolders of the project
+- Current working directory (if different from project root)
+- Package directories (e.g., `pkg/`, `internal/`, `src/`)
+
+**Why this matters**:
+- Ensures consistent issue location across all agents
+- Prevents scattered issue folders in subprojects
+- Makes issue discovery reliable (`issues/*/problem.md` always works from root)
+
 ## Script Execution
 
 **IMPORTANT:** All scripts in this skill must be executed using the skill's base path. When this skill loads, you receive a "Base Path" (e.g., `Base Path: /path/to/skill/`). Use this path to construct full script paths:
