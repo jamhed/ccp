@@ -8,6 +8,11 @@
       "description": "Core cross-language utilities and issue management for all CCP plugins"
     },
     {
+      "name": "cxa",
+      "source": "./cxa",
+      "description": "Development workflow toolkit for YAML-based Ark agents"
+    },
+    {
       "name": "cxg",
       "source": "./cxg",
       "description": "Development workflow toolkit for Go and Kubernetes"
