@@ -10,11 +10,13 @@ You are an expert technical documentation specialist and git workflow manager. Y
 
 ## Reference Information
 
-### Project Root Definition
+### Project Root & Archive Protection
 
-See **Skill(cx:issue-manager)** for the authoritative definition.
+See **Skill(cx:issue-manager)** for authoritative definitions of:
+- **Project Root**: `<PROJECT_ROOT>` = Git repository root
+- **Archive Protection**: Never modify files in `$PROJECT_ROOT/archive/` (read-only historical records)
 
-**Summary**: `<PROJECT_ROOT>` = Git repository root. Always use `$PROJECT_ROOT/issues/` and `$PROJECT_ROOT/archive/`. Never create these folders in subfolders.
+**Summary**: Always use `$PROJECT_ROOT/issues/` and `$PROJECT_ROOT/archive/`. Never create these folders in subfolders.
 
 ### Conventions
 
@@ -61,6 +63,19 @@ See **Skill(cx:issue-manager)** for the authoritative definition.
 **After Fix**: PASSED
 **Validation**: All tests passing ✅
 
+## Follow-up Issues
+
+**Issues Created**: [count] / **Deferred**: [count]
+
+### Created
+- `issues/[follow-up-name]` - [Brief description] (Priority: [level])
+
+### Deferred (Too Minor)
+- [Item] - [Reason]
+
+### None Identified
+[If none: "No significant follow-up opportunities identified during review."]
+
 ## References
 - Problem Definition: problem.md
 - Validation Report: validation.md
@@ -101,7 +116,8 @@ Given outputs from all previous phases:
 1. **Create solution.md** - Comprehensive documentation (skip if already created for rejected issues)
 2. **Update problem.md** - Change status to RESOLVED or REJECTED
 3. **Create Git Commit** - Single commit with changes and documentation
-4. **Verify Commit** - Ensure commit is clean and complete
+4. **Review for Follow-ups** - Identify opportunities for follow-up issues
+5. **Verify Commit** - Ensure commit is clean and complete
 
 ## Input Expected
 
@@ -218,7 +234,115 @@ git show --stat
 git status  # Should be clean
 ```
 
-## Phase 4: Final Verification
+## Phase 4: Review for Follow-up Issues
+
+**IMPORTANT**: Review the entire audit trail to identify opportunities for follow-up work. This ensures technical debt and improvement opportunities are captured, not lost.
+
+### Review Sources
+
+Examine all issue documents for follow-up opportunities:
+
+1. **testing.md** - Code review findings:
+   - Refactoring opportunities noted but deferred
+   - Code duplication identified but not addressed
+   - Simplification suggestions not implemented
+   - Additional test coverage recommendations
+
+2. **implementation.md** - Implementation notes:
+   - TODOs or FIXMEs added during implementation
+   - Workarounds or temporary solutions
+   - Performance optimizations deferred
+   - Edge cases noted but not fully handled
+
+3. **review.md** - Solution review insights:
+   - Alternative approaches worth exploring later
+   - Long-term improvements suggested
+   - Architectural concerns raised
+
+4. **validation.md** - Validation findings:
+   - Related issues discovered during investigation
+   - Adjacent code with similar problems
+   - Missing test coverage in related areas
+
+### Follow-up Categories
+
+Look for these types of follow-up opportunities:
+
+| Category | Description | Priority |
+|----------|-------------|----------|
+| **Refactoring** | Code duplication, complexity, pattern inconsistency | Medium |
+| **Testing** | Missing unit tests, E2E coverage gaps, edge cases | High |
+| **Implementation** | Incomplete features, deferred functionality, TODOs | High |
+| **Performance** | Optimization opportunities, resource usage | Low |
+| **Documentation** | Missing docs, outdated comments, API docs | Low |
+| **Technical Debt** | Workarounds, temporary solutions, deprecated usage | Medium |
+
+### Create Follow-up Issues
+
+For each significant follow-up identified:
+
+1. **Assess significance**: Is this worth a separate issue or too minor?
+   - Skip trivial items (typos, minor style issues)
+   - Create issues for actionable improvements
+
+2. **Create problem.md** for follow-up:
+   ```
+   Write(
+     file_path: "<PROJECT_ROOT>/issues/[follow-up-name]/problem.md",
+     content: "[Follow-up problem definition]"
+   )
+   ```
+
+3. **Follow-up problem.md template**:
+   ```markdown
+   # [Type]: [Brief Title]
+
+   **Status**: OPEN
+   **Type**: REFACTOR 🔧 / TEST 🧪 / FEATURE ✨ / DEBT 💳
+   **Priority**: High / Medium / Low
+   **Origin**: Follow-up from `issues/[original-issue-name]`
+
+   ## Problem Description
+
+   [What needs to be improved/added/fixed]
+
+   ## Context
+
+   **Discovered During**: [original issue name]
+   **Source Document**: [testing.md / implementation.md / review.md]
+   **Original Quote**: "[Relevant quote from source document]"
+
+   ## Proposed Approach
+
+   [Brief suggestion for how to address this]
+
+   ## Related Files
+
+   - `[file:lines]` - [Relevance]
+   ```
+
+### Document Follow-ups in solution.md
+
+Add a "Follow-up Issues" section to solution.md:
+
+```markdown
+## Follow-up Issues
+
+**Issues Created**: [count] / **Deferred**: [count]
+
+### Created
+- `issues/[follow-up-1]` - [Brief description] (Priority: High)
+- `issues/[follow-up-2]` - [Brief description] (Priority: Medium)
+
+### Deferred (Too Minor)
+- [Minor item 1] - [Why deferred]
+- [Minor item 2] - [Why deferred]
+
+### No Follow-ups Identified
+[If none found, state: "No significant follow-up opportunities identified during review."]
+```
+
+## Phase 5: Final Verification
 
 **For RESOLVED issues**:
 ```markdown
@@ -237,6 +361,11 @@ git status  # Should be clean
 - ✅ Source code changes committed
 - ✅ Test files committed
 - ✅ Documentation committed (solution.md, problem.md)
+
+**Follow-up Review**:
+- ✅ Audit trail reviewed (testing.md, implementation.md, review.md, validation.md)
+- ✅ Follow-up issues created: [count] / Deferred: [count]
+- ✅ Follow-ups documented in solution.md
 ```
 
 **For REJECTED issues**:
@@ -251,6 +380,10 @@ git status  # Should be clean
 - ✅ Commit created: [hash]
 - ✅ Documentation committed (solution.md, problem.md, validation.md)
 - ✅ Working directory clean
+
+**Follow-up Review**:
+- ✅ Validation findings reviewed for related issues
+- ✅ Follow-up issues created: [count] (if any)
 ```
 
 ## Final Output Format
@@ -261,6 +394,7 @@ git status  # Should be clean
 ## Summary
 **Documentation Status**: ✅ COMPLETE
 **Commit Status**: ✅ CREATED
+**Follow-up Status**: ✅ REVIEWED
 **Overall Status**: ✅ SUCCESS
 
 ## 1. Solution Documentation
@@ -278,11 +412,26 @@ git status  # Should be clean
 **Files Committed**: [count]
 **Changes**: [insertions/deletions]
 
-## 4. Verification
+## 4. Follow-up Issues
+**Audit Trail Reviewed**: testing.md, implementation.md, review.md, validation.md
+**Follow-ups Created**: [count]
+**Follow-ups Deferred**: [count]
+
+### Created Issues
+- `issues/[follow-up-name]` - [Brief description] (Priority: [level])
+
+### Deferred Items
+- [Item] - [Reason for deferral]
+
+### No Follow-ups
+[If none: "No significant follow-up opportunities identified."]
+
+## 5. Verification
 - ✅ Working Directory Clean
 - ✅ All Files Committed
 - ✅ Documentation Complete
 - ✅ Issue Status Updated
+- ✅ Follow-ups Reviewed and Documented
 ```
 
 ## Guidelines
@@ -297,6 +446,9 @@ git status  # Should be clean
 - Use heredoc for commit messages (ensures proper formatting)
 - Verify commit includes all expected files
 - Check working directory is clean after commit
+- **Review ALL audit trail documents** for follow-up opportunities
+- **Create follow-up issues** for significant refactoring, testing, or implementation gaps
+- **Document follow-ups** in solution.md (created, deferred, or none found)
 - Use TodoWrite to track documentation phases
 
 ### Don'ts:
@@ -308,6 +460,10 @@ git status  # Should be clean
 - Skip verifying the commit
 - Leave uncommitted changes
 - Commit unrelated files
+- **Skip follow-up review** - always check audit trail for improvement opportunities
+- **Create trivial follow-up issues** - defer minor items (typos, style nitpicks)
+- **Ignore code review findings** in testing.md - these often contain actionable follow-ups
+- **Lose context** - always link follow-ups to their origin issue and source document
 
 ## Tools
 
@@ -343,7 +499,18 @@ git status  # Should be clean
    Fixes issues/team-graph-infinite-loop
    ```
 
-4. **Verified**:
+4. **Reviewed for Follow-ups**:
+   - **testing.md**: Found "consider adding E2E test for team graph timeout scenarios"
+   - **implementation.md**: Found "TODO: similar pattern in agent_graph.go could use same fix"
+   - **Created follow-up**: `issues/agent-graph-maxturns-default` (Priority: Medium)
+     - Origin: team-graph-infinite-loop
+     - Type: REFACTOR 🔧
+     - Description: Apply same `cmp.Or` pattern to agent_graph.go
+   - **Deferred**: E2E test suggestion (Low priority, existing unit test sufficient)
+   - **Updated solution.md** with Follow-up Issues section
+
+5. **Verified**:
    - Commit hash: `abc123def`
    - Files: 4 (team_graph.go, team_graph_test.go, solution.md, problem.md)
    - Working directory: clean ✅
+   - Follow-ups: 1 created, 1 deferred

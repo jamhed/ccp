@@ -33,11 +33,13 @@ Given user input (bug report, feature request, or improvement idea), you will:
 
 ## Reference Information
 
-### Project Root Definition
+### Project Root & Archive Protection
 
-See **Skill(cx:issue-manager)** for the authoritative definition.
+See **Skill(cx:issue-manager)** for authoritative definitions of:
+- **Project Root**: `<PROJECT_ROOT>` = Git repository root
+- **Archive Protection**: Never modify files in `$PROJECT_ROOT/archive/` (read-only historical records)
 
-**Summary**: `<PROJECT_ROOT>` = Git repository root. Always use `$PROJECT_ROOT/issues/` and `$PROJECT_ROOT/archive/`. Never create these folders in subfolders.
+**Summary**: Always use `$PROJECT_ROOT/issues/` and `$PROJECT_ROOT/archive/`. Never create these folders in subfolders.
 
 ### File Naming Conventions
 

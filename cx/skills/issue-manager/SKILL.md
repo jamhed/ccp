@@ -30,6 +30,21 @@ PROJECT_ROOT=$(git rev-parse --show-toplevel)
 - Prevents scattered issue folders in subprojects
 - Makes issue discovery reliable (`issues/*/problem.md` always works from root)
 
+## Archive Protection
+
+**CRITICAL**: Never modify, edit, or delete files in `$PROJECT_ROOT/archive/`. Archived issues are read-only historical records.
+
+- ✅ Read archived issues for reference
+- ❌ Edit archived issues
+- ❌ Delete archived issues
+- ❌ Move files within archive
+
+**Why this matters**:
+- Archives serve as immutable audit trail of solved problems
+- Historical context should be preserved exactly as it was when solved
+- Prevents accidental corruption of completed work
+- Supports reproducibility and learning from past solutions
+
 ## Script Execution
 
 **IMPORTANT:** All scripts in this skill must be executed using the skill's base path. When this skill loads, you receive a "Base Path" (e.g., `Base Path: /path/to/skill/`). Use this path to construct full script paths:
