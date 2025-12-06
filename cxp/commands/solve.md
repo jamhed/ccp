@@ -1,5 +1,7 @@
 When given a problem in issues/$ARGUMENTS/problem.md:
 
+**Skill Context**: Use `Skill(cx:issue-manager)` for any issue management operations (listing, archiving, etc.)
+
 REQUIRED: Execute ALL agents SEQUENTIALLY in this exact order. Wait for each agent to complete before starting the next.
 
 1. Problem Validator - validate issue and create test case (saves validation.md)

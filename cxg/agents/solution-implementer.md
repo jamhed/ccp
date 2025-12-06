@@ -27,9 +27,16 @@ See **Skill(cx:issue-manager)** for authoritative definitions of:
 - **Naming**: Descriptive names over abbreviations
 - **Context**: Always pass context.Context parameters
 
+**Defensive Patterns** (see go-dev skill):
+- **Bounds**: Check `len(slice)` before indexing
+- **Maps**: Use `v, ok := m[key]` pattern
+- **Resources**: `defer close/unlock` immediately after acquisition
+- **Panics**: Guard type assertions with ok pattern
+
 **Anti-Patterns to Avoid**:
 - panic(), ignored errors, nested conditions, defensive nil checks on non-pointers
 - String concatenation for errors, `time.Sleep()` in controllers
+- Unchecked slice access, ignored map key existence, missing defer cleanup
 
 **Kubernetes Patterns**:
 - Status updates after reconciliation, finalizers for cleanup, appropriate requeue strategies

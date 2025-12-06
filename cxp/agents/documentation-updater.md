@@ -18,6 +18,7 @@ Given outputs from all previous phases:
 4. **Create Follow-up Issues** - Generate new issues for high/medium priority refactoring opportunities
 5. **Create Git Commit** - Single commit with changes and documentation
 6. **Verify Commit** - Ensure commit is clean and complete
+7. **Archive Issue** (optional) - Use `Skill(cx:issue-manager)` to archive solved issues when requested
 
 ## Input Expected
 
@@ -292,6 +293,36 @@ git status  # Should be clean
 **Follow-up Issues**: N/A (rejected issue)
 ```
 
+## Phase 7: Archive Solved Issue (Optional)
+
+**IMPORTANT**: This phase is optional. Only archive if the user requests it or if the workflow indicates automatic archiving.
+
+Use **Skill(cx:issue-manager)** to archive the solved issue:
+
+1. **Invoke the skill**:
+   ```
+   Skill(cx:issue-manager)
+   ```
+
+2. **Archive the issue** using the skill's archive script:
+   ```bash
+   {base_path}/scripts/archive [issue-name]
+   ```
+
+3. **Verify archive**:
+   - Issue folder moved from `issues/` to `archive/`
+   - All files preserved (problem.md, solution.md, validation.md, etc.)
+
+**When to archive**:
+- User explicitly requests "archive the issue"
+- Workflow configuration indicates automatic archiving
+- Issue is fully resolved with passing tests and clean commit
+
+**When NOT to archive**:
+- User wants to keep issue open for follow-up
+- Additional verification needed
+- Issue was rejected (may want manual review first)
+
 ## Final Output Format
 
 ```markdown
@@ -335,6 +366,10 @@ git status  # Should be clean
 - ✅ Documentation Complete
 - ✅ Issue Status Updated
 - ✅ Follow-up Issues Created (if applicable)
+
+## 6. Archive Status (if requested)
+**Archived**: ✅ YES / ⏭️ SKIPPED
+**Location**: `archive/[issue-name]/`
 ```
 
 ## Guidelines
@@ -354,6 +389,7 @@ git status  # Should be clean
 - Verify commit includes all expected files
 - Check working directory is clean after commit
 - Use TodoWrite to track documentation phases
+- **Use Skill(cx:issue-manager)** to archive solved issues when requested
 
 ### Don'ts:
 - Create sparse or incomplete documentation
@@ -369,9 +405,13 @@ git status  # Should be clean
 - Commit unrelated files
 - Create follow-up issues for rejected bugs (only for RESOLVED)
 
-## Tools
+## Tools and Skills
 
-**Common tools**: Read, Write, Edit, Bash for documentation and git operations
+**Skills**:
+- **Skill(cxp:python-developer)**: uv commands (if running verification)
+- **Skill(cx:issue-manager)**: Archive solved issues, list open/solved issues
+
+**Tools**: Read, Write, Edit, Bash, TodoWrite
 
 **IMPORTANT**: If running any verification commands, always use `uv run`:
 - Tests: `uv run pytest -n auto`
@@ -413,3 +453,8 @@ git status  # Should be clean
    - Commit hash: `abc123def`
    - Files: 4 (validation.py, test_validation.py, solution.md, problem.md)
    - Working directory: clean ✅
+
+5. **Archived** (if requested):
+   - Used `Skill(cx:issue-manager)`
+   - Ran: `{base_path}/scripts/archive validation-infinite-loop`
+   - Location: `archive/validation-infinite-loop/` ✅

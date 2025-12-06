@@ -13,6 +13,7 @@ Expert assistant for Go development, covering both writing new code and reviewin
 When writing new Go code:
 - Use modern Go idioms and features (Go 1.23+)
 - Apply fail-early patterns and guard clauses
+- **Apply defensive patterns**: check bounds, verify map keys, defer cleanup, prevent panics
 - Leverage generics, slices/maps packages, and range-over-functions
 - Implement proper error handling with wrapping and `errors.Join`
 - Use structured logging with `slog`
@@ -21,7 +22,9 @@ When writing new Go code:
 - Follow Timer/Ticker Go 1.23 behavior (unbuffered channels, auto-GC)
 - Follow idiomatic patterns from standard library
 
-**Reference**: [references/modern-go-2025.md](references/modern-go-2025.md)
+**References**:
+- [references/modern-go-2025.md](references/modern-go-2025.md)
+- [references/defensive-patterns.md](references/defensive-patterns.md)
 
 ### 2. Reviewing Existing Go Code
 When reviewing Go code:
@@ -31,10 +34,12 @@ When reviewing Go code:
 - Look for inefficient patterns (allocations, string concatenation)
 - Validate context usage and cancellation
 - Check logging patterns (prefer slog)
+- **Verify defensive patterns**: bounds checks, map access, resource cleanup, panic prevention
 
 **References**:
 - [references/modern-go-2025.md](references/modern-go-2025.md)
 - [references/fail-early-patterns.md](references/fail-early-patterns.md)
+- [references/defensive-patterns.md](references/defensive-patterns.md)
 
 ### 3. Kubernetes Operator Specialization (Optional)
 When working with Kubernetes operators or controller-runtime code:
@@ -175,18 +180,21 @@ The assistant adapts based on the codebase:
 
 1. **Fail Early**: Validate at boundaries, return errors immediately, use guard clauses
 2. **Trust Types**: Avoid defensive nil checks, trust the type system
-3. **Modern Features**: Leverage Go 1.23+ features (generics, iterators, slices/maps packages, unique, cmp)
-4. **Explicit Errors**: Wrap errors with context, distinguish transient vs permanent
-5. **Structured Logging**: Use slog for all logging
-6. **Memory Optimization**: Use unique package for value canonicalization in long-running processes
-7. **Production Optimization**: Apply PGO for production builds of operators
-8. **Modern Tooling**: Use go mod tidy -diff, go vet -version, go env -changed
-9. **Idiomatic Code**: Follow Go standard library patterns and conventions
+3. **Defensive Coding**: Guard panic-prone operations (bounds, maps, channels, type assertions)
+4. **Modern Features**: Leverage Go 1.23+ features (generics, iterators, slices/maps packages, unique, cmp)
+5. **Explicit Errors**: Wrap errors with context, distinguish transient vs permanent
+6. **Resource Cleanup**: Always defer close/unlock immediately after acquisition
+7. **Structured Logging**: Use slog for all logging
+8. **Memory Optimization**: Use unique package for value canonicalization in long-running processes
+9. **Production Optimization**: Apply PGO for production builds of operators
+10. **Modern Tooling**: Use go mod tidy -diff, go vet -version, go env -changed
+11. **Idiomatic Code**: Follow Go standard library patterns and conventions
 
 ## Reference Files
 
 - **modern-go-2025.md**: Modern Go idioms, generics, error handling, standard library patterns, memory optimization (unique package), PGO, Timer/Ticker changes, development tooling (go mod tidy -diff, go vet -version, etc.)
 - **fail-early-patterns.md**: Guard clauses, validation, avoiding defensive programming
+- **defensive-patterns.md**: LLM-specific safety patterns - bounds checking, map access, resource cleanup, panic prevention, channel safety
 - **k8s-operator-patterns.md**: Controller-runtime best practices, reconciliation loops
 - **common-antipatterns.md**: Operator-specific issues to avoid
 

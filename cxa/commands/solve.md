@@ -6,6 +6,8 @@ description: Execute full workflow to solve an Ark YAML agent issue (propose, re
 
 You are executing the full solution workflow for an Ark YAML agent issue.
 
+**Skill Context**: Use `Skill(cx:issue-manager)` for any issue management operations (listing, archiving, etc.)
+
 ## Issue Name
 
 $ARGUMENTS
